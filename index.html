@@ -5,6 +5,45 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
 <title>Subroutine</title>
 <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<!-- Firebase -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyDMRwlLJMr08PXhCRo29zDEplKNxNnVsFk",
+    authDomain: "subroutine-664c9.firebaseapp.com",
+    projectId: "subroutine-664c9",
+    storageBucket: "subroutine-664c9.firebasestorage.app",
+    messagingSenderId: "122446573415",
+    appId: "1:122446573415:web:e62fb295c76f86f1b549c2",
+    measurementId: "G-B57X38YD7M"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+  const DOC_REF = doc(db, "subroutine", "main");
+
+  window._fbLoad = async function() {
+    try {
+      const snap = await getDoc(DOC_REF);
+      if (snap.exists()) {
+        const d = snap.data();
+        return d.data ? JSON.parse(d.data) : null;
+      }
+    } catch(e) { console.warn('Firebase load failed:', e); }
+    return null;
+  };
+
+  window._fbSave = async function(json) {
+    try {
+      await setDoc(DOC_REF, { data: json, _ts: Date.now() });
+    } catch(e) { console.warn('Firebase save failed:', e); }
+  };
+
+  window._fbReady = true;
+  if (window._fbReadyCallback) window._fbReadyCallback();
+</script>
 <style>
 :root {
   --bg:#0f0e0d; --s1:#161412; --s2:#1e1b18; --s3:#252220;
@@ -1149,25 +1188,26 @@ var _syncReady = false;
 
 async function initStateAsync() {
   try {
-    // 1. Try window.storage first (cross-device, Claude account)
+    // 1. Try Firebase first (true cross-device sync)
     var cloudRaw = null;
     try {
-      var cloudResult = await window.storage.get('sub_v5');
-      if (cloudResult && cloudResult.value) cloudRaw = cloudResult.value;
+      if (window._fbLoad) {
+        var fbData = await window._fbLoad();
+        if (fbData) cloudRaw = JSON.stringify(fbData);
+      }
     } catch(e) {}
 
     // 2. Fall back to localStorage
     var localRaw = null;
     try { localRaw = localStorage.getItem('sub_v5'); } catch(e) {}
 
-    // 3. Pick whichest is newer by checking a timestamp field
+    // 3. Pick whichever is newer by timestamp
     var cloudData = null, localData = null;
     try { if (cloudRaw) cloudData = JSON.parse(cloudRaw); } catch(e) {}
     try { if (localRaw) localData = JSON.parse(localRaw); } catch(e) {}
 
     var saved = null;
     if (cloudData && localData) {
-      // Use whichever was saved more recently
       saved = ((cloudData._ts||0) >= (localData._ts||0)) ? cloudData : localData;
     } else {
       saved = cloudData || localData;
@@ -1186,7 +1226,6 @@ async function initStateAsync() {
     } catch(e2) { S = dc(SEED); }
   }
   _syncReady = true;
-  // Hydrate state fields
   hydrateState();
 }
 
@@ -1280,12 +1319,6 @@ function renderApp() {
 function resetAppData() {
   if (!confirm('Reset Subroutine to fresh data? This clears all saved state.')) return;
   try { localStorage.removeItem('sub_v5'); } catch(e) {}
-  try {
-    if (window.storage && window.storage.delete) {
-      window.storage.delete('sub_v5').finally(function(){ location.reload(); });
-      return;
-    }
-  } catch(e) {}
   location.reload();
 }
 
@@ -1293,11 +1326,11 @@ function save() {
   try {
     S._ts = Date.now();
     var json = JSON.stringify(S);
-    // Save to localStorage immediately (fast)
+    // Save to localStorage immediately (fast, offline fallback)
     try { localStorage.setItem('sub_v5', json); } catch(e) {}
-    // Save to window.storage async (cross-device)
-    if (window.storage) {
-      window.storage.set('sub_v5', json).catch(function(){});
+    // Save to Firebase async (true cross-device sync)
+    if (window._fbSave) {
+      window._fbSave(json).catch(function(){});
     }
   } catch(e) {}
 }
