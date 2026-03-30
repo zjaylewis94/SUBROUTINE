@@ -825,7 +825,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);dis
     </div>
     <button id="export-btn" title="Download a portable JSON save file" onclick="exportData()">⇩ Export</button>
     <button id="import-btn" title="Import a portable JSON save file" onclick="triggerImport()">⇧ Import</button>
-    <button id="reset-btn" title="Clear saved data and reload with fresh content" onclick="resetAppData()" >↺ Fresh Start</button>
+    <button id="reset-btn" title="Pull latest data from cloud" onclick="syncNow()">⇅ Sync</button>
   </div>
 </div>
 <input id="import-file" type="file" accept=".json,application/json" style="display:none">
@@ -1282,6 +1282,25 @@ function resetAppData() {
   if (!confirm('Reset Subroutine to fresh data? This clears all saved state.')) return;
   try { localStorage.removeItem('sub_v5'); } catch(e) {}
   location.reload();
+}
+
+async function syncNow() {
+  flashStatus('⇅ Syncing...', 'var(--dim)');
+  try {
+    if (!window._fbLoad) { flashStatus('No cloud connection', 'var(--danger)'); return; }
+    var cloudData = await window._fbLoad();
+    if (cloudData) {
+      S = cloudData;
+      try { localStorage.setItem('sub_v5', JSON.stringify(S)); } catch(e) {}
+      hydrateState();
+      renderApp();
+      flashStatus('✓ Synced', 'var(--ok)');
+    } else {
+      flashStatus('Nothing to sync', 'var(--dim)');
+    }
+  } catch(e) {
+    flashStatus('Sync failed', 'var(--danger)');
+  }
 }
 
 function save() {
