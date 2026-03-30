@@ -5,38 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
 <title>Subroutine</title>
 <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
-<!-- Firebase compat SDKs (work as regular scripts, no module conflicts) -->
-<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
-<script>
-  var _fbApp = firebase.initializeApp({
-    apiKey: "AIzaSyDMRwlLJMr08PXhCRo29zDEplKNxNnVsFk",
-    authDomain: "subroutine-664c9.firebaseapp.com",
-    projectId: "subroutine-664c9",
-    storageBucket: "subroutine-664c9.firebasestorage.app",
-    messagingSenderId: "122446573415",
-    appId: "1:122446573415:web:e62fb295c76f86f1b549c2"
-  });
-  var _fbDb = firebase.firestore();
-  var _fbDocRef = _fbDb.collection('subroutine').doc('main');
 
-  window._fbLoad = async function() {
-    try {
-      var snap = await _fbDocRef.get();
-      if (snap.exists) {
-        var d = snap.data();
-        return d.data ? JSON.parse(d.data) : null;
-      }
-    } catch(e) { console.warn('Firebase load failed:', e); }
-    return null;
-  };
-
-  window._fbSave = async function(json) {
-    try {
-      await _fbDocRef.set({ data: json, _ts: Date.now() });
-    } catch(e) { console.warn('Firebase save failed:', e); }
-  };
-</script>
 <style>
 :root {
   --bg:#0f0e0d; --s1:#161412; --s2:#1e1b18; --s3:#252220;
@@ -5410,6 +5379,57 @@ initState();
 document.getElementById('tb-date').textContent=new Date().toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'}).toUpperCase();
 renderApp();
 initSidebarControls();
+</script>
+
+<!-- Firebase — loaded last so it never blocks app scripts -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+<script>
+  (function() {
+    try {
+      var _fbApp = firebase.initializeApp({
+        apiKey: "AIzaSyDMRwlLJMr08PXhCRo29zDEplKNxNnVsFk",
+        authDomain: "subroutine-664c9.firebaseapp.com",
+        projectId: "subroutine-664c9",
+        storageBucket: "subroutine-664c9.firebasestorage.app",
+        messagingSenderId: "122446573415",
+        appId: "1:122446573415:web:e62fb295c76f86f1b549c2"
+      });
+      var _fbDb = firebase.firestore();
+      var _fbDocRef = _fbDb.collection('subroutine').doc('main');
+
+      window._fbLoad = async function() {
+        try {
+          var snap = await _fbDocRef.get();
+          if (snap.exists) {
+            var d = snap.data();
+            return d.data ? JSON.parse(d.data) : null;
+          }
+        } catch(e) { console.warn('Firebase load failed:', e); }
+        return null;
+      };
+
+      window._fbSave = async function(json) {
+        try {
+          await _fbDocRef.set({ data: json, _ts: Date.now() });
+        } catch(e) { console.warn('Firebase save failed:', e); }
+      };
+
+      // Now that Firebase is ready, do a cloud sync on top of what localStorage loaded
+      if (typeof S !== 'undefined' && window._fbLoad) {
+        window._fbLoad().then(function(cloudData) {
+          if (cloudData && cloudData._ts && S._ts && cloudData._ts > S._ts) {
+            S = cloudData;
+            if (typeof hydrateState === 'function') hydrateState();
+            if (typeof renderApp === 'function') renderApp();
+            if (typeof showSyncStatus === 'function') showSyncStatus();
+          }
+        });
+      }
+    } catch(e) {
+      console.warn('Firebase init failed:', e);
+    }
+  })();
 </script>
 </body>
 </html>
