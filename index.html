@@ -5,30 +5,26 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
 <title>Subroutine</title>
 <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
-<!-- Firebase -->
-<script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-  import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-
-  const firebaseConfig = {
+<!-- Firebase compat SDKs (work as regular scripts, no module conflicts) -->
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+<script>
+  var _fbApp = firebase.initializeApp({
     apiKey: "AIzaSyDMRwlLJMr08PXhCRo29zDEplKNxNnVsFk",
     authDomain: "subroutine-664c9.firebaseapp.com",
     projectId: "subroutine-664c9",
     storageBucket: "subroutine-664c9.firebasestorage.app",
     messagingSenderId: "122446573415",
-    appId: "1:122446573415:web:e62fb295c76f86f1b549c2",
-    measurementId: "G-B57X38YD7M"
-  };
-
-  const app = initializeApp(firebaseConfig);
-  const db = getFirestore(app);
-  const DOC_REF = doc(db, "subroutine", "main");
+    appId: "1:122446573415:web:e62fb295c76f86f1b549c2"
+  });
+  var _fbDb = firebase.firestore();
+  var _fbDocRef = _fbDb.collection('subroutine').doc('main');
 
   window._fbLoad = async function() {
     try {
-      const snap = await getDoc(DOC_REF);
-      if (snap.exists()) {
-        const d = snap.data();
+      var snap = await _fbDocRef.get();
+      if (snap.exists) {
+        var d = snap.data();
         return d.data ? JSON.parse(d.data) : null;
       }
     } catch(e) { console.warn('Firebase load failed:', e); }
@@ -37,12 +33,9 @@
 
   window._fbSave = async function(json) {
     try {
-      await setDoc(DOC_REF, { data: json, _ts: Date.now() });
+      await _fbDocRef.set({ data: json, _ts: Date.now() });
     } catch(e) { console.warn('Firebase save failed:', e); }
   };
-
-  window._fbReady = true;
-  if (window._fbReadyCallback) window._fbReadyCallback();
 </script>
 <style>
 :root {
