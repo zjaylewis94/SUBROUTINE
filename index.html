@@ -11,9 +11,9 @@
   --bg:#0f0e0d; --s1:#161412; --s2:#1e1b18; --s3:#252220;
   --br:#2a2622; --br2:#342e28;
   --gold:#e8a030; --gd:#9a6010; --gg:rgba(232,160,48,.09);
-  --text:#eee8e0; --mid:#b0a89e; --dim:#605850; --danger:#c84040; --ok:#5cb87a;
+  --text:#ffffff; --mid:#d4cfc9; --dim:#7a7068; --danger:#c84040; --ok:#5cb87a;
   --army:#5cb87a; --teaching:#e07840; --coaching:#38bcd4;
-  --art:#c87de0; --house:#4da6ff; --personal:#a09ab8; --lists:#f0c040;
+  --art:#c87de0; --house:#4da6ff; --personal:#a09ab8; --finance:#4dcc8a; --lists:#f0c040;
 }
 *{box-sizing:border-box;margin:0;padding:0}
 html,body{height:100%;overflow:hidden}
@@ -369,7 +369,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);dis
 .cal-day.other-month{background:var(--bg)}
 .cal-day.today{background:var(--s2)}
 .cal-day.today .cal-day-num{color:var(--gold);font-weight:700}
-.cal-day-num{font-size:.76rem;color:var(--dim);margin-bottom:4px;line-height:1}
+.cal-day-num{font-size:.76rem;color:var(--mid);margin-bottom:4px;line-height:1}
 .cal-events{display:flex;flex-direction:column;gap:2px}
 .cal-lanes{position:absolute;left:0;right:0;top:22px;bottom:0;pointer-events:none}
 .cal-event{position:absolute;left:0;right:0;height:18px;border-radius:4px;padding:1px 5px;
@@ -508,9 +508,9 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);dis
 #daily-left{width:300px;flex-shrink:0;overflow-y:auto;border-right:1px solid var(--br);padding:20px 18px;display:flex;flex-direction:column;gap:16px}
 #daily-left::-webkit-scrollbar{width:3px}
 #daily-left::-webkit-scrollbar-thumb{background:var(--br2);border-radius:2px}
-/* Middle = scheduler */
+/* Middle = tasks by box — large */
 #daily-middle{width:240px;flex-shrink:0;border-right:1px solid var(--br);display:flex;flex-direction:column;overflow:hidden}
-/* Right = tasks by box — large */
+/* Right = scheduler */
 #daily-right{flex:1;overflow-y:auto;display:flex;flex-direction:column;min-width:0}
 #daily-right::-webkit-scrollbar{width:3px}
 #daily-right::-webkit-scrollbar-thumb{background:var(--br2);border-radius:2px}
@@ -848,15 +848,17 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);dis
 
 <script>
 // ─── CONFIG ───────────────────────────────────────────────────────
-var BOXES = ['army','teaching','coaching','art','house','personal'];
+var BOXES = ['teaching','coaching','art','house','personal','finance','fitness','cookbook'];
 
 var BOX_META = [
-  {id:'army',     label:'Army',     icon:'🎖️', color:'var(--army)'    },
   {id:'teaching', label:'Teaching', icon:'🏫', color:'var(--teaching)'},
   {id:'coaching', label:'Coaching', icon:'🏃', color:'var(--coaching)'},
   {id:'art',      label:'Art',      icon:'🎨', color:'var(--art)'     },
   {id:'house',    label:'House',    icon:'🏠', color:'var(--house)'   },
   {id:'personal', label:'Personal', icon:'👤', color:'var(--personal)'},
+  {id:'finance',  label:'Finance',  icon:'💰', color:'var(--finance)' },
+  {id:'fitness',  label:'Fitness',  icon:'💪', color:'var(--coaching)'},
+  {id:'cookbook', label:'Cook Book',icon:'📖', color:'var(--finance)' },
 ];
 
 // ─── SEED ────────────────────────────────────────────────────────
@@ -1026,6 +1028,50 @@ var SEED = {
         { id:'ch-p2', label:'Fitness', pages:[
           {id:'p-p2a', icon:'💪', label:'Current Plan', content:''},
           {id:'p-p2b', icon:'📊', label:'Progress', content:''},
+        ]},
+      ],
+    },
+    finance: {
+      tasks: [],
+      projects: "Budget Reset [active]\nDebt Payoff Plan [planning]\nSavings Goal [planning]\nInvestment Research [someday]\n",
+      notes: "Pay Mariah $2700\nSam paperwork (W-2s + paystub)\nUpdate monthly expenses\nBudget money\n\nMonthly bills:\n- Rent\n- Utilities\n- Car payment / insurance\n- Phone\n- Subscriptions (audit + cancel unneeded)\n",
+      chapters: [
+        { id:"ch-f1", label:"Budget", pages:[
+          {id:"p-f1a", icon:"📊", label:"Monthly Budget", content:""},
+          {id:"p-f1b", icon:"📋", label:"Bills & Subs", content:""},
+        ]},
+        { id:"ch-f2", label:"Goals", pages:[
+          {id:"p-f2a", icon:"🎯", label:"Short Term", content:""},
+          {id:"p-f2b", icon:"🏦", label:"Long Term", content:""},
+        ]},
+      ],
+    },
+    fitness: {
+      tasks: [],
+      projects: "Army PT & Fitness [active]\nWorkout & Fitness [active]\n",
+      notes: "Workout Plan: Figure out lifts per day / Numbers for all 9 weeks / Print plans\n\nMurphy Progression Plan:\nWeightless: 1/4=0.5mi/5x5-10-15 | 1/2=0.5mi/10x5-10-15/0.5mi | 3/4=0.75mi/15x5-10-15/0.75mi | Full=1mi/20x5-10-15/1mi\nWeighted: same structure\n",
+      chapters: [
+        { id:"ch-fit1", label:"Program", pages:[
+          {id:"p-fit1a", icon:"💪", label:"Program", content:""},
+        ]},
+        { id:"ch-fit2", label:"Tracking", pages:[
+          {id:"p-fit2a", icon:"📊", label:"Metrics", content:""},
+          {id:"p-fit2b", icon:"📝", label:"Notes", content:""},
+        ]},
+      ],
+    },
+    cookbook: {
+      tasks: [],
+      projects: "Meal Prep System [active]\nMacro Planning [planning]\n",
+      notes: "Meal Prep Notes:\n• Protein sources: steak, chicken, smoked salmon, beef pucks\n• Snacks: protein bars, granola bars, uncrustables\n• Drinks: cold brew, water, protein shakes\n",
+      chapters: [
+        { id:"ch-ck1", label:"Recipes", pages:[
+          {id:"p-ck1a", icon:"🍳", label:"Favorites", content:""},
+          {id:"p-ck1b", icon:"🥩", label:"Protein Meals", content:""},
+        ]},
+        { id:"ch-ck2", label:"Meal Plan", pages:[
+          {id:"p-ck2a", icon:"📅", label:"Weekly Menu", content:""},
+          {id:"p-ck2b", icon:"🛒", label:"Staples List", content:""},
         ]},
       ],
     },
@@ -1218,7 +1264,9 @@ function hydrateState() {
       if (!S.boxes[k].notes) S.boxes[k].notes = '';
       if (!S.boxes[k].projects) S.boxes[k].projects = '';
     });
-    if (!S.boxes.army.tracker) S.boxes.army.tracker = dc(SEED.boxes.army.tracker);
+    if (!S.boxes.finance) S.boxes.finance = dc(SEED.boxes.finance);
+    if (!S.boxes.fitness) S.boxes.fitness = dc(SEED.boxes.fitness);
+    if (!S.boxes.cookbook) S.boxes.cookbook = dc(SEED.boxes.cookbook);
     if (!S.lists) S.lists = dc(SEED.lists);
     if (!S.lists.quotes) S.lists.quotes = dc(SEED.lists.quotes);
     if (!S.lists.media)  S.lists.media  = dc(SEED.lists.media);
@@ -1230,8 +1278,9 @@ function hydrateState() {
     if (typeof S.fitness.currentBlock !== 'number') S.fitness.currentBlock = 0;
     if (!S.fitness.checked) S.fitness.checked = {};
     if (!S.fitness.dayNotes) S.fitness.dayNotes = {};
-    if (!S.homeTabOrder) S.homeTabOrder = ['overview','dump','monthly','weekly','daily','fitness'];
-    if (S.homeTabOrder.indexOf('fitness')===-1) S.homeTabOrder.push('fitness');
+    if (!S.homeTabOrder) S.homeTabOrder = ['overview','dump','monthly','weekly','daily'];
+    if (S.homeTabOrder.indexOf('fitness')!==-1) S.homeTabOrder = S.homeTabOrder.filter(function(s){return s!=='fitness';});
+    if (S.homeTabOrder.indexOf('cookbook')!==-1) S.homeTabOrder = S.homeTabOrder.filter(function(s){return s!=='cookbook';});
     curFitnessPage = S.fitness.currentPage;
     if (!S.calEvents) S.calEvents = [];
     if (!S.timeBlocks) S.timeBlocks = [];
@@ -1473,8 +1522,8 @@ function buildTabBar() {
 
   if (curTab==='home') {
     bar.style.display='flex';
-    var homeLabels = {overview:'Overview', dump:'Brain Dump', monthly:'Monthly', weekly:'Weekly', daily:'Daily', fitness:'Fitness'};
-    var defaultOrder = ['overview','dump','monthly','weekly','daily','fitness'];
+    var homeLabels = {overview:'Overview', dump:'Brain Dump', monthly:'Monthly', weekly:'Weekly', daily:'Daily'};
+    var defaultOrder = ['overview','dump','monthly','weekly','daily'];
     if (!S.homeTabOrder) S.homeTabOrder = defaultOrder.slice();
     // Ensure all tabs present
     defaultOrder.forEach(function(s){ if(S.homeTabOrder.indexOf(s)===-1) S.homeTabOrder.push(s); });
@@ -1525,14 +1574,6 @@ function buildTabBar() {
     bar.appendChild(btn);
   });
 
-  if (curTab==='army') {
-    var trk = el('button','tab-pill'+(curSec==='tracker'?' on':''));
-    trk.style.setProperty('--rc', meta.color);
-    var d2 = el('div','tab-dot'); d2.style.background=meta.color;
-    trk.appendChild(d2); trk.appendChild(tx('OCS Tracker'));
-    trk.onclick = function() { curSec='tracker'; curChapter=null; curPage=null; buildTabBar(); buildRSB(); renderCanvas(); };
-    bar.appendChild(trk);
-  }
 
   if (curTab==='teaching') {
     var cur = el('button','tab-pill'+(curSec==='curriculum'?' on':''));
@@ -1541,6 +1582,15 @@ function buildTabBar() {
     cur.appendChild(d3); cur.appendChild(tx('Curriculum'));
     cur.onclick = function() { curSec='curriculum'; curChapter=null; curPage=null; buildTabBar(); buildRSB(); renderCanvas(); };
     bar.appendChild(cur);
+  }
+
+  if (curTab==='fitness') {
+    var prog = el('button','tab-pill'+(curSec==='program'?' on':''));
+    prog.style.setProperty('--rc', meta.color);
+    var dp = el('div','tab-dot'); dp.style.background=meta.color;
+    prog.appendChild(dp); prog.appendChild(tx('Program'));
+    prog.onclick = function() { curSec='program'; curChapter=null; curPage=null; buildTabBar(); buildRSB(); renderCanvas(); };
+    bar.appendChild(prog);
   }
 
   // Chapters (projects as tabs)
@@ -1553,9 +1603,26 @@ function buildTabBar() {
     btn.draggable = true;
     btn.dataset.chIdx = String(i);
     var dot = el('div','tab-dot'); dot.style.background=meta.color;
-    btn.appendChild(dot); btn.appendChild(tx(ch.label));
+    var delCh = document.createElement('span');
+    delCh.textContent = '×';
+    delCh.title = 'Delete chapter';
+    delCh.style.cssText = 'margin-left:5px;font-size:.75rem;opacity:0;line-height:1;transition:opacity .12s;color:var(--dim)';
+    btn.appendChild(dot); btn.appendChild(tx(ch.label)); btn.appendChild(delCh);
+    btn.onmouseover = function(){ delCh.style.opacity='1'; };
+    btn.onmouseout  = function(){ delCh.style.opacity='0'; };
     (function(chId, chapter, idx) {
-      btn.onclick = function() {
+      delCh.onclick = function(e) {
+        e.stopPropagation();
+        if (!confirm('Delete "'+chapter.label+'" and all its pages?')) return;
+        box.chapters.splice(idx, 1);
+        if (curChapter === chId) {
+          curChapter = box.chapters.length ? box.chapters[0].id : null;
+          curPage = (curChapter && box.chapters[0].pages && box.chapters[0].pages.length) ? box.chapters[0].pages[0].id : null;
+        }
+        save(); buildTabBar(); buildRSB(); renderCanvas();
+      };
+      btn.onclick = function(e) {
+        if (e.target === delCh) return;
         curSec='chapter'; curChapter=chId;
         curPage=(chapter.pages&&chapter.pages.length)?chapter.pages[0].id:null;
         buildTabBar(); buildRSB(); renderCanvas();
@@ -1626,54 +1693,6 @@ function buildRSB() {
   var rsb = document.getElementById('rsb');
   var scroll = document.getElementById('rsb-scroll');
   scroll.innerHTML = '';
-
-  // Fitness home tab uses right sidebar as page list too
-  if (curTab==='home' && curSec==='fitness') {
-    var fit = S.fitness || dc(SEED.fitness);
-    rsb.classList.remove('hidden');
-    applySidebarLayout();
-    rsb.style.setProperty('--rc', 'var(--gold)');
-    document.getElementById('rsb-head-label').textContent = 'Fitness Pages';
-    document.getElementById('rsb-add-btn').textContent = '+ Add Page';
-    (fit.pages||[]).forEach(function(page, i) {
-      var row = el('div','rp-row'+(fit.currentPage===page.id?' on':''));
-      row.style.setProperty('--rc', 'var(--gold)');
-      row.draggable = true;
-      row.dataset.rpIdx = String(i);
-      var ico = el('div','rp-icon'); ico.appendChild(tx(page.icon||'📄'));
-      var lbl2 = el('div','rp-lbl'); lbl2.appendChild(tx(page.label));
-      var del = el('button','rp-del'); del.appendChild(tx(page.id==='fit-program' ? '•' : '✕'));
-      del.title = page.id==='fit-program' ? 'Program page is pinned' : 'Delete page';
-      (function(pid, p, idx) {
-        del.onclick = function(e) {
-          e.stopPropagation();
-          if (p.id==='fit-program') return;
-          if (!confirm('Delete "'+p.label+'"?')) return;
-          fit.pages = fit.pages.filter(function(x){return x.id!==pid;});
-          if (fit.currentPage===pid) fit.currentPage = fit.pages.length ? fit.pages[0].id : 'fit-program';
-          curFitnessPage = fit.currentPage;
-          save(); buildRSB(); renderCanvas();
-        };
-        row.onclick = function() { fit.currentPage=pid; curFitnessPage=pid; save(); buildRSB(); renderCanvas(); };
-        row.ondragstart = function(e) { e.dataTransfer.setData('fitrpidx', String(idx)); setTimeout(function(){row.style.opacity='.35';},0); };
-        row.ondragend   = function() { row.style.opacity=''; document.querySelectorAll('.rp-row').forEach(function(r){r.classList.remove('drag-over');}); };
-        row.ondragover  = function(e) { e.preventDefault(); row.classList.add('drag-over'); };
-        row.ondragleave = function() { row.classList.remove('drag-over'); };
-        row.ondrop      = function(e) {
-          e.preventDefault(); row.classList.remove('drag-over'); row.style.opacity='';
-          var from = parseInt(e.dataTransfer.getData('fitrpidx'),10);
-          var to = idx;
-          if(isNaN(from)||from===to) return;
-          var moved = fit.pages.splice(from,1)[0];
-          fit.pages.splice(to,0,moved);
-          save(); buildRSB();
-        };
-      })(page.id, page, i);
-      row.appendChild(ico); row.appendChild(lbl2); row.appendChild(del);
-      scroll.appendChild(row);
-    });
-    return;
-  }
 
   // Only show RSB when in a chapter
   if (curSec !== 'chapter' || !curChapter || !S.boxes[curTab]) {
@@ -1773,7 +1792,7 @@ function applySidebarLayout() {
   rsb.style.width = clamp(S.ui.rsbWidth||180, 140, 380) + 'px';
 
   sb.classList.toggle('collapsed', !!S.ui.sbCollapsed);
-  var showRight = ((curSec === 'chapter' && !!curChapter && !!S.boxes[curTab]) || (curTab==='home' && curSec==='fitness')) && !rsb.classList.contains('hidden');
+  var showRight = ((curSec === 'chapter' && !!curChapter && !!S.boxes[curTab]) || (curTab==='home' && (curSec==='fitness'||curSec==='cookbook'))) && !rsb.classList.contains('hidden');
   rsb.classList.toggle('collapsed', !!S.ui.rsbCollapsed && showRight);
 
   if (sbc) {
@@ -1869,7 +1888,6 @@ function renderCanvas() {
   if (curTab==='home' && curSec==='monthly') { cv.style.cssText='padding:0;overflow:hidden;display:flex;flex-direction:column;flex:1'; renderMonthly(cv); return; }
   if (curTab==='home' && curSec==='weekly')  { cv.style.padding='0'; cv.style.overflowY='auto'; renderWeekly(cv); return; }
   if (curTab==='home' && curSec==='daily')   { cv.style.padding='0'; cv.style.overflowY='auto'; renderDaily(cv); return; }
-  if (curTab==='home' && curSec==='fitness') { cv.style.padding='0'; cv.style.overflowY='auto'; renderFitness(cv); return; }
 
   cv.style.padding='32px 40px'; cv.style.overflowY='auto';
 
@@ -1884,6 +1902,7 @@ function renderCanvas() {
   if (curSec==='projects')   { renderProjects(cv,meta,box); return; }
   if (curSec==='tracker')    { renderTracker(cv,meta,box); return; }
   if (curSec==='curriculum') { renderCurriculum(cv,meta); return; }
+  if (curSec==='program' && curTab==='fitness') { cv.style.padding='0'; cv.style.overflowY='auto'; renderFitness(cv); return; }
   if (curSec==='chapter')    { renderChapterPage(cv,meta,box); return; }
 }
 
@@ -2818,9 +2837,9 @@ function renderDaily(cv) {
 
   // Overflow (undone tasks from all boxes)
   var ovTasks=[];
-  BOX_META.forEach(function(b){(S.boxes[b.id].tasks||[]).filter(function(t){return t.d;}).forEach(function(t){ovTasks.push({box:b,t:t});});});
+  BOX_META.forEach(function(b){var bx2=S.boxes[b.id];if(!bx2)return;(bx2.tasks||[]).filter(function(t){return t.d;}).forEach(function(t){ovTasks.push({box:b,t:t});});});
   var allPending=[];
-  BOX_META.forEach(function(b){(S.boxes[b.id].tasks||[]).filter(function(t){return !t.d;}).forEach(function(t){allPending.push({box:b,t:t});});});
+  BOX_META.forEach(function(b){var bx2=S.boxes[b.id];if(!bx2)return;(bx2.tasks||[]).filter(function(t){return !t.d;}).forEach(function(t){allPending.push({box:b,t:t});});});
   if(allPending.length) {
     var ovStrip = el('div','dov-strip');
     var ovL2 = el('div','dov-strip-label'); ovL2.textContent='⚡ Overflow — All Pending Tasks ('+allPending.length+')';
@@ -2836,7 +2855,18 @@ function renderDaily(cv) {
     left.appendChild(ovStrip);
   }
 
-  // ── MIDDLE PANEL — scheduler (Clarity-style) ──
+  // ── RIGHT PANEL — tasks by box (now in middle position) ──
+  var right = el('div',''); right.id='daily-right';
+  page.appendChild(right);
+
+  var rhdr2 = el('div','daily-time-hdr');
+  var rhl2 = el('div','daily-time-hdr-label'); rhl2.textContent='📋 Tasks by Box';
+  rhdr2.appendChild(rhl2); right.appendChild(rhdr2);
+
+  var tasksPanel = el('div',''); tasksPanel.id='daily-tasks-panel';
+  right.appendChild(tasksPanel);
+
+  // ── MIDDLE PANEL — scheduler (Clarity-style, now on right) ──
   var middle = el('div',''); middle.id='daily-middle';
   page.appendChild(middle);
 
@@ -2844,11 +2874,10 @@ function renderDaily(cv) {
   var mhl = el('div','daily-time-hdr-label'); mhl.textContent='🕐 Schedule';
   mhdr.appendChild(mhl); middle.appendChild(mhdr);
 
-  // Time input bar — sits above the scroll area
   var tBar = el('div',''); tBar.id='sched-bar';
   tBar.style.cssText='display:flex;gap:5px;padding:7px 8px;border-bottom:1px solid var(--br);flex-shrink:0;background:var(--s1)';
   var tInp = document.createElement('input'); tInp.id='sched-title-inp';
-  tInp.placeholder='What\'s happening?';
+  tInp.placeholder="What's happening?";
   tInp.style.cssText='flex:1;background:var(--s2);border:1px solid var(--br);border-radius:6px;color:var(--text);font-family:DM Sans,sans-serif;font-size:.75rem;padding:5px 8px;outline:none';
   tInp.onfocus=function(){tInp.style.borderColor='var(--gold)';};
   tInp.onblur=function(){tInp.style.borderColor='var(--br)';};
@@ -2864,7 +2893,6 @@ function renderDaily(cv) {
   timeCanvas.style.height = DCANVAS_H+'px';
   timeWrap.appendChild(timeCanvas);
 
-  // Draw hour + quarter lines exactly like Clarity
   for (var h=DSTART; h<=DEND; h++) {
     var y2 = (h - DSTART) * 4 * DSLOT;
     var hrow = el('div','dhr-row'); hrow.style.top = y2+'px';
@@ -2884,29 +2912,17 @@ function renderDaily(cv) {
     }
   }
 
-  // Init Clarity-style scheduler
   Sched.init(timeCanvas, ds, tInp, tAdd);
   Sched.redraw();
 
-  // Scroll to now
   var nowH2 = new Date().getHours() + new Date().getMinutes()/60;
   if (nowH2 >= DSTART && nowH2 <= DEND) {
     setTimeout(function(){ timeWrap.scrollTop = Math.max(0,(nowH2-DSTART)*60*DPM - 120); }, 80);
   }
 
-  // ── RIGHT PANEL — tasks by box ──
-  var right = el('div',''); right.id='daily-right';
-  page.appendChild(right);
-
-  var rhdr2 = el('div','daily-time-hdr');
-  var rhl2 = el('div','daily-time-hdr-label'); rhl2.textContent='📋 Tasks by Box';
-  rhdr2.appendChild(rhl2); right.appendChild(rhdr2);
-
-  var tasksPanel = el('div',''); tasksPanel.id='daily-tasks-panel';
-  right.appendChild(tasksPanel);
-
   // ── UNSORTED / CATCH-ALL SECTION ──
   (function() {
+    if(!S.unsortedTasks) S.unsortedTasks=[];
     var isOpen = !!S.dboxOpen['__unsorted__'];
     var sec = el('div','dtask-box-section');
     sec.style.borderLeft = '3px solid var(--dim)';
@@ -2915,8 +2931,7 @@ function renderDaily(cv) {
     var name = el('div','dtask-box-hdr-name'); name.textContent='UNSORTED';
     name.style.color='var(--mid)';
     var cnt = el('div','dtask-box-hdr-count');
-    var pending = (S.unsortedTasks||[]).filter(function(t){return !t.d;});
-    cnt.textContent = pending.length + ' pending';
+    cnt.textContent = S.unsortedTasks.filter(function(t){return !t.d;}).length + ' pending';
     var arr = el('div','dtask-box-hdr-arr'+(isOpen?' open':'')); arr.textContent='▶';
     hdr.appendChild(dot); hdr.appendChild(name); hdr.appendChild(cnt); hdr.appendChild(arr);
     hdr.onclick = function(){ S.dboxOpen['__unsorted__']=!S.dboxOpen['__unsorted__']; save(); renderCanvas(); };
@@ -2924,31 +2939,23 @@ function renderDaily(cv) {
 
     if (isOpen) {
       var body = el('div','dtask-box-body');
-      if (!pending.length) {
-        var none = el('div',''); none.style.cssText='font-size:.78rem;color:var(--dim);padding:4px 0;font-style:italic';
-        none.textContent='Dump tasks here when you\'re not sure where they go.'; body.appendChild(none);
-      } else {
-        pending.forEach(function(task, i) {
-          var row = el('div','dtask-item');
-          var uid = 'dtu'+i;
-          var cb = document.createElement('input'); cb.type='checkbox'; cb.id=uid; cb.checked=false;
-          cb.style.accentColor='var(--dim)';
-          var lbl = el('label',''); lbl.htmlFor=uid; lbl.textContent=task.t;
-          cb.onchange=(function(tk,l){return function(){tk.d=cb.checked;l.className=tk.d?'done':'';save();};})(task,lbl);
-          var del = el('button',''); del.textContent='✕';
-          del.style.cssText='background:none;border:none;color:var(--dim);cursor:pointer;font-size:.7rem;padding:2px 5px;flex-shrink:0;transition:color .12s';
-          del.onmouseover=function(){del.style.color='var(--danger)';}; del.onmouseout=function(){del.style.color='var(--dim)';};
-          (function(idx){ del.onclick=function(){ S.unsortedTasks.splice(idx,1); save(); renderCanvas(); }; })(i);
-          row.appendChild(cb); row.appendChild(lbl); row.appendChild(del); body.appendChild(row);
+      body.style.padding='8px 10px 10px';
+      // buildTaskList writes back to box.tasks — wire it to S.unsortedTasks
+      var unsortedBox = { tasks: S.unsortedTasks };
+      var list = buildTaskList(unsortedBox, 'var(--dim)');
+      // After buildTaskList schedules a save it sets unsortedBox.tasks — sync back
+      var origSave = save;
+      (function patchSave(){
+        // Override save just long enough to sync unsortedBox.tasks → S.unsortedTasks
+        // Actually simpler: observe via MutationObserver isn't needed — buildTaskList
+        // calls save() after setting box.tasks, so we patch the box reference directly.
+        Object.defineProperty(unsortedBox, 'tasks', {
+          get: function(){ return S.unsortedTasks; },
+          set: function(v){ S.unsortedTasks = v; },
+          configurable: true
         });
-      }
-      var addR = el('div','dtask-add');
-      var addI = document.createElement('input'); addI.placeholder='Toss something here to sort later…';
-      var addB = el('button',''); addB.textContent='+ ADD';
-      addB.onclick = function(){ var t=addI.value.trim(); if(!t) return; if(!S.unsortedTasks)S.unsortedTasks=[]; S.unsortedTasks.push({t:t,d:false}); addI.value=''; save(); renderCanvas(); };
-      addI.onkeydown = function(e){ if(e.key==='Enter') addB.onclick(); };
-      addR.appendChild(addI); addR.appendChild(addB);
-      body.appendChild(addR);
+      })();
+      body.appendChild(list);
       sec.appendChild(body);
     }
     tasksPanel.appendChild(sec);
@@ -2956,8 +2963,8 @@ function renderDaily(cv) {
 
   getAllBoxMeta().forEach(function(b) {
     var box = S.boxes[b.id]; if(!box) return;
-    var tasks = (box.tasks||[]);
-    var pending = tasks.filter(function(t){return !t.d;});
+    if(!box.tasks) box.tasks=[];
+    var pending = box.tasks.filter(function(t){return !t.d;});
     var isOpen = !!S.dboxOpen[b.id];
 
     var sec = el('div','dtask-box-section');
@@ -2965,38 +2972,17 @@ function renderDaily(cv) {
     var dot3 = el('div','dtask-box-hdr-dot'); dot3.style.background=b.color;
     var name3 = el('div','dtask-box-hdr-name'); name3.textContent=b.label;
     var cnt = el('div','dtask-box-hdr-count'); cnt.textContent=pending.length+' pending';
-    var arr3 = el('div','dtask-box-hdr-arr'+(isOpen?' open':'')); arr3.textContent='▶';
+    var arr3 = el('div','dtask-box-hdr-arr'+(isOpen?' open':'')); arr3.textContent='\u25b6';
     hdr3.appendChild(dot3); hdr3.appendChild(name3); hdr3.appendChild(cnt); hdr3.appendChild(arr3);
-    (function(bid,ar4){
+    (function(bid){
       hdr3.onclick=function(){ S.dboxOpen[bid]=!S.dboxOpen[bid]; save(); renderCanvas(); };
-    })(b.id,arr3);
+    })(b.id);
     sec.appendChild(hdr3);
 
     if(isOpen) {
       var body3 = el('div','dtask-box-body');
-      if(!pending.length) {
-        var none=el('div',''); none.style.cssText='font-size:.78rem;color:var(--dim);padding:4px 0;font-style:italic';
-        none.textContent='No pending tasks'; body3.appendChild(none);
-      } else {
-        pending.forEach(function(task,i){
-          var row3 = el('div','dtask-item');
-          var uid3='dtr'+b.id+i;
-          var cb4=document.createElement('input'); cb4.type='checkbox'; cb4.id=uid3; cb4.checked=false;
-          cb4.style.accentColor=b.color;
-          var lbl5=el('label',''); lbl5.htmlFor=uid3; lbl5.textContent=task.t;
-          cb4.onchange=(function(tk,l){return function(){tk.d=cb4.checked;l.className=tk.d?'done':'';save();};})(task,lbl5);
-          row3.appendChild(cb4); row3.appendChild(lbl5); body3.appendChild(row3);
-        });
-      }
-      var addR3=el('div','dtask-add');
-      var addI3=document.createElement('input'); addI3.placeholder='Add task to '+b.label+'…';
-      var addB3=el('button',''); addB3.textContent='+ ADD';
-      (function(bid3,ai3){
-        addB3.onclick=function(){addDayTask(bid3,ai3);};
-        ai3.onkeydown=function(e){if(e.key==='Enter')addDayTask(bid3,ai3);};
-      })(b.id,addI3);
-      addR3.appendChild(addI3); addR3.appendChild(addB3);
-      body3.appendChild(addR3);
+      body3.style.padding='8px 10px 10px';
+      body3.appendChild(buildTaskList(box, b.color));
       sec.appendChild(body3);
     }
     tasksPanel.appendChild(sec);
@@ -3253,7 +3239,7 @@ var Sched = (function(){
 function addDayTask(boxId, inp) {
   var t=inp.value.trim(); if(!t) return;
   if(!S.boxes[boxId].tasks) S.boxes[boxId].tasks=[];
-  S.boxes[boxId].tasks.push({t:t,d:false});
+  S.boxes[boxId].tasks.push({t:t,d:false,children:[]});
   inp.value=''; save(); renderCanvas();
   setTimeout(function(){inp.focus();},0);
 }
@@ -3287,15 +3273,15 @@ var CURRICULUM = [
         {id:'u5p9',tier:'TIER 3',name:'2 Point Perspective House',pts:8,desc:'Design and draw a house or building using two-point perspective with accurate construction and detail.',materials:['Pencil','Ruler','Pen or fine liner for outlines','Colored pencils or paint (optional)'],steps:['Draw a horizon line and place two vanishing points near the edges of your paper.','Draw the front corner vertical line — make it tall for a convincing building.','Construct the basic box form of the house using both VPs.','Add a roof: draw a center vertical above the box, connect it to the top corners.','Add windows and a door — all receding lines must go to the VPs.','Add details: trim, shutters, chimney, path, landscaping.','Erase all construction lines.','Add color or shading — 3 values for the 3 visible faces.'],tip:'Doors and windows are just smaller boxes — use the same VP lines. Everything in 2PP obeys the same two points.',rubric:[{name:'Perspective Accuracy',desc:'All lines converge to correct VPs',d:{4:'Perfect convergence throughout',3:'Mostly accurate, minor errors',2:'Some errors in construction',1:'Perspective mostly incorrect',0:'Not attempted'}},{name:'Construction',desc:'House is properly built from box form',d:{4:'Clean, complete structure',3:'Solid structure with minor issues',2:'Basic shape present',1:'Incomplete structure',0:'Not attempted'}},{name:'Detail',desc:'Windows, door, and at least 2 other details',d:{4:'4+ details in correct perspective',3:'3 details, mostly correct',2:'1–2 details',1:'No added details',0:'Not attempted'}},{name:'Shading / Color',desc:'3 faces show different values',d:{4:'Clear 3-value shading on all faces',3:'2 values visible',2:'Some shading',1:'Flat, no value',0:'Not attempted'}},{name:'Craftsmanship',desc:'Clean final lines, no construction marks',d:{4:'Very polished and clean',3:'Mostly clean',2:'Some stray lines',1:'Construction lines not erased',0:'Not attempted'}}]},
         {id:'u5p12',tier:'TIER 3',name:'Master Study — Banksy',pts:8,desc:'Recreate or reinterpret a work by Banksy, focusing on how he uses space, silhouette, and implied texture to communicate a message.',materials:['Banksy reference image (printed)','Pencil sketch paper','Black spray paint effect','Canvas board or heavy paper'],steps:['Research Banksy — look at 10+ works. Note his use of stencil, negative space, and humor.','Choose one Banksy piece to study (or create your own in his style).','Sketch the composition — Banksy works are often simple: one or two figures plus a background.','Create a stencil effect: either cut an actual stencil or simulate spray paint edges.','Focus on SILHOUETTE — Banksy\'s figures are often pure black shapes.','Add context: a background, wall texture, or environmental element.','Your piece must communicate a clear idea or message.'],tip:'Banksy\'s power is in simplicity. One strong silhouette + one unexpected detail = the whole statement.',rubric:[{name:'Stencil / Silhouette Quality',desc:'Banksy-style silhouette is clear and clean'},{name:'Use of Space',desc:'Negative space used intentionally'},{name:'Message / Concept',desc:'Piece communicates a clear idea'},{name:'Texture / Environment',desc:'Background or surface adds context'},{name:'Craftsmanship',desc:'Clean execution'}]},
       ]},
-      { id:'u6', num:6, title:'Balance', overview:'Balance is one of the foundational principles of design — the visual weight of a composition and how it makes a viewer feel stable, tense, or dynamic. This unit explores symmetrical, asymmetrical, and radial balance through hands-on projects that range from design exercises to expressive fine art. By the end, you should be able to intentionally control the visual weight of a composition and explain the choices you made.', deadlines:{t1:'TBD',t2:'TBD',t3:'TBD'}, projects:[
-        {id:'u6p1',tier:'TIER 1',name:'Composition Practice',pts:2,desc:'Explore the principles of balance through a series of quick thumbnail compositions using basic shapes.',materials:['Composition worksheet','Pencil','Markers or colored pencils'],steps:['You will be given a worksheet with 6 blank composition boxes.','In each box, arrange simple shapes to demonstrate a different balance type: symmetrical, asymmetrical, radial, and more.','Label each composition with the balance type it demonstrates.','Use value or color in at least 3 of the 6 boxes to show how visual weight works.','No detailed drawing — shapes only. This is a design exercise, not an illustration.'],tip:'Visual weight isn\'t just about size — a small dark shape can balance a large light one.',rubric:[{name:'Balance Variety',desc:'Multiple balance types demonstrated',d:{4:'4+ types clearly shown and labeled',3:'3 types correct',2:'2 types correct',1:'1 type or labels missing',0:'Not attempted'}},{name:'Visual Weight Awareness',desc:'Color or value used to show weight',d:{4:'Clear use of value/color as weight in 3+ boxes',3:'Used in 2 boxes',2:'Used in 1 box',1:'No awareness of visual weight',0:'Not attempted'}},{name:'Completion',desc:'All 6 boxes filled',d:{4:'All 6 complete and labeled',3:'5 complete',2:'3–4 complete',1:'1–2 complete',0:'Not submitted'}},{name:'Effort',desc:'Compositions are thoughtful, not random',d:{4:'All boxes show deliberate design thinking',3:'Most are thoughtful',2:'Some thought evident',1:'Shapes placed randomly',0:'Not submitted'}}]},
-        {id:'u6p2',tier:'QUIZ',name:'Balance Quiz',pts:2,desc:'Assess understanding of symmetrical, asymmetrical, and radial balance, and the concept of visual weight.',materials:['Pencil','Quiz handout'],steps:['Complete all written questions on the quiz handout.','Identify balance types in provided composition diagrams.','Answer short-response questions about visual weight and design decisions.'],tip:'Review your Composition Practice worksheet before the quiz.',rubric:[]},
-        {id:'u6p3',tier:'TIER 1',name:'Bauhaus Balance Composition',pts:2,desc:'Create a geometric composition inspired by Bauhaus design principles — primary colors, basic shapes, and deliberate use of visual weight and balance.',materials:['Pencil','Ruler','Markers or paint','Drawing paper or cardstock'],steps:['Limit yourself to circles, rectangles, and triangles only — no organic shapes.','Use only primary colors (red, yellow, blue) plus black and white.','Create one composition that is symmetrically balanced and one that is asymmetrically balanced.','Size, placement, and color should all be intentional — every element should earn its spot.','Label each composition with the balance type.'],tip:'Bauhaus designers believed that form follows function. Every shape and color should have a reason.',rubric:[{name:'Shape Restraint',desc:'Only geometric forms used',d:{4:'Strictly geometric throughout',3:'Mostly geometric, one organic slip',2:'Some organic shapes',1:'Geometric intent not clear',0:'Not attempted'}},{name:'Color Restraint',desc:'Primary palette only',d:{4:'Strictly primary + black/white',3:'Mostly correct, one off-color',2:'Some primaries used',1:'Palette not followed',0:'Not attempted'}},{name:'Balance Demonstration',desc:'Both balance types clearly shown',d:{4:'Both clearly and intentionally demonstrated',3:'One strong, one weaker',2:'One type clear',1:'Balance not evident',0:'Not attempted'}},{name:'Craftsmanship',desc:'Clean edges and precise construction',d:{4:'Very clean and precise',3:'Mostly clean',2:'Some roughness',1:'Very rough',0:'Not attempted'}}]},
-        {id:'u6p4',tier:'TIER 2',name:'Radial Name Design',pts:3,desc:'Write your name in decorative lettering inside one triangle of an 8-fold radial grid, then trace it into all eight sections to create a mandala-style radial symmetry composition.',materials:['Square paper (at least 12x12)','Pencil','Sharpie or fine liner','Colored pencils or markers'],steps:['Fold your square paper into eighths — fold corner-to-corner both ways, then horizontally and vertically. You should have 8 triangular sections.','In ONE triangle, write your name in large bubble letters. Fill the triangle — small letters make a weak final design.','Sharpie over your letters when you are happy with them.','At a bright window, fold along a crease so your name shows through and trace it into the adjoining section. Repeat until all 8 sections are filled.','Go in with Sharpie and fill select shapes solid black — whatever you fill, fill all matching shapes to maintain radial symmetry.','Color with markers or colored pencils. All matching shapes must be the same color.'],tip:'Overlapping letters and filling the whole triangle makes the final mandala dramatically more interesting than small, neat letters.',rubric:[{name:'Radial Symmetry',desc:'All 8 sections match accurately',d:{4:'All 8 sections precisely traced and consistent',3:'7 sections correct, minor errors',2:'Some sections consistent',1:'Symmetry not achieved',0:'Not attempted'}},{name:'Letter Design',desc:'Name fills the triangle with decorative letterforms',d:{4:'Triangle fully filled, letters stylized and bold',3:'Good fill, some areas thin',2:'Letters small or plain',1:'Very small or illegible',0:'Not attempted'}},{name:'Color',desc:'90%+ colored, matching shapes same color',d:{4:'Fully colored, radial symmetry maintained in color',3:'Mostly colored, minor inconsistency',2:'Some color, some white areas',1:'Barely colored',0:'Not attempted'}},{name:'Craftsmanship',desc:'Clean Sharpie lines and neat coloring',d:{4:'Very clean and polished',3:'Mostly clean',2:'Some roughness',1:'Very rough',0:'Not attempted'}}]},
-        {id:'u6p5',tier:'TIER 2',name:'Abstract Oil Pastel Design',pts:3,desc:'Create an expressive abstract composition using oil pastels that demonstrates a clear principle of balance — let color weight, shape, and placement do the work.',materials:['Oil pastels','Heavy paper or cardstock','Pencil for initial sketch'],steps:['Choose your balance type: symmetrical, asymmetrical, or radial.','Sketch a loose composition first — shapes only, no detail.','Build color in layers. Oil pastels can be blended by rubbing.','Use color weight intentionally — dark and saturated colors feel heavier than light ones.','Make sure no large white areas remain — push the color to the edges.','Step back and assess: does the composition feel balanced?'],tip:'You don\'t need to draw anything recognizable. Bold shapes and strong color relationships are enough.',rubric:[{name:'Balance',desc:'Chosen balance type clearly demonstrated',d:{4:'Balance type obvious and intentional',3:'Balance evident, slightly off',2:'Some balance present',1:'No clear balance',0:'Not attempted'}},{name:'Color Use',desc:'Oil pastels used with layering and blending',d:{4:'Rich color, clear layering and blending',3:'Good color, some blending',2:'Flat color, no blending',1:'Minimal color effort',0:'Not attempted'}},{name:'Composition',desc:'Shapes fill the page, no large empty areas',d:{4:'Full composition, dynamic and engaging',3:'Mostly filled',2:'Some empty areas',1:'Very sparse',0:'Not attempted'}},{name:'Craftsmanship',desc:'Intentional mark-making throughout',d:{4:'Every mark feels purposeful',3:'Mostly intentional',2:'Some careless areas',1:'Very careless',0:'Not attempted'}}]},
-        {id:'u6p6',tier:'TIER 3',name:'Asymmetrical Balance Collage / Painting',pts:8,desc:'Create a large-format mixed media piece — collage and/or paint — that achieves clear asymmetrical balance. Different visual weights on each side must feel resolved, not accidental.',materials:['Large paper or canvas board (at least 12x18)','Acrylic or tempera paint','Collage materials (magazines, patterned paper, etc.)','Glue stick or Mod Podge','Scissors'],steps:['Plan your composition with a thumbnail sketch first. Map out where heavy and light visual weights will sit.','Asymmetrical balance means the two sides are NOT mirrors — but they still feel equally weighted.','Build your background with paint first.','Add collage layers on top. Think about how each piece affects the visual weight of that area.','Step back frequently. Does one side feel too heavy? Adjust.','Add final paint details or marks to unify the piece.','Write 2–3 sentences on the back: explain how you achieved asymmetrical balance.'],tip:'A small dark shape can balance a large light one. Visual weight is about more than size.',rubric:[{name:'Asymmetrical Balance',desc:'Composition feels balanced without mirroring',d:{4:'Clear, confident asymmetrical balance throughout',3:'Mostly balanced, slight pull to one side',2:'Some balance, some imbalance',1:'Clearly unbalanced',0:'Not attempted'}},{name:'Mixed Media Integration',desc:'Collage and paint work together',d:{4:'Materials feel unified and intentional',3:'Good integration, minor disconnects',2:'Some integration',1:'Materials feel separate',0:'Not attempted'}},{name:'Scale',desc:'Composition fills the large format',d:{4:'Fully fills the space, dynamic',3:'Mostly fills, some empty corners',2:'Some areas underdeveloped',1:'Very sparse for the format',0:'Not attempted'}},{name:'Written Reflection',desc:'Balance strategy explained',d:{4:'Clear, specific explanation of balance choices',3:'Good reflection, some vagueness',2:'Basic reflection',1:'Very vague or missing',0:'Not attempted'}},{name:'Craftsmanship',desc:'Polished, intentional finish',d:{4:'Very polished',3:'Mostly clean',2:'Some roughness',1:'Very rough',0:'Not attempted'}}]},
-        {id:'u6p7',tier:'TIER 2',name:'Minimalistic Album Cover',pts:3,desc:'Design a fictional album cover that uses minimalism and balance to communicate a mood or identity.',materials:['Heavy paper or cardstock (5×5 or 6×6 inches)','Ruler','Pencil','Paint, markers, or colored pencils','Fine liner for text'],steps:['Invent a band name and album title — these are your only text elements.','Choose a single dominant image or shape.','Sketch 3 thumbnail compositions before committing.','Choose a palette of 2–3 colors maximum.','Construct your final design with clean, precise shapes and lettering.','Balance your text and image.','Evaluate: could this sit next to a real album cover and hold its own?'],tip:'The best minimalist design removes everything that isn\'t necessary.',rubric:[{name:'Minimalism',desc:'Design uses restraint — only essential elements',d:{4:'Truly minimal — every element earns its place',3:'Mostly minimal, one unnecessary element',2:'Some clutter',1:'Overcrowded, not minimalist',0:'Not attempted'}},{name:'Balance',desc:'Text and image are balanced compositionally',d:{4:'Strong, intentional balance',3:'Mostly balanced',2:'Some imbalance',1:'Clearly unbalanced',0:'Not attempted'}},{name:'Concept',desc:'Design communicates a mood or identity',d:{4:'Strong, clear concept',3:'Concept readable',2:'Vague concept',1:'No clear concept',0:'Not attempted'}},{name:'Typography',desc:'Band and album text is clean and designed',d:{4:'Lettering is intentional and well-executed',3:'Clean lettering, minimal design',2:'Basic lettering',1:'Illegible or careless',0:'Not attempted'}},{name:'Craftsmanship',desc:'Clean, precise, professional finish',d:{4:'Very polished',3:'Mostly clean',2:'Some roughness',1:'Very rough',0:'Not attempted'}}]},
-        {id:'u6p9',tier:'TIER 3',name:'Master Study — Josef Albers',pts:8,desc:'Study and recreate a work from Albers\' Homage to the Square series, analyzing how he used color relationships to create balance, depth, and optical illusion.',materials:['Albers reference image (printed)','Ruler','Tape or masking tape','Paint (acrylic or gouache)','Canvas board or heavy paper'],steps:['Research Josef Albers and his Homage to the Square series.','Choose one painting from the series to study.','Use a ruler and tape to mask off the nested square composition precisely.','Mix your colors carefully — Albers\' whole point is that colors look different depending on what surrounds them.','Paint each square as a perfectly flat, even area of color. No brushstrokes visible.','Remove tape carefully once paint is dry.','Write 2–3 sentences on the back: how do the colors interact?'],tip:'Albers proved that the same color looks completely different depending on what\'s next to it.',rubric:[{name:'Compositional Accuracy',desc:'Nested squares are correctly proportioned',d:{4:'Precise, clean nested square structure',3:'Good structure, minor proportion errors',2:'Basic structure present',1:'Squares poorly constructed',0:'Not attempted'}},{name:'Color Mixing',desc:'Colors closely match the chosen Albers work',d:{4:'Accurate, carefully mixed colors',3:'Close matches with some variation',2:'Approximate colors',1:'Colors not matched',0:'Not attempted'}},{name:'Flat Paint Application',desc:'Each square is smooth and even',d:{4:'Perfectly flat, no brushstrokes visible',3:'Mostly flat, minor texture',2:'Some uneven areas',1:'Very textured, not flat',0:'Not attempted'}},{name:'Written Reflection',desc:'Color interaction described in writing',d:{4:'Thoughtful, specific observation of color interaction',3:'Good reflection, some vagueness',2:'Basic reflection',1:'Very vague or missing',0:'Not attempted'}},{name:'Craftsmanship',desc:'Clean edges, no paint bleed',d:{4:'Crisp, professional edges throughout',3:'Mostly clean',2:'Some bleed',1:'Very rough edges',0:'Not attempted'}}]},
+      { id:'u6', num:6, title:'Balance', overview:'Balance is one of the foundational principles of design — the visual weight of a composition and how it makes a viewer feel stable, tense, or dynamic. This unit explores symmetrical, asymmetrical, and radial balance through hands-on projects ranging from design exercises to expressive fine art.', deadlines:{t1:'4/8/26',t2:'4/17/26',t3:'4/30/26'}, projects:[
+        {id:'u6p1',tier:'TIER 1',name:'Composition Practice',pts:2,desc:'Arrange simple shapes on a page to explore how size, placement, and weight affect visual balance. Try symmetrical, asymmetrical, and radial arrangements.',materials:['Pencil','Paper','Markers or colored pencils'],steps:['Arrange simple shapes on a page.','Try a symmetrical arrangement — mirror one side.','Try an asymmetrical arrangement — balance with visual weight, not matching.','Try a radial arrangement — elements radiating from a center point.','Label each composition with the type of balance it demonstrates.'],tip:'Visual weight isn\'t just about size — a small dark shape can balance a large light one.',rubric:[{name:'Balance Variety',desc:'Multiple types demonstrated and labeled',d:{4:'All 3 types clearly shown and labeled',3:'2–3 types correct',2:'1–2 types attempted',1:'Labels missing or incorrect',0:'Not attempted'}},{name:'Visual Weight Awareness',desc:'Intentional use of size, placement, or value',d:{4:'Clear deliberate control of visual weight',3:'Mostly intentional',2:'Some awareness',1:'Shapes placed randomly',0:'Not attempted'}},{name:'Completion',desc:'All arrangements filled in',d:{4:'All complete and thoughtful',3:'Most complete',2:'Some complete',1:'Barely started',0:'Not submitted'}}]},
+        {id:'u6p2',tier:'TIER 1',name:'Bauhaus Balance Composition',pts:2,desc:'Create a geometric composition inspired by Bauhaus design principles — primary colors, basic shapes, and deliberate use of visual weight and balance.',materials:['Pencil','Ruler','Markers or paint','Drawing paper'],steps:['Research Bauhaus design — look at works by Moholy-Nagy, Albers, Klee.','Limit yourself to circles, squares, triangles, and rectangles only.','Limit your palette to primary colors (red, yellow, blue) plus black and white.','Arrange shapes to demonstrate a clear principle of balance.','Fill the composition edge to edge — no blank center or corner drift.','Title your piece with the type of balance it uses.'],tip:'Bauhaus = function meets beauty. Every shape should earn its place.',rubric:[{name:'Shape Vocabulary',desc:'Only basic geometric forms used',d:{4:'Strictly limited to basic forms',3:'Mostly correct, one exception',2:'Some non-geometric shapes',1:'Shapes not limited',0:'Not attempted'}},{name:'Color Discipline',desc:'Primary palette only',d:{4:'Strictly primary + black/white',3:'Mostly correct',2:'Some off-palette colors',1:'Not limited',0:'Not attempted'}},{name:'Balance',desc:'Composition demonstrates intentional balance',d:{4:'Strong, clear balance principle',3:'Mostly balanced',2:'Some balance',1:'Feels random',0:'Not attempted'}},{name:'Craftsmanship',desc:'Clean edges, neat color fills',d:{4:'Very clean and precise',3:'Mostly clean',2:'Some roughness',1:'Rough',0:'Not attempted'}}]},
+        {id:'u6pq',tier:'QUIZ',name:'Balance Quiz',pts:2,desc:'Assess understanding of symmetrical, asymmetrical, radial, and crystallographic balance — vocabulary, identification, and application.',materials:['Pencil','Quiz handout'],steps:['Complete all written questions on the quiz handout.','Identify balance types in provided composition diagrams.','Answer short-response questions about visual weight and design decisions.'],tip:'Review your Composition Practice and Bauhaus piece before the quiz.',rubric:[]},
+        {id:'u6p4',tier:'TIER 2',name:'Minimalist Album Cover',pts:3,desc:'Design an album cover using only 2–3 colors and minimal shapes. Focus on achieving strong visual balance without relying on detail.',materials:['Heavy paper or cardstock','Ruler','Pencil','Markers or paint','Fine liner for text'],steps:['Invent a band name and album title — these are your only text elements.','Choose a single dominant image or shape.','Sketch 3 thumbnail compositions before committing.','Choose a palette of 2–3 colors maximum.','Construct your final design with clean, precise shapes and lettering.','Balance your text and image.'],tip:'The best minimalist design removes everything that isn\'t necessary.',rubric:[{name:'Minimalism',desc:'Design uses restraint',d:{4:'Truly minimal — every element earns its place',3:'Mostly minimal',2:'Some clutter',1:'Overcrowded',0:'Not attempted'}},{name:'Balance',desc:'Text and image balanced compositionally',d:{4:'Strong, intentional balance',3:'Mostly balanced',2:'Some imbalance',1:'Clearly unbalanced',0:'Not attempted'}},{name:'Concept',desc:'Communicates a mood or identity',d:{4:'Strong clear concept',3:'Concept readable',2:'Vague',1:'No concept',0:'Not attempted'}},{name:'Craftsmanship',desc:'Clean, precise finish',d:{4:'Very polished',3:'Mostly clean',2:'Some roughness',1:'Rough',0:'Not attempted'}}]},
+        {id:'u6p5',tier:'TIER 2',name:'Radial Name Design',pts:3,desc:'Write your name in decorative lettering inside one triangle of an 8-fold radial grid, then trace it into all eight sections to create a mandala-style radial symmetry composition.',materials:['Pencil','Compass or circle template','Ruler','Markers or colored pencils','Drawing paper'],steps:['Draw a large circle and divide it into 8 equal wedges (like a pie).','Design your name in decorative block lettering to fit one wedge.','Trace that wedge into all 8 sections using tracing paper or light box.','Each section should be identical — perfect radial symmetry.','Add color using markers or colored pencils.'],tip:'Radial symmetry reads as unified and powerful — think mandalas, snowflakes, wheels.',rubric:[{name:'Radial Accuracy',desc:'All 8 sections match',d:{4:'All sections identical and aligned',3:'Mostly accurate, minor variations',2:'Some sections off',1:'Clearly uneven',0:'Not attempted'}},{name:'Letter Design',desc:'Decorative lettering fits the wedge',d:{4:'Creative and well-fitted',3:'Good design, mostly fits',2:'Basic, some fitting issues',1:'Doesn\'t fit the wedge',0:'Not attempted'}},{name:'Color',desc:'Color applied cleanly',d:{4:'Very clean and intentional',3:'Mostly clean',2:'Some roughness',1:'Messy',0:'Not attempted'}}]},
+        {id:'u6p6',tier:'TIER 2',name:'Abstract Oil Pastel Design',pts:3,desc:'Create an expressive abstract composition using oil pastels that demonstrates a clear principle of balance — let color weight, shape, and placement do the work.',materials:['Oil pastels','Heavy paper or cardstock','Reference images (optional)'],steps:['Choose a principle of balance: symmetrical, asymmetrical, or radial.','Block in large color areas first — don\'t start with detail.','Think about visual weight: dark colors and large shapes carry more weight.','Layer oil pastels — blend where you want transitions, leave hard edges where you want contrast.','Step back and evaluate: does the composition feel resolved?'],tip:'In abstract work, the viewer can\'t rely on subject matter — composition and color weight have to carry everything.',rubric:[{name:'Balance Principle',desc:'Clear balance type demonstrated',d:{4:'Strong and unmistakable',3:'Readable',2:'Some balance',1:'Unclear',0:'Not attempted'}},{name:'Color Weight',desc:'Color used intentionally to balance',d:{4:'Sophisticated use of color as weight',3:'Mostly intentional',2:'Some awareness',1:'Appears random',0:'Not attempted'}},{name:'Oil Pastel Technique',desc:'Medium used with some control',d:{4:'Confident blending and layering',3:'Good technique, minor issues',2:'Some control',1:'Struggling with medium',0:'Not attempted'}}]},
+        {id:'u6p7',tier:'TIER 3',name:'Asymmetrical Balance Collage / Painting',pts:8,desc:'Create a large-format mixed media piece — collage and/or paint — that achieves clear asymmetrical balance. Different visual weights on each side of the composition must feel resolved, not accidental.',materials:['Magazines or printed images for collage','Acrylic or gouache paint','Large paper or canvas board','Glue','Brushes'],steps:['Sketch 3 thumbnail compositions exploring asymmetrical balance.','Choose your strongest thumbnail and scale it up.','Block in large background color areas with paint.','Layer collage elements — consider texture, value, and scale as visual weight tools.','Add painted details or marks on top of collage.','Final piece should feel balanced but NOT symmetrical — different on each side, resolved overall.'],tip:'Asymmetrical balance is the hardest to pull off. The two sides should feel like equal weight even though they look completely different.',rubric:[{name:'Asymmetrical Balance',desc:'Both sides feel equal weight, look different',d:{4:'Strong, clearly intentional asymmetrical balance',3:'Mostly balanced, minor issues',2:'Some sense of balance',1:'Feels imbalanced or accidental',0:'Not attempted'}},{name:'Mixed Media Integration',desc:'Collage and paint work together',d:{4:'Seamlessly integrated',3:'Mostly cohesive',2:'Some integration',1:'Elements feel separate',0:'Not attempted'}},{name:'Visual Weight Control',desc:'Deliberate use of size, color, and texture',d:{4:'Sophisticated control',3:'Good control',2:'Some control',1:'Appears random',0:'Not attempted'}},{name:'Scale & Finish',desc:'Large format, fully realized',d:{4:'Large, complete, and polished',3:'Mostly complete',2:'Partially realized',1:'Barely started',0:'Not submitted'}}]},
+        {id:'u6p9',tier:'TIER 3',name:'Master Study — Josef Albers',pts:8,desc:'Study and recreate a work from Albers\' Homage to the Square series, then design your own variation. Focus on how color relationships, proportion, and placement create optical balance and visual tension.',materials:['Albers reference image (printed)','Ruler','Tape or masking tape','Paint (acrylic or gouache)','Canvas board or heavy paper'],steps:['Research Josef Albers and his Homage to the Square series.','Choose one painting from the series to recreate exactly.','Use a ruler and tape to mask off the nested square composition precisely.','Mix your colors carefully — match the Albers piece as closely as you can.','Paint each square as a perfectly flat, even area of color.','Remove tape carefully once dry.','Design your own Homage to the Square variation — new color relationships, your choice.','Write 2–3 sentences: how do the colors interact differently in your version?'],tip:'Albers proved that the same color looks completely different depending on what surrounds it.',rubric:[{name:'Study Accuracy',desc:'Nested squares match the original',d:{4:'Precise, clean match to Albers original',3:'Good match, minor variations',2:'Approximate',1:'Loosely based',0:'Not attempted'}},{name:'Color Mixing',desc:'Colors closely match the chosen work',d:{4:'Accurate, carefully mixed',3:'Close with some variation',2:'Approximate',1:'Not matched',0:'Not attempted'}},{name:'Flat Paint Application',desc:'Perfectly smooth, no brushstrokes',d:{4:'Perfectly flat throughout',3:'Mostly flat',2:'Some texture',1:'Heavy texture',0:'Not attempted'}},{name:'Original Variation',desc:'Student-designed color variation present',d:{4:'Original variation complete with reflection',3:'Variation present, no reflection',2:'Partial variation',1:'Only the study, no variation',0:'Not attempted'}}]},
       ]},
     ]
   },
@@ -3309,22 +3295,23 @@ var CURRICULUM = [
         {id:'u19p8',tier:'TIER 3',name:'The Selfie Project',pts:8,desc:'Create a fully realized self-portrait that communicates something true about your identity — not just what you look like, but who you are.',materials:['Selfie reference photo (printed or on device)','Pencil, pen, or paint','Canvas board or heavy paper','Any additional media of your choice'],steps:['Take or choose a selfie that feels like YOU — consider angle, expression, and setting.','Sketch the portrait using the Loomis method for accurate proportions.','Decide on your medium: pencil, paint, mixed media, collage, etc.','Incorporate at least one personal element beyond the face: background, objects, patterns, text.','Refine your value structure — light source should be consistent.','Final piece should feel personal, not just technical.'],tip:'The best self-portraits tell you something about the person you couldn\'t learn from a photo.',rubric:[{name:'Likeness & Proportion',desc:'Recognizable self-portrait with accurate proportions',d:{4:'Strong likeness, accurate proportions throughout',3:'Recognizable, minor proportion errors',2:'Somewhat recognizable',1:'Barely recognizable',0:'Not attempted'}},{name:'Personal Identity',desc:'Piece communicates something beyond appearance',d:{4:'Strong personal concept clearly expressed',3:'Some personal element present',2:'Minimal personal content',1:'No personal concept',0:'Not attempted'}},{name:'Technical Skill',desc:'Medium used with control and intention',d:{4:'Skilled use of chosen medium',3:'Good control, minor issues',2:'Some control',1:'Struggling with medium',0:'Not attempted'}},{name:'Value / Color',desc:'Light source consistent, full range',d:{4:'Strong value or color structure',3:'Good structure, minor gaps',2:'Some value present',1:'Mostly flat',0:'Not attempted'}},{name:'Effort & Completion',desc:'Fully finished and polished',d:{4:'Complete and clearly invested in',3:'Complete, some areas underdeveloped',2:'Partially complete',1:'Barely started',0:'Not submitted'}}]},
         {id:'u19p10',tier:'TIER 3',name:'Master Study — Jean-Michel Basquiat',pts:8,desc:'Study and recreate a work by Basquiat, focusing on his use of raw mark-making, text, symbols, and expressive portraiture.',materials:['Basquiat reference image (printed)','Acrylic paint or mixed media','Canvas board or heavy paper','Markers, oil pastel, or crayon for text and marks'],steps:['Research Jean-Michel Basquiat — look at 10+ works. Note his use of text, crowns, crossed-out words, and raw line.','Choose one Basquiat portrait work to study.','Sketch the basic composition — don\'t overthink it. Basquiat worked fast and raw.','Block in the main colors. Basquiat used bold, clashing color.','Add text, symbols, and mark layers on top of the paint.','Cross out words, add arrows, repeat shapes — this is part of his visual language.','Don\'t over-refine. Rough edges and visible struggle are part of the style.'],tip:'Basquiat\'s work is about identity, history, and power. Your study should feel alive, not polished.',rubric:[{name:'Style Accuracy',desc:'Work reflects Basquiat\'s visual language'},{name:'Text & Symbol Use',desc:'Words and marks integrated into composition'},{name:'Color',desc:'Bold, expressive palette'},{name:'Raw Energy',desc:'Work feels alive and unpolished'},{name:'Effort & Research',desc:'Clearly studied the source work'}]},
       ]},
-      { id:'u20', num:20, title:'Body + Character Design', overview:'Figure drawing is the foundation of character design. This unit builds proportion and figure skills through the 8-head model, then applies them to original character work, costume design, and full production pieces. You\'ll start with structure and proportion, then push into invention — designing original characters with consistent anatomy, personality, and style. By the end you should be able to construct a believable figure from imagination and translate it into a finished, production-ready piece.', deadlines:{t1:'TBD',t2:'TBD',t3:'TBD'}, projects:[
-        {id:'u20p1',tier:'TIER 1',name:'8 Head Model Practice',pts:2,desc:'Learn the industry-standard 8-head proportion system used in figure drawing, fashion illustration, and character design.',materials:['8 Head Model worksheet','Pencil','Ruler'],steps:['Draw a vertical line and divide it into 8 equal units — each unit = one head height.','Use the landmark guide: Head (1), Chest/nipple line (2), Navel (3), Crotch (4), Mid-thigh (5), Knee (6), Mid-shin (7), Feet (8).','Sketch the basic body form over your measurement guide.','Draw the figure a second time from scratch using your measurements, this time adding more form.','Check proportions: arms reach to mid-thigh, shoulders are 2 heads wide.'],tip:'The 8-head model is a guide, not a cage. Real bodies vary — but knowing the standard lets you break it intentionally.',rubric:[{name:'Proportion Accuracy',desc:'8 head units used correctly'},{name:'Body Mass',desc:'Torso, limbs, and head read as solid forms'},{name:'Two Attempts',desc:'Both figures present'},{name:'Craftsmanship',desc:'Clean, controlled linework'}]},
-        {id:'u20p2',tier:'TIER 1',name:'Body Parts Worksheet',pts:2,desc:'Isolated practice of the parts that trip people up most — hands, feet, and torsos. Draw each section from reference multiple times, focusing on structure and form.',materials:['Body Parts worksheet','Pencil','Eraser','Figure reference images'],steps:['Section 1 — Hands: Draw a front-view hand and a 3/4 view hand. Block in the palm as a flat shape first, then add fingers.','Section 2 — Feet: Draw a front-view foot and a side-view foot. Think of the foot as a wedge shape before adding toes.','Section 3 — Torso: Draw a front-view torso using simple box forms for the chest and hips. Note how they tilt in opposite directions.','Add basic shading to each section to show form — not just outline.','Draw each section at least twice. Second attempt should be noticeably better.'],tip:'Hands and feet are where most people give up. Draw them more, not less.',rubric:[{name:'Hand Accuracy',desc:'Both hand views drawn with structure',d:{4:'Both views accurate, palm mass clear',3:'Both present, minor errors',2:'One view correct',1:'Hands inaccurate or avoided',0:'Not attempted'}},{name:'Foot Accuracy',desc:'Both foot views drawn with structure',d:{4:'Both views accurate, wedge form clear',3:'Both present, minor errors',2:'One view correct',1:'Feet inaccurate or avoided',0:'Not attempted'}},{name:'Torso Accuracy',desc:'Torso drawn using box/mass forms',d:{4:'Chest and hip masses clearly blocked in',3:'Good structure, some errors',2:'Basic shape present',1:'No structural understanding',0:'Not attempted'}},{name:'Two Attempts Per Section',desc:'Each section drawn twice',d:{4:'All sections drawn twice, improvement visible',3:'Most sections doubled',2:'Some sections doubled',1:'Single attempts only',0:'Not attempted'}}]},
-        {id:'u20p5',tier:'TIER 1',name:'Silhouette Lineup',pts:2,desc:'Design 5–6 character silhouettes that are instantly readable and visually distinct from one another using only solid black shapes — no internal lines, no detail.',materials:['Pencil','Black marker or paint','White cardstock'],steps:['Sketch 5–6 different character shapes in pencil — vary height, build, and posture dramatically.','Each silhouette should communicate something about the character: large and imposing, small and quick, elegant, hunched, etc.','Fill each silhouette completely solid black — no internal lines or detail.','Test your lineup: cover the page and reveal one at a time. Can you tell them apart instantly?','If two silhouettes look too similar, redesign one.','Label each silhouette with one word that describes the character type.'],tip:'If your characters only work with details and colors, the design isn\'t strong enough yet. Silhouette is everything.',rubric:[{name:'Distinctiveness',desc:'All silhouettes clearly different from each other',d:{4:'5–6 immediately distinct silhouettes',3:'4 distinct, 1–2 similar',2:'Some variety',1:'All look similar',0:'Not attempted'}},{name:'Character Communication',desc:'Each silhouette suggests a personality or role',d:{4:'All silhouettes clearly suggest a character type',3:'Most communicate something',2:'Some character evident',1:'Generic shapes, no personality',0:'Not attempted'}},{name:'Solid Fill',desc:'All silhouettes fully filled black',d:{4:'All clean solid black fills',3:'Mostly filled, minor gaps',2:'Some unfilled areas',1:'Not filled',0:'Not attempted'}},{name:'Quantity',desc:'5–6 silhouettes present',d:{4:'6 complete silhouettes',3:'5 complete',2:'3–4 complete',1:'1–2 complete',0:'Not attempted'}}]},
-        {id:'u20p3',tier:'QUIZ',name:'Body Comp Quiz',pts:2,desc:'Assess understanding of the 8-head proportion system, body landmarks, and figure drawing vocabulary.',materials:['Pencil','Quiz handout'],steps:['Label the 8 landmark positions on a provided figure diagram.','Answer short written questions about proportion and figure structure.','Draw a quick 8-head proportion guide from memory in the blank section.'],tip:'If you can place all 8 landmarks without looking, you\'ll ace this.',rubric:[]},
-        {id:'u20p4',tier:'TIER 2',name:'Original Character Design',pts:3,desc:'Design an original character using the 8-head model as your proportion foundation.',materials:['Pencil','Pen or fine liner','Colored pencils or markers','Drawing paper'],steps:['Start with the 8-head proportion guide — block in the body mass first.','Decide on your character\'s role: hero, villain, civilian, creature, etc.','Design the silhouette first — a strong character reads as a clear shape from a distance.','Add costume, clothing, and accessories that reinforce the character\'s identity.','Draw the character\'s face in a small inset box — expressions matter.','Add a name and 3-word personality description beside the character.','Ink and color your final character.'],tip:'The best character designs are readable as a silhouette alone.',rubric:[{name:'Proportion',desc:'8-head model used correctly'},{name:'Silhouette Strength',desc:'Character reads clearly as a shape'},{name:'Design Cohesion',desc:'Costume and personality feel unified'},{name:'Completion',desc:'Inked, colored, named, and described'}]},
-        {id:'u20p6',tier:'TIER 2',name:'Character in 4 Styles',pts:3,desc:'Take one character and redraw it in 4 distinct cartoon or comic styles. Forces you to analyze what actually makes each style different.',materials:['Pencil','Pen or fine liner','Colored pencils or markers','Drawing paper'],steps:['Choose your character — it can be your original character or one provided by the teacher.','Choose 4 distinct styles: examples include Disney, anime, Looney Tunes, superhero comic, Pixar, CalArts, etc.','Research each style before drawing — look at 5+ examples of each. What are the rules?','Draw the same character in each style. Same character, completely different visual language.','Each version should feel authentically like that style, not just a slight tweak.','Label each version with the style name.'],tip:'The goal isn\'t to just change the outfit. Eyes, proportions, line quality, and shape language all change between styles.',rubric:[{name:'Style Accuracy',desc:'Each version authentically reflects its style',d:{4:'All 4 styles immediately recognizable',3:'3 styles clearly executed',2:'2 styles clear',1:'Styles not distinct from each other',0:'Not attempted'}},{name:'Consistency',desc:'Same character across all 4 versions',d:{4:'Character clearly the same across all styles',3:'Mostly consistent, one version off',2:'Some consistency',1:'Looks like 4 different characters',0:'Not attempted'}},{name:'Research',desc:'Styles studied before drawing',d:{4:'Deep style understanding evident in all 4',3:'Research evident in most',2:'Some style understanding',1:'No research evident',0:'Not attempted'}},{name:'Completion',desc:'All 4 styles complete and labeled',d:{4:'All 4 complete, inked, and labeled',3:'3 complete',2:'2 complete',1:'1 complete',0:'Not attempted'}}]},
-        {id:'u20p7',tier:'TIER 2',name:'Costume Design Variants',pts:3,desc:'Take a single character body and design 3 completely different outfits that each tell a different story about who that character is.',materials:['Pencil','Pen or fine liner','Colored pencils or markers','Drawing paper'],steps:['Draw the same character body 3 times on one page — use the 8-head model for each.','Design 3 completely different costumes: think about occupation, personality, status, and setting.','Each costume should make the character feel like a different person — streetwear, armor, formal wear, sci-fi, etc.','Add flat color to each variant.','Label each variant with 2–3 words describing the character\'s new identity or role.','Ask yourself: if you saw these three on the street, would you assume they\'re the same person?'],tip:'Costume is character. What someone wears tells you who they are before they say a word.',rubric:[{name:'Variant Distinctiveness',desc:'3 costumes feel clearly different from each other',d:{4:'3 dramatically different, instantly readable costumes',3:'2 clearly different, 1 similar to another',2:'Some variation',1:'Costumes too similar',0:'Not attempted'}},{name:'Character Storytelling',desc:'Each costume suggests a different identity',d:{4:'All 3 suggest a clear, distinct character type',3:'2 suggest a clear identity',2:'1 clearly communicates',1:'No identity communicated',0:'Not attempted'}},{name:'Figure Consistency',desc:'Same body used for all 3 variants',d:{4:'Consistent figure across all 3',3:'Mostly consistent',2:'Some inconsistency',1:'Different figures used',0:'Not attempted'}},{name:'Color & Completion',desc:'All 3 variants colored and labeled',d:{4:'All 3 fully colored and labeled',3:'2 fully colored and labeled',2:'1 complete',1:'No color or labels',0:'Not attempted'}}]},
-        {id:'u20p9',tier:'TIER 3',name:'Comic Strip',pts:8,desc:'Write and illustrate a 6–8 panel comic strip featuring your original character.',materials:['Pencil','Pen or fine liner','Ruler','Markers or ink','Comic strip paper or heavy paper divided into panels'],steps:['Plan your story first — write a 1-sentence summary: who, what, where, and why it matters.','Thumbnail all 6–8 panels in tiny sketches before drawing full size.','Each panel should have a clear purpose — establish, action, reaction, resolution.','Vary your panel sizes — close-ups for emotion, wide shots for action and environment.','Draw figures using the 8-head model.','Add speech bubbles and captions.','Ink all panels. Add spot black for shadow and depth.'],tip:'Comics are about what you leave OUT as much as what you include.',rubric:[{name:'Visual Storytelling',desc:'Story is clear without needing explanation'},{name:'Panel Composition',desc:'Varied panel sizes and camera angles'},{name:'Figure Drawing',desc:'Characters consistently drawn using 8-head model'},{name:'Lettering & Dialogue',desc:'Text is legible and placed well'},{name:'Completion',desc:'6–8 panels fully inked and finished'}]},
-        {id:'u20p12',tier:'TIER 3',name:'Master Study — Jack Kirby',pts:8,desc:'Study and recreate a page or panel from Jack Kirby\'s work, analyzing his use of dynamic figure drawing, energy lines, and compositional power.',materials:['Kirby reference panel (printed)','Pencil','Pen or fine liner','Markers or ink','Drawing paper'],steps:['Research Jack Kirby — look at his work on Fantastic Four, New Gods, Captain America.','Choose one full panel or half-page composition to recreate.','Lightly sketch the composition — note how Kirby uses exaggerated foreshortening and massive figures.','Pay attention to his \'Kirby Krackle\' — the pattern of black dots he uses to show energy.','Ink with bold, confident lines. Vary your line weight.','Add spot black aggressively — Kirby used heavy shadow to create drama.','Write 2–3 sentences on the back: what makes this panel work?'],tip:'Kirby drew like the figures were about to explode off the page. Don\'t be timid.',rubric:[{name:'Composition Accuracy',desc:'Layout matches the chosen Kirby panel'},{name:'Figure Energy',desc:'Figures are dynamic and exaggerated'},{name:'Line Weight',desc:'Bold, varied line weight used'},{name:'Spot Black',desc:'Heavy shadow and Kirby Krackle used'},{name:'Written Reflection',desc:'Analysis of the panel\'s effectiveness'}]},
-        {id:'u20p13',tier:'TIER 3',name:'Emotional Figure Painting',pts:8,desc:'Pick an emotion, a mood, or a moment — something you\'ve actually felt. Use the body as your subject but let go of accuracy. The goal isn\'t a perfect figure — it\'s a painting that actually feels like something when someone looks at it.',materials:['Heavy paper, canvas board, or mixed media paper','Acrylic paint, oil pastel, or mixed media','Brushes','Reference images (optional)'],steps:['Choose your emotion or mood first. Write it down. This is your north star — every choice should serve it.','Decide on a pose or body position that physically expresses that feeling. Reference optional — go from feeling.','Sketch loosely. You\'re not trying to be accurate. Exaggerate the pose if it helps the emotion land.','Choose a color palette that matches the mood — don\'t default to realistic skin tones if they don\'t serve the feeling.','Build the painting in layers. Let it be messy where it needs to be.','Step back and ask: does this feel like something? If not, push harder.'],tip:'Distortion and inaccuracy are not mistakes here — they\'re tools. A figure doesn\'t need to be correct, it needs to be felt.',rubric:[{name:'Emotional Impact',desc:'Painting communicates a clear feeling',d:{4:'Immediately hits — emotion is unmistakable',3:'Feeling is readable',2:'Some emotion present',1:'No clear emotional content',0:'Not attempted'}},{name:'Color as Expression',desc:'Color choices serve the mood',d:{4:'Color palette powerfully reinforces the emotion',3:'Color mostly serves the mood',2:'Some intentional color choices',1:'Default or random color',0:'Not attempted'}},{name:'Figure Use',desc:'Body or figure used as expressive vehicle',d:{4:'Figure exaggerated or distorted purposefully for emotion',3:'Figure present with some expressive quality',2:'Figure present but generic',1:'No figure element',0:'Not attempted'}},{name:'Commitment',desc:'Fully painted, no large empty areas',d:{4:'Fully committed — every inch worked',3:'Mostly complete',2:'Some underdeveloped areas',1:'Barely started',0:'Not submitted'}}]},
+      { id:'u20', num:20, title:'Body + Character Design', overview:'Figure drawing is the foundation of character design. This unit builds proportion and figure skills through the 8-head model, then applies them to original character work, costume design, and full production pieces. You\'ll start with structure and proportion, then push into invention — designing original characters with consistent anatomy, personality, and style.', deadlines:{t1:'4/8/26',t2:'4/17/26',t3:'4/30/26'}, projects:[
+        {id:'u20p1',tier:'TIER 1',name:'8 Head Model Practice',pts:2,desc:'Use the 8-head proportion system to construct a full standing figure. Divide the figure into 8 equal head-height units and place landmarks at their correct positions. Complete at least 3 practice figures with visible guidelines.',materials:['8 Head Model worksheet','Pencil','Ruler'],steps:['Draw a vertical line and divide it into 8 equal units — each unit = one head height.','Mark landmarks: Head (1), Chest (2), Navel (3), Crotch (4), Mid-thigh (5), Knee (6), Mid-shin (7), Feet (8).','Sketch the basic body form over your measurement guide.','Complete at least 3 practice figures — keep the guidelines visible.','Check: arms reach mid-thigh, shoulders are 2 heads wide.'],tip:'The 8-head model is a guide, not a cage. Real bodies vary — but knowing the standard lets you break it intentionally.',rubric:[{name:'Proportion Accuracy',desc:'8 head units used and visible'},{name:'Landmark Placement',desc:'Shoulders, hips, knees, feet at correct positions'},{name:'Three Figures',desc:'At least 3 practice figures complete'},{name:'Guidelines Visible',desc:'Construction lines kept, not erased'}]},
+        {id:'u20p2',tier:'TIER 1',name:'Body Parts Worksheet',pts:2,desc:'Isolated practice of the parts that trip people up most — hands, feet, and torsos. Draw each section multiple times from reference, focusing on structure and form.',materials:['Body Parts worksheet or blank paper','Pencil','Reference images'],steps:['Section 1 — Hands: Draw an open hand front view, then a fist. Focus on the knuckle structure and finger proportions.','Section 2 — Feet: Draw a foot from the side, then from the front. Think of the foot as a wedge shape.','Section 3 — Torso: Draw a front torso and a 3/4 torso. Block in the ribcage and pelvis as separate masses.','Add light shading to each to show form, not just outline.','Complete at least 2 drawings per section.'],tip:'Think of each body part as a 3D form, not a flat outline. Hands are boxes. Feet are wedges. The torso is two interlocking cylinders.',rubric:[{name:'Hands',desc:'Front and fist view attempted',d:{4:'Both accurate with structure evident',3:'Both present, minor errors',2:'One view complete',1:'Barely attempted',0:'Not attempted'}},{name:'Feet',desc:'Side and front view attempted',d:{4:'Both accurate with wedge form evident',3:'Both present, minor errors',2:'One view complete',1:'Barely attempted',0:'Not attempted'}},{name:'Torso',desc:'Front and 3/4 view attempted',d:{4:'Both show ribcage/pelvis as separate masses',3:'Both present, minor errors',2:'One view complete',1:'Barely attempted',0:'Not attempted'}},{name:'Form vs Outline',desc:'Shading suggests 3D form',d:{4:'All sections show clear 3D thinking',3:'Most sections shaded',2:'Some shading',1:'All flat outlines',0:'Not attempted'}}]},
+        {id:'u20p3',tier:'TIER 1',name:'Silhouette Lineup',pts:2,desc:'Design 5–6 character silhouettes that are instantly readable and visually distinct from one another using only solid black shapes — no internal lines, no detail.',materials:['Pencil','Black marker','Paper'],steps:['Design 5–6 character concepts — think about their role, size, and personality.','For each character, fill in a complete solid black silhouette — no outlines, no detail inside.','Each silhouette must read clearly as a unique character at arm\'s length.','If you can\'t tell them apart as silhouettes, the design isn\'t working yet — push it further.','Write the character\'s role or name beside each silhouette.'],tip:'Shape language is everything: round = friendly, angular = dangerous, wide = strong, thin = fast. Let the shape do the storytelling.',rubric:[{name:'Readability',desc:'Each silhouette reads clearly as a character',d:{4:'All 5–6 instantly readable',3:'Most readable',2:'Some readable',1:'Hard to distinguish',0:'Not attempted'}},{name:'Variety',desc:'All silhouettes visually distinct',d:{4:'Immediately distinguishable from each other',3:'Mostly distinct',2:'Some similarities',1:'Very similar to each other',0:'Not attempted'}},{name:'Completion',desc:'5–6 silhouettes present',d:{4:'5–6 solid silhouettes',3:'4 silhouettes',2:'3 silhouettes',1:'1–2 silhouettes',0:'Not attempted'}}]},
+        {id:'u20pq',tier:'QUIZ',name:'Body Comp Quiz',pts:2,desc:'Assess understanding of the 8-head proportion model, figure landmark placement, and character design vocabulary. Includes identification, short answer, and a timed proportion sketch.',materials:['Pencil','Quiz handout'],steps:['Label the 8 landmark positions on a provided figure diagram.','Answer short written questions about proportion and figure structure.','Answer vocabulary identification questions on character design terms.','Draw a quick 8-head proportion guide from memory in the blank section.'],tip:'If you can place all 8 landmarks without looking and sketch a full figure in under 5 minutes, you\'ll ace this.',rubric:[]},
+        {id:'u20p4',tier:'TIER 2',name:'Original Character Design',pts:3,desc:'Design an original character from scratch. Start with a silhouette, then develop proportion, costume, and personality details. Your final sheet should include a front-facing figure built on the 8-head model, at least one detailed close-up, and a short written description.',materials:['Pencil','Pen or fine liner','Colored pencils or markers','Drawing paper'],steps:['Start with a silhouette — design the shape before the details.','Build the full front-facing figure using the 8-head proportion guide.','Add costume and accessories that tell us who this character is.','Draw at least one detailed close-up: face, hands, or a signature item.','Write 2–3 sentences describing who this character is: name, role, personality.','Ink and color your final character.'],tip:'The best character designs are readable as a silhouette alone. Design outside-in.',rubric:[{name:'Silhouette First',desc:'Character reads as clear shape',d:{4:'Immediately readable silhouette',3:'Mostly readable',2:'Somewhat readable',1:'Unclear shape',0:'Not attempted'}},{name:'8-Head Proportion',desc:'Full figure on correct proportions',d:{4:'Accurate 8-head construction visible',3:'Mostly correct',2:'Some errors',1:'Proportion not used',0:'Not attempted'}},{name:'Close-up Detail',desc:'At least one detailed element',d:{4:'Rich, clearly rendered detail',3:'Good detail',2:'Some detail',1:'Minimal',0:'Not attempted'}},{name:'Written Description',desc:'Character identity described',d:{4:'Name, role, and personality clearly written',3:'Most info present',2:'Partial description',1:'Barely written',0:'Not attempted'}}]},
+        {id:'u20p5',tier:'TIER 2',name:'Character in 4 Styles',pts:3,desc:'Take one character — yours or a provided one — and redraw it in 4 distinct cartoon or comic styles. Each version should feel authentically like that style, not just a slight tweak.',materials:['Pencil','Pen or fine liner','Colored pencils or markers','Drawing paper'],steps:['Choose a character to use — your Original Character Design works great here.','Choose 4 distinct styles: e.g. Disney, anime, Looney Tunes, superhero comic, chibi, noir.','Research each style before you draw — look at 5+ examples per style.','Redraw the character in each style. Push the style hard — subtle tweaks don\'t count.','Label each version with its style name.'],tip:'Ask yourself what actually DEFINES each style — line weight, head size, eye shape, body proportion. Then exaggerate those things.',rubric:[{name:'Style Authenticity',desc:'Each version reads as that specific style',d:{4:'All 4 styles immediately recognizable',3:'Most styles clear',2:'Some styles clear',1:'Versions are too similar',0:'Not attempted'}},{name:'Variety',desc:'4 styles are genuinely different',d:{4:'Dramatically different from each other',3:'Mostly different',2:'Some variation',1:'Very similar',0:'Not attempted'}},{name:'Character Consistency',desc:'Same character across all 4 styles',d:{4:'Clearly the same character throughout',3:'Mostly consistent',2:'Somewhat consistent',1:'Hard to tell it\'s the same character',0:'Not attempted'}}]},
+        {id:'u20p6',tier:'TIER 2',name:'Costume Design Variants',pts:3,desc:'Take a single character body and design 3 completely different outfits that each tell a different story about who that character is.',materials:['Pencil','Pen or fine liner','Colored pencils or markers','Drawing paper'],steps:['Draw the same character body pose 3 times — you can trace or lightly block in the same figure.','Design 3 completely different outfits that each communicate a different personality or context.','Each costume should make the character feel like a completely different person.','Ink and add flat color to each variant.','Label each variant with the personality or role it communicates.'],tip:'Same body, totally different personality. The costume is doing the characterization work here.',rubric:[{name:'Costume Variety',desc:'3 outfits read as distinctly different',d:{4:'Dramatically different — each a distinct personality',3:'Mostly different',2:'Some difference',1:'Too similar',0:'Not attempted'}},{name:'Storytelling',desc:'Each costume communicates something specific',d:{4:'Each costume immediately communicates a role or personality',3:'Most do',2:'Some do',1:'Not communicating much',0:'Not attempted'}},{name:'Completion',desc:'All 3 inked and colored',d:{4:'All 3 fully inked and colored',3:'2 complete, 1 partial',2:'2 complete',1:'1 complete',0:'Not attempted'}}]},
+        {id:'u20p7',tier:'TIER 3',name:'Comic Strip',pts:8,desc:'Create a multi-panel comic strip (minimum 4 panels) featuring your original character. Figures must demonstrate consistent proportions across panels, dynamic poses, and clear storytelling through composition and expression.',materials:['Pencil','Pen or fine liner','Ruler','Markers or ink','Comic strip paper or heavy paper divided into panels'],steps:['Plan your story first — write a 1-sentence summary: who, what, where, and why it matters.','Thumbnail all panels in tiny sketches before drawing full size.','Each panel should have a clear purpose — establish, action, reaction, resolution.','Vary your panel sizes — close-ups for emotion, wide shots for action.','Draw figures using the 8-head model.','Add speech bubbles and captions.','Ink all panels. Add color or value to finish.'],tip:'Comics are about what you leave OUT as much as what you include. Every panel earns its place.',rubric:[{name:'Visual Storytelling',desc:'Story is clear without needing explanation'},{name:'Panel Composition',desc:'Varied panel sizes and camera angles'},{name:'Figure Drawing',desc:'Consistent proportions across panels, dynamic poses'},{name:'Lettering & Dialogue',desc:'Text is legible and placed well'},{name:'Completion',desc:'4+ panels fully inked and finished'}]},
+        {id:'u20p8',tier:'TIER 3',name:'Emotional Figure Painting',pts:8,desc:'Pick an emotion, a mood, or a moment — something you\'ve actually felt. Use the body as your subject but let go of accuracy. Exaggerate the pose, push the color, let the paint be messy if it needs to be. The goal isn\'t a perfect figure — it\'s a painting that actually feels like something.',materials:['Paint (acrylic, watercolor, or oil pastel)','Canvas board or heavy paper','Brushes','Any additional mixed media'],steps:['Choose your emotion or moment. Be specific — not "sad" but "the feeling after a bad day when you\'re sitting in your car."','Find or create a reference pose that physically embodies that feeling.','Sketch loosely — don\'t be precious about accuracy.','Exaggerate: make the pose more extreme, the colors more intense, the marks more expressive.','Let the medium be part of the expression — drips, texture, and mess can be intentional.','Ask yourself: does this actually FEEL like something when you look at it?'],tip:'This is the only project in this unit where accuracy doesn\'t matter. Expression does.',rubric:[{name:'Emotional Communication',desc:'Painting conveys a specific feeling',d:{4:'Viewer can feel it without being told what it is',3:'Feeling is readable',2:'Some emotional content',1:'Feels generic or flat',0:'Not attempted'}},{name:'Expressive Use of Medium',desc:'Paint, marks, or color used expressively',d:{4:'Medium actively contributes to the emotion',3:'Mostly expressive',2:'Some expressive choices',1:'Flat and even throughout',0:'Not attempted'}},{name:'Pose/Body Language',desc:'Figure communicates through its physicality',d:{4:'Body language is the main storyteller',3:'Mostly communicates through pose',2:'Some intentional body language',1:'Generic or static pose',0:'Not attempted'}},{name:'Completion',desc:'Fully realized painting',d:{4:'Complete, fully painted, feels resolved',3:'Mostly complete',2:'Partially realized',1:'Barely started',0:'Not submitted'}}]},
+        {id:'u20p12',tier:'TIER 3',name:'Master Study — Jack Kirby',pts:8,desc:'Study and recreate a panel or figure from Jack Kirby\'s work, focusing on his dynamic figure construction, exaggerated proportions, and use of geometric form. Follow with your own figure in Kirby\'s style.',materials:['Kirby reference panel (printed)','Pencil','Pen or fine liner','Markers or ink','Drawing paper'],steps:['Research Jack Kirby — look at Fantastic Four, New Gods, Captain America. Study 10+ panels.','Choose one full panel or figure to recreate exactly.','Lightly sketch the composition — note the exaggerated foreshortening and massive geometric forms.','Look for the "Kirby Krackle" — the pattern of black dots he uses to show energy and cosmic power.','Ink with bold, confident lines. Vary your line weight heavily.','Add spot black aggressively — Kirby used heavy shadow for drama.','Design your own original character or scene in Kirby\'s style.','Write 2–3 sentences: what makes Kirby\'s figures feel so powerful?'],tip:'Kirby drew like the figures were about to explode off the page. Every muscle is a geometric form. Don\'t be timid.',rubric:[{name:'Study Accuracy',desc:'Recreated panel matches Kirby\'s original',d:{4:'Strong match — energy, proportion, and black placement',3:'Good match, some differences',2:'Partial match',1:'Loosely based',0:'Not attempted'}},{name:'Kirby Style Mastery',desc:'Geometric forms, exaggeration, Krackle',d:{4:'All key elements present and confident',3:'Most elements present',2:'Some elements',1:'Minimal style elements',0:'Not attempted'}},{name:'Original Kirby-Style Piece',desc:'Student-created piece in Kirby\'s style',d:{4:'Convincingly Kirby-style and original',3:'Mostly in style',2:'Some style elements',1:'Barely started',0:'Not attempted'}},{name:'Written Reflection',desc:'Analysis of what makes the panel work',d:{4:'Thoughtful and specific',3:'Good reflection',2:'Basic reflection',1:'Very vague',0:'Not attempted'}}]},
       ]},
     ]
   }
 ];
 
+// curriculum state
 var currCourseId = 'dp2';
 var currUnitId   = 'u4';
 var currProjId   = null;
@@ -4063,6 +4050,25 @@ function renderFitnessRichPage(cv, page) {
   cv.appendChild(wrap);
 }
 
+function renderCookbook(cv) {
+  if (!S.cookbook) S.cookbook = { pages:[{id:'cb-recipes',icon:'🍳',label:'Recipes',type:'rich',content:''},{id:'cb-mealplan',icon:'📅',label:'Weekly Menu',type:'rich',content:''},{id:'cb-nutrition',icon:'🥗',label:'Nutrition Notes',type:'rich',content:''},{id:'cb-groceries',icon:'🛒',label:'Staples',type:'rich',content:''}], currentPage:'cb-recipes' };
+  var ck = S.cookbook;
+  var page = null;
+  (ck.pages||[]).forEach(function(p){ if (p.id===ck.currentPage) page=p; });
+  if (!page && ck.pages && ck.pages.length) { page=ck.pages[0]; ck.currentPage=page.id; }
+  if (!page) { cv.appendChild(tx('No pages yet — add one from the sidebar.')); return; }
+
+  var wrap = el('div',''); wrap.id='fitness-wrap';
+  var h = el('div','fit-header');
+  var left2 = el('div','');
+  var t2 = el('div','fit-title'); t2.style.color='var(--finance)'; t2.appendChild(tx('📖 Cook Book'));
+  var s2 = el('div','fit-sub'); s2.appendChild(tx(page.label));
+  left2.appendChild(t2); left2.appendChild(s2); h.appendChild(left2); wrap.appendChild(h);
+  var ed2 = buildEditor('Add recipes, notes, meal plans, nutrition info…', textToHtml(page.content||''), function(html){ page.content=html; save(); });
+  wrap.appendChild(ed2.wrap);
+  cv.appendChild(wrap);
+}
+
 function renderDump(cv) {
   var d=new Date().toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric'});
 
@@ -4358,42 +4364,258 @@ function sendSortedToBoxes(grouped) {
 }
 
 // ─── TASKS ────────────────────────────────────────────────────────
+function buildTaskList(box, color) {
+  if(!box.tasks) box.tasks=[];
+
+  function flatten(tasks, depth) {
+    var out=[];
+    (tasks||[]).forEach(function(t){
+      out.push({t:t.t, d:!!t.d, depth:depth||0});
+      if(t.children&&t.children.length)
+        flatten(t.children,depth+1).forEach(function(c){out.push(c);});
+    });
+    return out;
+  }
+
+  function buildNested(flat) {
+    var root=[]; var stack=[];
+    flat.forEach(function(item){
+      var node={t:item.t, d:item.d, children:[]};
+      var depth=item.depth||0;
+      stack=stack.slice(0,depth);
+      if(depth===0){ root.push(node); stack[0]=node; }
+      else {
+        var parent=stack[depth-1]||root[root.length-1];
+        if(!parent){ root.push(node); stack[0]=node; }
+        else { parent.children.push(node); stack[depth]=node; }
+      }
+    });
+    return root;
+  }
+
+  var flat=flatten(box.tasks,0);
+  var listEl=el('div','');
+  listEl.style.cssText='display:flex;flex-direction:column;gap:2px;margin-bottom:8px';
+  var dragSrc=null;
+
+  var saveTimer=null;
+  function scheduleSave(){
+    clearTimeout(saveTimer);
+    saveTimer=setTimeout(function(){
+      var newFlat=[];
+      listEl.querySelectorAll('.task-row').forEach(function(row){
+        var depth=parseInt(row.dataset.depth)||0;
+        var cb=row.querySelector('input[type=checkbox]');
+        var sp=row.querySelector('.task-text');
+        var text=(sp?sp.textContent:'').trim();
+        if(text) newFlat.push({t:text,d:cb?cb.checked:false,depth:depth});
+      });
+      box.tasks=buildNested(newFlat);
+      save();
+    },400);
+  }
+
+  function makeRow(item) {
+    var row=el('div','task-row');
+    row.dataset.depth=String(item.depth||0);
+    row.style.cssText='display:flex;align-items:center;gap:8px;padding:5px 8px;border-radius:7px;background:var(--s1);border:1px solid var(--br);margin-left:'+((item.depth||0)*20)+'px;transition:background .12s';
+
+    // ── DRAG HANDLE (declared first so onmouseover can reference it) ──
+    var handle=document.createElement('div');
+    handle.textContent='⠿';
+    handle.style.cssText='flex-shrink:0;cursor:grab;color:var(--dim);font-size:.9rem;padding:0 3px;opacity:0;transition:opacity .15s;user-select:none';
+    handle.title='Drag to reorder';
+
+    // Show/hide handle + del on row hover
+    row.onmouseover=function(){ row.style.background='var(--s2)'; del.style.color='var(--dim)'; handle.style.opacity='1'; };
+    row.onmouseout=function(){ row.style.background='var(--s1)'; del.style.color='transparent'; handle.style.opacity='0'; };
+
+    // ── CHECKBOX ──
+    var cb=document.createElement('input'); cb.type='checkbox'; cb.checked=!!item.d;
+    cb.style.cssText='flex-shrink:0;width:14px;height:14px;cursor:pointer;accent-color:'+color;
+    cb.onchange=function(){
+      sp.style.textDecoration=cb.checked?'line-through':'none';
+      sp.style.opacity=cb.checked?'0.4':'1';
+      scheduleSave();
+    };
+
+    // ── TEXT (contenteditable) ──
+    var sp=el('div','task-text');
+    sp.contentEditable='true';
+    sp.textContent=item.t;
+    sp.style.cssText='flex:1;font-size:.84rem;color:var(--text);outline:none;line-height:1.5;caret-color:var(--gold);min-width:0;'+(item.d?'text-decoration:line-through;opacity:.4;':'');
+    sp.spellcheck=false;
+    sp.oninput=scheduleSave;
+
+    sp.onkeydown=function(e){
+      var rows=Array.from(listEl.querySelectorAll('.task-row'));
+      var idx=rows.indexOf(row);
+      if(e.key==='Enter'){
+        e.preventDefault();
+        var newRow=makeRow({t:'',d:false,depth:item.depth||0});
+        if(rows[idx+1]) listEl.insertBefore(newRow,rows[idx+1]);
+        else listEl.appendChild(newRow);
+        newRow.querySelector('.task-text').focus();
+        scheduleSave();
+      }
+      else if(e.key==='Tab'){
+        e.preventDefault();
+        var d=parseInt(row.dataset.depth)||0;
+        if(e.shiftKey){ if(d>0) d--; }
+        else { if(idx>0) d++; }
+        row.dataset.depth=String(d); row.style.marginLeft=(d*20)+'px'; item.depth=d;
+        scheduleSave(); sp.focus();
+      }
+      else if(e.key==='Backspace'&&sp.textContent===''){
+        e.preventDefault();
+        var prev=rows[idx-1];
+        listEl.removeChild(row);
+        if(prev){ var ps=prev.querySelector('.task-text'); if(ps){ ps.focus(); var r2=document.createRange(); r2.selectNodeContents(ps); r2.collapse(false); var s2=window.getSelection(); s2.removeAllRanges(); s2.addRange(r2); } }
+        scheduleSave();
+      }
+      else if(e.key==='ArrowUp'&&idx>0){ e.preventDefault(); rows[idx-1].querySelector('.task-text').focus(); }
+      else if(e.key==='ArrowDown'&&idx<rows.length-1){ e.preventDefault(); rows[idx+1].querySelector('.task-text').focus(); }
+    };
+
+    // ── DELETE BUTTON ──
+    var del=document.createElement('button');
+    del.textContent='✕';
+    del.style.cssText='background:none;border:none;color:transparent;cursor:pointer;font-size:.65rem;padding:2px 4px;flex-shrink:0;transition:color .12s';
+    del.onmouseover=function(e){ e.stopPropagation(); del.style.color='var(--danger)'; };
+    del.onclick=function(e){
+      e.stopPropagation();
+      var rows2=Array.from(listEl.querySelectorAll('.task-row'));
+      var i2=rows2.indexOf(row);
+      listEl.removeChild(row);
+      if(rows2[i2-1]) rows2[i2-1].querySelector('.task-text').focus();
+      scheduleSave();
+    };
+
+    // ── DRAG LOGIC ──
+    // Only the handle initiates drag — text stays clickable/editable
+    handle.addEventListener('mousedown', function(e){
+      row.draggable = true;
+    });
+    handle.addEventListener('mouseup', function(){
+      row.draggable = false;
+    });
+
+    row.addEventListener('dragstart', function(e){
+      dragSrc = row;
+      e.dataTransfer.effectAllowed = 'move';
+      e.dataTransfer.setData('text/plain', '');
+      setTimeout(function(){ row.style.opacity='0.35'; }, 0);
+    });
+    row.addEventListener('dragend', function(){
+      row.style.opacity = '1';
+      row.draggable = false;
+      dragSrc = null;
+      listEl.querySelectorAll('.task-row').forEach(function(r){
+        r.style.boxShadow = '';
+      });
+      scheduleSave();
+    });
+    row.addEventListener('dragover', function(e){
+      if (!dragSrc || dragSrc === row) return;
+      e.preventDefault();
+      e.dataTransfer.dropEffect = 'move';
+      var rect = row.getBoundingClientRect();
+      listEl.querySelectorAll('.task-row').forEach(function(r){ r.style.boxShadow=''; });
+      if (e.clientY < rect.top + rect.height/2)
+        row.style.boxShadow = '0 -2px 0 var(--gold)';
+      else
+        row.style.boxShadow = '0 2px 0 var(--gold)';
+    });
+    row.addEventListener('dragleave', function(){
+      row.style.boxShadow = '';
+    });
+    row.addEventListener('drop', function(e){
+      if (!dragSrc || dragSrc === row) return;
+      e.preventDefault();
+      row.style.boxShadow = '';
+      var rect = row.getBoundingClientRect();
+      if (e.clientY < rect.top + rect.height/2)
+        listEl.insertBefore(dragSrc, row);
+      else
+        listEl.insertBefore(dragSrc, row.nextSibling);
+      scheduleSave();
+    });
+
+    row.appendChild(handle); row.appendChild(cb); row.appendChild(sp); row.appendChild(del);
+    return row;
+  }
+
+  flat.forEach(function(item){ listEl.appendChild(makeRow(item)); });
+
+  // Ghost "new task" row
+  var addGhost=el('div','');
+  addGhost.style.cssText='display:flex;align-items:center;gap:8px;padding:5px 8px;border-radius:7px;color:var(--dim);cursor:text;font-size:.84rem;border:1px dashed var(--br);transition:border-color .15s,color .15s';
+  addGhost.innerHTML='<span style="opacity:.5;font-size:.9rem">+</span><span>New task\u2026</span>';
+  addGhost.onmouseover=function(){addGhost.style.borderColor='var(--gold)';addGhost.style.color='var(--mid)';};
+  addGhost.onmouseout=function(){addGhost.style.borderColor='var(--br)';addGhost.style.color='var(--dim)';};
+  addGhost.onclick=function(){
+    var newRow=makeRow({t:'',d:false,depth:0});
+    listEl.appendChild(newRow);
+    newRow.querySelector('.task-text').focus();
+  };
+
+  var container=el('div','');
+  container.appendChild(listEl);
+  container.appendChild(addGhost);
+  return container;
+}
+
 function renderTasks(cv,meta,box) {
   var wrap=el('div',''); wrap.style.maxWidth='720px';
   var h1=el('div','pg-h1'); h1.style.color=meta.color; h1.appendChild(tx(meta.icon+' '+meta.label));
   var sub=el('div','pg-sub'); sub.appendChild(tx('Tasks'));
   wrap.appendChild(h1); wrap.appendChild(sub);
-  var list=el('div','cl-wrap');
-  (box.tasks||[]).forEach(function(task,i){list.appendChild(mkTaskRow(task,i,meta.color,box.tasks));});
-  wrap.appendChild(list);
-  var ar=el('div','add-row');
-  var inp=document.createElement('input'); inp.className='add-inp'; inp.id='task-inp'; inp.placeholder='Add a task…';
-  var btn=el('button','add-btn'); btn.appendChild(tx('ADD'));
-  btn.onclick=function(){addTask(box,inp,meta.color);};
-  inp.onkeydown=function(e){if(e.key==='Enter')addTask(box,inp,meta.color);};
-  ar.appendChild(inp); ar.appendChild(btn); wrap.appendChild(ar);
+  wrap.appendChild(buildTaskList(box, meta.color));
+  var hint=el('div',''); hint.style.cssText='font-size:.7rem;color:var(--dim);margin-top:8px';
+  hint.textContent='Enter = new task \u00b7 Tab = indent \u00b7 Shift+Tab = unindent \u00b7 Backspace on empty = delete';
+  wrap.appendChild(hint);
   cv.appendChild(wrap);
 }
 
-function mkTaskRow(task,i,color,arr) {
+function mkTaskRow(task,i,color,arr,depth,onchange) {
+  // Minimal version used by Daily panel — simple checkbox + span, no contenteditable
+  depth=depth||0;
+  if(!task.children) task.children=[];
+  var wrap=el('div','');
+  if(depth>0) wrap.style.marginLeft=(depth*20)+'px';
   var row=el('div','cl-row');
-  var uid='tk'+i+Math.random().toString(36).slice(2,5);
-  var cb=document.createElement('input'); cb.type='checkbox'; cb.id=uid; cb.checked=task.d;
-  cb.style.accentColor=color;
-  var lb=el('label',task.d?'done':''); lb.htmlFor=uid; lb.appendChild(tx(task.t));
-  cb.onchange=(function(tk,l){return function(){tk.d=cb.checked;l.className=tk.d?'done':'';save();};})(task,lb);
-  var del=el('button','cl-del'); del.appendChild(tx('✕'));
-  (function(idx){del.onclick=function(){arr.splice(idx,1);save();renderCanvas();};})(i);
-  row.appendChild(cb); row.appendChild(lb); row.appendChild(del);
-  return row;
+  var cb=document.createElement('input'); cb.type='checkbox'; cb.checked=!!task.d;
+  cb.style.cssText='flex-shrink:0;width:14px;height:14px;cursor:pointer;accent-color:'+color;
+  var span=document.createElement('span');
+  span.textContent=task.t;
+  span.style.cssText='flex:1;font-size:.83rem;color:'+(task.d?'var(--dim)':'var(--mid)')+';line-height:1.4;'+(task.d?'text-decoration:line-through;':'');
+  cb.onchange=function(){
+    task.d=cb.checked;
+    span.style.textDecoration=task.d?'line-through':'none';
+    span.style.color=task.d?'var(--dim)':'var(--mid)';
+    if(onchange) onchange();
+  };
+  var del=document.createElement('button');
+  del.textContent='✕'; del.style.cssText='background:none;border:none;color:transparent;cursor:pointer;font-size:.68rem;padding:2px 4px;flex-shrink:0';
+  row.onmouseover=function(){del.style.color='var(--dim)';};
+  row.onmouseout=function(){del.style.color='transparent';};
+  del.onmouseover=function(e){e.stopPropagation();del.style.color='var(--danger)';};
+  (function(idx){del.onclick=function(e){e.stopPropagation();arr.splice(idx,1);if(onchange)onchange();};})(i);
+  row.appendChild(cb); row.appendChild(span); row.appendChild(del);
+  wrap.appendChild(row);
+  if(task.children&&task.children.length){
+    task.children.forEach(function(child,ci){
+      wrap.appendChild(mkTaskRow(child,ci,color,task.children,depth+1,onchange));
+    });
+  }
+  return wrap;
 }
 
 function addTask(box,inp,color) {
   var t=inp.value.trim(); if(!t) return;
   if(!box.tasks) box.tasks=[];
-  box.tasks.push({t:t,d:false});
+  box.tasks.push({t:t,d:false,children:[]});
   inp.value=''; save(); renderCanvas();
-  setTimeout(function(){var i=document.getElementById('task-inp');if(i)i.focus();},0);
 }
 
 // ─── RICH TEXT EDITOR ─────────────────────────────────────────────
@@ -4479,13 +4701,14 @@ function buildEditor(placeholder, htmlContent, onSave) {
       var lines = selText.split('\n').map(function(l){return l.trim();}).filter(function(l){return l;});
       var html = lines.map(function(line) {
         var uid = 'cb' + Date.now() + Math.random().toString(36).slice(2,5);
-        return '<div><input type="checkbox" id="'+uid+'"><label for="'+uid+'"> '+line+'</label></div>';
+        // No "for" attr on label — clicking text places cursor, only checkbox itself toggles
+        return '<div><input type="checkbox" id="'+uid+'"><label> '+line+'</label></div>';
       }).join('');
       document.execCommand('insertHTML', false, html);
     } else {
       var uid = 'cb' + Date.now();
       document.execCommand('insertHTML', false,
-        '<div><input type="checkbox" id="'+uid+'"><label for="'+uid+'"> &nbsp;</label></div>'
+        '<div><input type="checkbox" id="'+uid+'"><label> &nbsp;</label></div>'
       );
     }
     body.focus();
@@ -4543,6 +4766,18 @@ function buildEditor(placeholder, htmlContent, onSave) {
   body.oninput = function() {
     if (onSave) onSave(body.innerHTML);
   };
+
+  // Fix: clicking label text in a checkbox row should place cursor, not toggle checkbox.
+  // We intercept clicks on labels that have a `for` attribute and only allow the toggle
+  // if the click target was the label's own element (not text inside it).
+  body.addEventListener('click', function(e) {
+    var t = e.target;
+    if (t && t.tagName === 'LABEL' && t.htmlFor) {
+      // Remove the for link so the browser doesn't auto-toggle the checkbox.
+      // The checkbox itself still toggles on direct click.
+      t.removeAttribute('for');
+    }
+  }, true); // capture phase so we intercept before browser default
 
   // Update toolbar bold/italic state on selection change
   function updateToolbarState() {
@@ -5401,6 +5636,44 @@ function closeSB(){document.getElementById('sb').classList.remove('open');docume
 document.getElementById('import-file').addEventListener('change', function(e){
   handleImportFile(e.target.files && e.target.files[0]);
 });
+
+// ── PRE-LOAD MERGED SAVE ─────────────────────────────────────────
+(function() {
+  try {
+    var INJECTED_TS = 1775456061844;
+    var existing = localStorage.getItem('sub_v5');
+    if (existing) {
+      try { var ex = JSON.parse(existing); if ((ex._ts||0) >= INJECTED_TS) return; } catch(e) {}
+    }
+    localStorage.setItem('sub_v5', "{\"_ts\": 1775456061844, \"boxes\": {\"teaching\": {\"tasks\": [{\"t\": \"Make Unit Guides\", \"d\": true}, {\"t\": \"Update Google classroom\", \"d\": false}, {\"t\": \"Complete tier 1 content\", \"d\": false}, {\"t\": \"START WORKING ON TIER 2 CONTENT\", \"d\": false}, {\"t\": \"CLEAN UP BEHIND THE DESK\", \"d\": false}], \"projects\": \"Ramhaus [active]\nCurriculum Planning [active]\nStill Life Displays [active]\nInterview Prep [active]\n\", \"notes\": \"Still life displays:\n  Left side -- Left and Right lighting\n  Right side -- Front, Middle, and Back lighting\n\n--- GRADING SCALE ---\n0-4 Scale: 0=F / 1=D / 2=C / 3=B / 4=A\nGrade %: A=75-100 / B=62-74.9 / C=50-61.9 / D=33-49.9 / F=0-32.9\n\nTeaching Framework: INSPIRE -> DESIGN -> CREATE -> PRESENT & REFLECT\n\", \"chapters\": [{\"id\": \"ch-t1\", \"label\": \"Ramhaus\", \"pages\": [{\"id\": \"p-t1a\", \"icon\": \"\ud83d\udcdd\", \"label\": \"Concept\", \"content\": \"\"}, {\"id\": \"p-t1b\", \"icon\": \"\ud83d\uddfa\ufe0f\", \"label\": \"Room Layout\", \"content\": \"\"}, {\"id\": \"p-t1c\", \"icon\": \"\ud83d\udccb\", \"label\": \"To Do\", \"content\": \"\"}]}, {\"id\": \"ch-t3\", \"label\": \"Classroom\", \"pages\": [{\"id\": \"p-t3a\", \"icon\": \"\ud83c\udfa8\", \"label\": \"Supply Stations\", \"content\": \"Pencils, erasers, sharpeners\nSketchbooks / paper\nPaint station\nColored pencils & markers\n\"}, {\"id\": \"p-t3b\", \"icon\": \"\ud83d\uddbc\ufe0f\", \"label\": \"Project Zones\", \"content\": \"\"}, {\"id\": \"p-t3c\", \"icon\": \"\u2728\", \"label\": \"Display Areas\", \"content\": \"\"}, {\"id\": \"p-t3d\", \"icon\": \"\ud83d\udccb\", \"label\": \"Reference Zone\", \"content\": \"\"}, {\"id\": \"p-t3e\", \"icon\": \"\ud83d\udce6\", \"label\": \"Storage\", \"content\": \"\"}]}], \"projectList\": []}, \"coaching\": {\"tasks\": [{\"t\": \"CHECK FAT HEAD PHOTOS\", \"d\": false}, {\"t\": \"EMAIL PHOTOS TO OLIVIA\", \"d\": false}, {\"t\": \"ASK TIBBLES ABOUT WIRELESS MIC\", \"d\": false}], \"projects\": \"Finish Season Strong [active]\nNext Season Planning [planning]\nTeam Merch & Logo [planning]\nTrack Room Organization [active]\nCoaching Handbook [active]\n\", \"notes\": \"Recruiting pitch for next year -- document what worked this season.\n\nH-CREW SYSTEM:\n- Need a 10-man crew -- one at each hurdle stack\n- Preassign athletes -- whoever isn't hurdling\n\nTHE HURDLE COMMANDMENTS:\n- Thou shall not go over a backwards hurdle\n- Thou shall not stutter step\n- Thou shall clap if a teammate falls\n\", \"chapters\": [{\"id\": \"ch-c1\", \"label\": \"This Season\", \"pages\": [{\"id\": \"p-c1a\", \"icon\": \"\ud83d\udcdd\", \"label\": \"Notes\", \"content\": \"\"}, {\"id\": \"p-c1b\", \"icon\": \"\u2705\", \"label\": \"Meet Checklist\", \"content\": \"\"}]}, {\"id\": \"ch-c2\", \"label\": \"Next Season\", \"pages\": [{\"id\": \"p-c2a\", \"icon\": \"\ud83d\udcdd\", \"label\": \"Ideas\", \"content\": \"\"}, {\"id\": \"p-c2b\", \"icon\": \"\ud83d\udc65\", \"label\": \"Recruiting\", \"content\": \"\"}]}, {\"id\": \"ch-c3\", \"label\": \"Admin\", \"pages\": [{\"id\": \"p-c3a\", \"icon\": \"\ud83d\udcb0\", \"label\": \"Track Bank\", \"content\": \"\"}, {\"id\": \"p-c3b\", \"icon\": \"\ud83d\uded2\", \"label\": \"Snack Bar\", \"content\": \"\"}, {\"id\": \"p-c3c\", \"icon\": \"\ud83c\udfa8\", \"label\": \"Merch & Logo\", \"content\": \"\"}]}], \"projectList\": []}, \"art\": {\"tasks\": [{\"t\": \"Learn to love blender more please\", \"d\": false}], \"projects\": \"Personal Art Practice [paused]\nProject Genesis -- Indie Game [active]\nRedondo Rags [active]\nAmanda Logo [active]\nMariah Portrait & Watercolor [active]\nMikey Positive Vibes Logo [active]\nDramamine Dragon Logo [active]\nTattooing Practice [active]\nUnreal + Blender Studies [active]\n\", \"notes\": \"Client Projects:\n- Amanda -- logo\n- Mariah -- portrait on Procreate + watercolor stencil\n- Mikey -- Positive Vibes logo\n- Mother -- cover up tattoo\n- Grandma -- American Flag Mural\n\", \"chapters\": [{\"id\": \"ch-ar1\", \"label\": \"Project Genesis\", \"pages\": [{\"id\": \"p-ar1a\", \"icon\": \"\ud83d\udcdd\", \"label\": \"Concept\", \"content\": \"\"}, {\"id\": \"p-ar1b\", \"icon\": \"\ud83c\udfae\", \"label\": \"Mechanics\", \"content\": \"\"}, {\"id\": \"p-ar1c\", \"icon\": \"\ud83c\udfa8\", \"label\": \"Art Direction\", \"content\": \"\"}]}, {\"id\": \"ch-ar2\", \"label\": \"Oasis Concept\", \"pages\": [{\"id\": \"p-ar2a\", \"icon\": \"\ud83d\udcdd\", \"label\": \"Vision\", \"content\": \"Glen Ivy meets high-end athletic club.\nSpa + gym + lounge.\n\"}, {\"id\": \"p-ar2b\", \"icon\": \"\ud83c\udfd7\ufe0f\", \"label\": \"Design Ideas\", \"content\": \"\"}]}, {\"id\": \"ch-ar3\", \"label\": \"3D Print Hustle\", \"pages\": [{\"id\": \"p-ar3a\", \"icon\": \"\ud83d\udcdd\", \"label\": \"Research\", \"content\": \"\"}, {\"id\": \"p-ar3b\", \"icon\": \"\ud83d\udce6\", \"label\": \"Products\", \"content\": \"\"}]}], \"projectList\": []}, \"house\": {\"tasks\": [{\"t\": \"Get a Pinterest Board going for Tiki Bar Bathroom\", \"d\": false}], \"projects\": \"Garage Design & Build-Out [active]\nCatio Build-Out [active]\nRoom Setup [active]\nNew House Vision Plan [planning]\nTiki Bar Bathroom [someday]\nBuy a House [someday]\n\", \"notes\": \"Room wishlist: Desk / Under table PC mount / Bed frame / Overhead bed lights\nCatio wishlist: More plants / Rug / Fake or real grass / Chairs / Lights\nGarage wishlist: Racks / 3D print station / Running medals display\n\", \"chapters\": [{\"id\": \"ch-h1\", \"label\": \"Garage\", \"pages\": [{\"id\": \"p-h1a\", \"icon\": \"\ud83d\udcdd\", \"label\": \"Plan\", \"content\": \"\"}, {\"id\": \"p-h1b\", \"icon\": \"\ud83d\udce6\", \"label\": \"Storage Ideas\", \"content\": \"\"}]}, {\"id\": \"ch-h2\", \"label\": \"Tiki Bar Bath\", \"pages\": [{\"id\": \"p-h2a\", \"icon\": \"\ud83d\udcdd\", \"label\": \"Inspo\", \"content\": \"\"}, {\"id\": \"p-h2b\", \"icon\": \"\ud83d\udd28\", \"label\": \"Build Plan\", \"content\": \"\"}]}], \"projectList\": []}, \"personal\": {\"tasks\": [{\"t\": \"Ask Casey Adkins if he reached out to SFC King\", \"d\": true}, {\"t\": \"EMAIL EMMA AND DJ DAVID PERE $$$ PDF\", \"d\": false}, {\"t\": \"Loose weight\", \"d\": false}], \"projects\": \"OCS Board Prep [active]\nArmy PT & Fitness [active]\nLand Nav Training [planning]\nFinancial Plan for Deployment [planning]\nEMT School Research [someday]\nGI Bill / VA Strategy [someday]\nGun Upgrades [planning]\nCar Restoration [active]\nWorkout & Fitness [active]\nDental Work [active]\nFinancial Reset [active]\nVegas Trip [planning]\n\", \"notes\": \"--- FROM ARMY ---\nFULL PATH: Army -> EMT School -> Firefighter -> GI Bill/VA -> reset finances -> buy house -> flip houses -> build wealth\n\nASVAB Score: 110+ CHECK\n\nDaily Routine:\n- No social media\n- Get up at 6am\n- Make breakfast / Shower / Get dressed / Brush teeth + fix hair / Drink water / Feed cats\n- Pack for school: lunch / toned paper / coffee / bag\nAM: Get gas / Go for run\nAt school: Prepare for day\nNoon: Grade work / Eat lunch / Update credit sheets\nPM: Plan tomorrow / Unpack and repack / Shower\n\nCar Parts Needed:\n- Front bumper: tie downs / front splitter / bondo to seal cracks\n- Spoiler: sand polish clear coat / 3M double tape back on\n- Fuse box / Lights / Dents / Gross interior wires\n- Alternator / Battery / Sun visor fixture replacement / Fix coolant\n\nDental Plan: Check RUSD insurance -> schedule appointment -> wisdom teeth -> teeth whitening\n\nWorkout Plan: Figure out lifts per day / Numbers for all 9 weeks / Print plans\n\", \"chapters\": [{\"id\": \"ch-a1\", \"label\": \"OCS Prep\", \"pages\": [{\"id\": \"p-a1a\", \"icon\": \"\ud83d\udcdd\", \"label\": \"Overview\", \"content\": \"\"}, {\"id\": \"p-a1b\", \"icon\": \"\ud83d\udccb\", \"label\": \"Study Plan\", \"content\": \"\"}, {\"id\": \"p-a1c\", \"icon\": \"\ud83d\udcaa\", \"label\": \"PT Goals\", \"content\": \"255 LBS CHECK\n38 in waist\n18 min 2 mile\n2 min plank\n50 push ups\n\"}]}, {\"id\": \"ch-a2\", \"label\": \"After Army\", \"pages\": [{\"id\": \"p-a2a\", \"icon\": \"\ud83d\udcdd\", \"label\": \"EMT Research\", \"content\": \"\"}, {\"id\": \"p-a2b\", \"icon\": \"\ud83d\udcb0\", \"label\": \"GI Bill Plan\", \"content\": \"\"}]}, {\"id\": \"ch-p1\", \"label\": \"Car Project\", \"pages\": [{\"id\": \"p-p1a\", \"icon\": \"\ud83d\udcdd\", \"label\": \"Diagnosis\", \"content\": \"Get OBD2 scan first.\n\"}, {\"id\": \"p-p1b\", \"icon\": \"\ud83d\udd27\", \"label\": \"Parts & Costs\", \"content\": \"\"}]}], \"projectList\": [{\"id\": \"prj1\", \"name\": \"Gun Upgrades\", \"status\": \"planning\", \"desc\": \"\"}, {\"id\": \"prj2\", \"name\": \"Car Restoration\", \"status\": \"active\", \"desc\": \"\"}, {\"id\": \"prj3\", \"name\": \"Workout & Fitness\", \"status\": \"active\", \"desc\": \"\"}, {\"id\": \"prj4\", \"name\": \"Dental Work\", \"status\": \"active\", \"desc\": \"\"}, {\"id\": \"prj5\", \"name\": \"Financial Reset\", \"status\": \"active\", \"desc\": \"\"}, {\"id\": \"prj6\", \"name\": \"Vegas Trip\", \"status\": \"planning\", \"desc\": \"\"}]}, \"finance\": {\"tasks\": [], \"projects\": \"Budget Reset [active]\n\", \"notes\": \"Pay Mariah $2700\nUpdate monthly expenses\n\", \"chapters\": [{\"id\": \"ch-f1\", \"label\": \"Budget\", \"pages\": [{\"id\": \"p-f1a\", \"icon\": \"\ud83d\udcca\", \"label\": \"Monthly Budget\", \"content\": \"\"}, {\"id\": \"p-f1b\", \"icon\": \"\ud83d\udccb\", \"label\": \"Bills & Subs\", \"content\": \"\"}]}, {\"id\": \"ch-f2\", \"label\": \"Goals\", \"pages\": [{\"id\": \"p-f2a\", \"icon\": \"\ud83c\udfaf\", \"label\": \"Short Term\", \"content\": \"\"}, {\"id\": \"p-f2b\", \"icon\": \"\ud83c\udfe6\", \"label\": \"Long Term\", \"content\": \"\"}]}], \"projectList\": []}, \"fitness\": {\"tasks\": [], \"projects\": \"Army PT & Fitness [active]\nWorkout & Fitness [active]\n\", \"notes\": \"Workout Plan: Figure out lifts per day / Numbers for all 9 weeks / Print plans\n\", \"chapters\": [{\"id\": \"ch-fit1\", \"label\": \"Program\", \"pages\": [{\"id\": \"p-fit1a\", \"icon\": \"\ud83d\udcaa\", \"label\": \"Program\", \"content\": \"\"}]}, {\"id\": \"ch-fit2\", \"label\": \"Tracking\", \"pages\": [{\"id\": \"p-fit2a\", \"icon\": \"\ud83d\udcca\", \"label\": \"Metrics\", \"content\": \"\"}, {\"id\": \"p-fit2b\", \"icon\": \"\ud83d\udcdd\", \"label\": \"Notes\", \"content\": \"\"}]}], \"projectList\": []}, \"cookbook\": {\"tasks\": [], \"projects\": \"Meal Prep System [active]\n\", \"notes\": \"Protein sources: steak, chicken, smoked salmon, beef pucks\nSnacks: protein bars, granola bars\n\", \"chapters\": [{\"id\": \"ch-ck1\", \"label\": \"Recipes\", \"pages\": [{\"id\": \"p-ck1a\", \"icon\": \"\ud83c\udf73\", \"label\": \"Favorites\", \"content\": \"\"}, {\"id\": \"p-ck1b\", \"icon\": \"\ud83e\udd69\", \"label\": \"Protein Meals\", \"content\": \"\"}]}, {\"id\": \"ch-ck2\", \"label\": \"Meal Plan\", \"pages\": [{\"id\": \"p-ck2a\", \"icon\": \"\ud83d\udcc5\", \"label\": \"Weekly Menu\", \"content\": \"\"}, {\"id\": \"p-ck2b\", \"icon\": \"\ud83d\uded2\", \"label\": \"Staples List\", \"content\": \"\"}]}], \"projectList\": []}}, \"fitness\": {\"currentBlock\": 0, \"currentDay\": \"monday\", \"currentPage\": \"fit-mealprep\", \"pages\": [{\"id\": \"fit-program\", \"icon\": \"\ud83d\udcaa\", \"label\": \"Program\", \"type\": \"program\"}, {\"id\": \"fit-mealprep\", \"icon\": \"\ud83e\udd57\", \"label\": \"Meal Prep\", \"type\": \"rich\", \"content\": \"\"}, {\"id\": \"fit-metrics\", \"icon\": \"\ud83d\udcca\", \"label\": \"Metrics\", \"type\": \"rich\", \"content\": \"\"}, {\"id\": \"fit-notes\", \"icon\": \"\ud83d\udcdd\", \"label\": \"Notes\", \"type\": \"rich\", \"content\": \"\"}], \"checked\": {}, \"dayNotes\": {}}, \"lists\": {\"lastReset\": \"2026-04-06\", \"chores\": [{\"id\": \"c1\", \"t\": \"Clear & refill litter\", \"d\": false}, {\"id\": \"c2\", \"t\": \"Take out trash\", \"d\": false}, {\"id\": \"c3\", \"t\": \"Do dishes\", \"d\": false}, {\"id\": \"c4\", \"t\": \"Clean up room\", \"d\": false}, {\"id\": \"c5\", \"t\": \"Do laundry\", \"d\": false}, {\"id\": \"c6\", \"t\": \"Fold clothes\", \"d\": false}, {\"id\": \"c7\", \"t\": \"Wash car\", \"d\": false}, {\"id\": \"c8\", \"t\": \"Check mail\", \"d\": false}, {\"id\": \"c9\", \"t\": \"Sweep the floors\", \"d\": false}, {\"id\": \"c10\", \"t\": \"Get gas\", \"d\": false}, {\"id\": \"c11\", \"t\": \"Meal prep\", \"d\": false}, {\"id\": \"c12\", \"t\": \"Grocery shop\", \"d\": false}], \"grocery\": [{\"id\": \"g3\", \"t\": \"Steak\", \"d\": false, \"cat\": \"Protein\"}, {\"id\": \"g4\", \"t\": \"Chicken\", \"d\": false, \"cat\": \"Protein\"}, {\"id\": \"g5\", \"t\": \"Smoked salmon\", \"d\": false, \"cat\": \"Protein\"}, {\"id\": \"g7\", \"t\": \"Protein shakes\", \"d\": false, \"cat\": \"Supplements\"}, {\"id\": \"g9\", \"t\": \"Uncrustables\", \"d\": false, \"cat\": \"Snacks\"}, {\"id\": \"g11\", \"t\": \"Granola bars\", \"d\": false, \"cat\": \"Snacks\"}, {\"id\": \"g12\", \"t\": \"Beef pucks\", \"d\": false, \"cat\": \"Protein\"}, {\"id\": \"g16\", \"t\": \"Veggies\", \"d\": false, \"cat\": \"Produce\"}, {\"id\": \"g17\", \"t\": \"Cold brew\", \"d\": false, \"cat\": \"Drinks\"}], \"quotes\": [{\"id\": \"q1\", \"t\": \"So who are you to tell me I ain't living right\"}, {\"id\": \"q2\", \"t\": \"I love you more than I hate me\"}, {\"id\": \"q7\", \"t\": \"I CANT DROWN MY DEMONS THEY KNOW HOW TO SWIM\"}, {\"id\": \"q19\", \"t\": \"comparison is the thief of joy\"}, {\"id\": \"q20\", \"t\": \"happiness is reality minus expectations\"}, {\"id\": \"q33\", \"t\": \"Being an artist is the best excuse for being crazy\"}, {\"id\": \"q40\", \"t\": \"Trespass in the domain of the gods\"}, {\"id\": \"q43\", \"t\": \"Do not pray for easy lives! Pray to be stronger men\"}, {\"id\": \"q45\", \"t\": \"The Less You care The More You Live\"}], \"media\": {\"movies\": [\"A Bronx Tale\", \"Downsizing\", \"Batman Ninja\", \"Enemy at the Gates\", \"In Time (2011)\", \"Home Front\", \"Yesterday\", \"48 HRS\", \"Paul\", \"CB4\", \"Stripes\", \"I Care a Lot\", \"The Bike Riders\", \"They Live\", \"War Machine\", \"Naruto Movies\"], \"games\": [\"Skate 3 -- PS3\", \"SSX Tricky -- GameCube\", \"Army of Two -- PS3\", \"Need for Speed: Underground 2 -- PS2\"], \"gear\": {\"Game Cube\": [\"AV cables\", \"Controller\"], \"PS1\": [\"Power cables\", \"AV cables\"], \"PS2\": [\"System\", \"Power cables\", \"AV cables\"], \"PS3\": [\"HDMI cable\", \"Power cable\"]}, \"gearChecked\": {\"Game Cube\": {}, \"PS1\": {}, \"PS2\": {}, \"PS3\": {}}}, \"wishlist\": [{\"id\": \"w1\", \"t\": \"Gun light & laser combo\", \"d\": false, \"p\": \"high\"}, {\"id\": \"w2\", \"t\": \"Gun case\", \"d\": false, \"p\": \"high\"}, {\"id\": \"w3\", \"t\": \"Litter bot\", \"d\": false, \"p\": \"med\"}, {\"id\": \"w4\", \"t\": \"Automatic cat feeder\", \"d\": false, \"p\": \"med\"}, {\"id\": \"w5\", \"t\": \"Better phone case\", \"d\": false, \"p\": \"low\"}, {\"id\": \"w6\", \"t\": \"More workout shorts\", \"d\": false, \"p\": \"low\"}]}, \"homeTabOrder\": [\"monthly\", \"weekly\", \"daily\", \"overview\", \"dump\"], \"dboxOpen\": {\"teaching\": true, \"coaching\": true, \"art\": true, \"__unsorted__\": true, \"house\": true, \"personal\": true}, \"unsortedTasks\": [{\"t\": \"Turn in old iPhone\", \"d\": false}, {\"t\": \"Check birth certificate for time of birth\", \"d\": false}, {\"t\": \"Add nutritional component to the Fitness box\", \"d\": false}], \"calEvents\": [{\"id\": \"ev1\", \"title\": \"OCS BOARDS\", \"date\": \"2026-04-29\", \"endDate\": \"2026-04-29\", \"colorIdx\": 1}, {\"id\": \"ev2\", \"title\": \"RVL FINALS\", \"date\": \"2026-04-29\", \"endDate\": \"2026-04-29\", \"colorIdx\": 5}, {\"id\": \"ev3\", \"title\": \"TIER 1\", \"date\": \"2026-04-08\", \"endDate\": \"2026-04-08\", \"colorIdx\": 3}, {\"id\": \"ev4\", \"title\": \"TIER 2\", \"date\": \"2026-04-17\", \"endDate\": \"2026-04-17\", \"colorIdx\": 3}, {\"id\": \"ev5\", \"title\": \"TIER 3\", \"date\": \"2026-04-30\", \"endDate\": \"2026-04-30\", \"colorIdx\": 3}, {\"id\": \"ev6\", \"title\": \"JURUPA VALLEY\", \"date\": \"2026-04-09\", \"endDate\": \"2026-04-09\", \"colorIdx\": 5}, {\"id\": \"ev7\", \"title\": \"ARCADIA\", \"date\": \"2026-04-11\", \"endDate\": \"2026-04-11\", \"colorIdx\": 5}, {\"id\": \"ev8\", \"title\": \"BIG MEET\", \"date\": \"2026-04-11\", \"endDate\": \"2026-04-11\", \"colorIdx\": 5}, {\"id\": \"ev9\", \"title\": \"MT SAC RELAYS\", \"date\": \"2026-04-18\", \"endDate\": \"2026-04-18\", \"colorIdx\": 5}, {\"id\": \"ev10\", \"title\": \"PATRIOT\", \"date\": \"2026-04-22\", \"endDate\": \"2026-04-22\", \"colorIdx\": 5}, {\"id\": \"ev11\", \"title\": \"RUBIDOUX\", \"date\": \"2026-04-16\", \"endDate\": \"2026-04-16\", \"colorIdx\": 5}, {\"id\": \"ev12\", \"title\": \"STAFF MEETING\", \"date\": \"2026-04-15\", \"endDate\": \"2026-04-15\", \"colorIdx\": 2}, {\"id\": \"ev13\", \"title\": \"TAX DAY\", \"date\": \"2026-04-15\", \"endDate\": \"2026-04-15\", \"colorIdx\": 7}, {\"id\": \"ev14\", \"title\": \"JAKES FIGHT\", \"date\": \"2026-04-18\", \"endDate\": \"2026-04-18\", \"colorIdx\": 4}], \"timeBlocks\": [], \"dailyData\": {}, \"weeklyData\": {}, \"ui\": {\"sbWidth\": 196, \"rsbWidth\": 180, \"sbCollapsed\": false, \"rsbCollapsed\": false}}");
+  } catch(e) {}
+})();
+
+// ── GLOBAL TAB KEY FIX ──────────────────────────────────────────
+// Prevent Tab from shifting focus out of textareas (inputs use their own handlers).
+// Skip checkboxes and any element that handles Tab itself.
+document.addEventListener('keydown', function(e) {
+  if (e.key !== 'Tab') return;
+  var el2 = document.activeElement;
+  if (!el2) return;
+  // Only handle plain text inputs and textareas
+  if (el2.tagName === 'INPUT' && el2.type !== 'text' && el2.type !== 'search' && el2.type !== '') return;
+  if (el2.tagName !== 'INPUT' && el2.tagName !== 'TEXTAREA') return;
+  // Skip the task textarea — it has its own Tab handler for indentation
+  if (el2.id === 'task-inp') return;
+  // Skip contenteditable — handled by the rich text editor
+  if (el2.isContentEditable) return;
+  e.preventDefault();
+  try {
+    var start = el2.selectionStart;
+    var end   = el2.selectionEnd;
+    var spaces = '    ';
+    el2.value = el2.value.substring(0, start) + spaces + el2.value.substring(end);
+    el2.selectionStart = el2.selectionEnd = start + spaces.length;
+    el2.dispatchEvent(new Event('input', { bubbles: true }));
+  } catch(err) {}
+}, true);
+
 initState();
 document.getElementById('tb-date').textContent=new Date().toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'}).toUpperCase();
 renderApp();
