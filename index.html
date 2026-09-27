@@ -230,7 +230,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);dis
 .feed-board{flex:1;overflow-y:auto;padding:20px 30px 70px;column-count:4;column-gap:16px}
 @media(max-width:1250px){.feed-board{column-count:3}}
 @media(max-width:900px){.feed-board{column-count:2}}
-@media(max-width:560px){.feed-board{column-count:1}}
+@media(max-width:560px){.feed-board{column-count:1}.feed-searchrow{flex-wrap:wrap}.feed-search{flex:1 1 100%}}
 .note{break-inside:avoid;-webkit-column-break-inside:avoid;page-break-inside:avoid;display:inline-block;width:100%;
   margin:0 0 14px;border-radius:10px;padding:12px 14px 10px;position:relative;
   background:rgba(12,12,14,.72);border:1px solid var(--nc,#5cb87a);
@@ -281,6 +281,10 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);dis
   letter-spacing:1px;text-transform:uppercase;padding:4px 9px;border-radius:5px;cursor:pointer}
 .feed-vbtn.on{background:var(--gg);color:var(--gold)}
 .feed-vbtn:hover{color:var(--text)}
+.feed-sort{flex-shrink:0;color:var(--gold);border:1px solid var(--br);background:var(--s2)}
+.feed-sort:disabled{opacity:.4;cursor:default}
+.note.sorted{opacity:.6}
+.note-sorted{font-size:.58rem;font-family:'Rajdhani',sans-serif;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--ok);cursor:pointer}
 /* ── attachments ── */
 .note-atts{display:flex;flex-direction:column;gap:7px;margin:9px 0 2px;position:relative;z-index:1}
 .note-img{width:100%;border-radius:7px;display:block;cursor:zoom-in;border:1px solid rgba(255,255,255,.08)}
@@ -5710,7 +5714,7 @@ function renderDump(cv){
 
   // ── Toolbar (search + tag chips) ──
   var tbar=el('div','feed-toolbar');
-  var searchRow=el('div',''); searchRow.style.cssText='display:flex;gap:8px;align-items:center';
+  var searchRow=el('div','feed-searchrow'); searchRow.style.cssText='display:flex;gap:8px;align-items:center';
   var search=document.createElement('input'); search.className='feed-search'; search.type='text'; search.placeholder='Search your feed…';
   search.value=_feedQuery;
   search.oninput=function(){ _feedQuery=search.value; renderList(); };
@@ -5734,7 +5738,21 @@ function renderDump(cv){
     storeFill.style.width=si.pct+'%';
     storeFill.style.background = si.pct>85 ? 'var(--danger)' : (si.pct>65 ? 'var(--gold)' : 'var(--ok)');
   }
-  searchRow.appendChild(search); searchRow.appendChild(views); searchRow.appendChild(store);
+  // AI sort: files notes not yet sorted into boxes; they stay on the board marked sorted
+  var sortBtn=el('button','feed-vbtn feed-sort'); sortBtn.title='AI-sort unsorted notes into your boxes';
+  function unsortedNotes(){ return S.feed.filter(function(e){ return !e.sorted && String(e.t||'').trim(); }); }
+  function syncSortBtn(){ var n=unsortedNotes().length; sortBtn.disabled=!n; sortBtn.textContent='⚡ Sort'+(n?' '+n:''); }
+  sortBtn.onclick=async function(){
+    var notes=unsortedNotes(); if(!notes.length) return;
+    sortBtn.disabled=true; sortBtn.textContent='Reading…';
+    var items=await aiSortDump(notes.map(function(e){ return e.t; }).join('\n\n---\n\n'), function(m){ noteMsg.textContent=m; });
+    if(!items){ syncSortBtn(); return; }
+    showSortPreview(items, function(){
+      var now=Date.now(); notes.forEach(function(e){ e.sorted=now; });
+      save(); renderList(); noteMsg.textContent='✓ Sent to boxes — notes marked sorted.';
+    }, syncSortBtn);
+  };
+  searchRow.appendChild(search); searchRow.appendChild(views); searchRow.appendChild(sortBtn); searchRow.appendChild(store);
   var tagbar=el('div','feed-tagbar');
   tbar.appendChild(searchRow); tbar.appendChild(tagbar);
   outer.appendChild(tbar);
@@ -5781,7 +5799,7 @@ function renderDump(cv){
   function buildNote(e){
     var col=noteColor(e);
     var szClass = e.sz===2?' big':(e.sz===0?' small':'');
-    var card=el('div','note'+(e.pin?' pinned':'')+szClass);
+    var card=el('div','note'+(e.pin?' pinned':'')+(e.sorted?' sorted':'')+szClass);
     card.style.setProperty('--nc', col);
 
     // colour dot — cycles the colour of this note's first tag (or the note itself)
@@ -5804,6 +5822,12 @@ function renderDump(cv){
     var head=el('div','note-head');
     var time=el('div','note-time'); time.textContent=feedRelTime(e.ts); time.title=new Date(e.ts).toLocaleString();
     head.appendChild(time);
+    if(e.sorted){
+      var srt=el('div','note-sorted'); srt.textContent='✓ sorted';
+      srt.title='Filed into boxes '+new Date(e.sorted).toLocaleDateString()+' — tap to unmark';
+      srt.onclick=function(ev){ ev.stopPropagation(); delete e.sorted; save(); renderList(); };
+      head.appendChild(srt);
+    }
     var tgs=feedTags(e.t);
     if(tgs.length){
       var chips=el('div','note-chips');
@@ -5878,6 +5902,7 @@ function renderDump(cv){
   function renderList(){
     renderTagbar();
     syncViewButtons();
+    syncSortBtn();
     syncStore();
     var view=S.feedView||'board';
     list.className='feed-board'+(view==='list'?' view-list':'');
@@ -6079,37 +6104,87 @@ function setDumpStatus(msg) {
   if (st) st.textContent = msg;
 }
 
-async function autoSort(btn) {
-  var body = document.querySelector('#dump-outer .editor-body');
-  var dumpText = body ? (body.innerText || body.textContent || '').trim() : '';
-  if (!dumpText) { setDumpStatus('Nothing to sort!'); return; }
-  btn.disabled = true; btn.textContent = 'Reading...';
-  setDumpStatus('AI is reading your dump...');
+// Anthropic API key — kept in its own localStorage slot on this device only,
+// never inside S, so it is never pushed to the GitHub data file.
+var AI_KEY_LS = 'subroutine_ai_key';
+function getAIKey() { try { return localStorage.getItem(AI_KEY_LS) || ''; } catch(e) { return ''; } }
+function setAIKey(k) { try { if (k) localStorage.setItem(AI_KEY_LS, k); else localStorage.removeItem(AI_KEY_LS); } catch(e) {} }
+function askAIKey() {
+  return new Promise(function(res) {
+    uiPrompt('Auto-Sort uses the Claude API, which needs an API key from console.anthropic.com (Settings → API Keys; API use is billed separately from a Claude subscription).\n\nThe key is saved on this device only and never synced to GitHub.', '',
+      function(v) { setAIKey(v); res(v); },
+      { title: 'Claude API key', okLabel: 'Save', placeholder: 'sk-ant-...', allowEmpty: true, onCancel: function(){ res(''); } });
+  });
+}
+
+// Sends brain-dump text to Claude; resolves to [{box, type, text}] or null (status explains why)
+async function aiSortDump(dumpText, setStatus) {
+  var apiKey = getAIKey() || await askAIKey();
+  if (!apiKey) { setStatus('Sorting needs a Claude API key.'); return null; }
+  setStatus('AI is reading your notes…');
   try {
-    var boxNames = 'army, teaching, coaching, art, house, personal';
-    if (S.customBoxes) S.customBoxes.forEach(function(cb){ boxNames += ', ' + cb.id; });
-    var sysPrompt = 'You are a life organizer for Zachary: high school art teacher, track & field head coach, Army OCS candidate, artist, game dev. His boxes: ' + boxNames + '. Read his brain dump and sort every distinct item — preserve full content verbatim, do NOT summarize or condense anything. For each item decide: which box it belongs to, and what TYPE: todo (action/task), note (info/ideas/reference/lists/details to keep in full), or project (named initiative). FORMAT RULES — todos must start with "[ ] ", notes must start with "• " and use "\n• " for sub-items, projects are just the name. Group related items into one note entry rather than splitting them. Return ONLY valid JSON no markdown: {"sorted":[{"box":"coaching","type":"todo","text":"[ ] Make coaching card 5x8 double sided"},{"box":"coaching","type":"note","text":"• Hurdle Commandments:\n• Thou shall not go over a backwards hurdle\n• Thou shall not stutter step"},{"box":"art","type":"project","text":"Dramamine Dragon Logo"}]}';
+    var boxIds = ['army', 'teaching', 'coaching', 'art', 'house', 'personal'];
+    if (S.customBoxes) S.customBoxes.forEach(function(cb){ if (boxIds.indexOf(cb.id) < 0) boxIds.push(cb.id); });
+    var boxNames = boxIds.join(', ');
+    var sysPrompt = 'You are a life organizer for Zachary: high school art teacher, track & field head coach, Army OCS candidate, artist, game dev. His boxes: ' + boxNames + '. Read his brain dump and sort every distinct item — preserve full content verbatim, do NOT summarize or condense anything. For each item decide: which box it belongs to, and what TYPE: todo (action/task), note (info/ideas/reference/lists/details to keep in full), or project (named initiative). FORMAT RULES — todos must start with "[ ] ", notes must start with "• " and use "\n• " for sub-items, projects are just the name. Group related items into one note entry rather than splitting them. Example output: {"sorted":[{"box":"coaching","type":"todo","text":"[ ] Make coaching card 5x8 double sided"},{"box":"coaching","type":"note","text":"• Hurdle Commandments:\n• Thou shall not go over a backwards hurdle\n• Thou shall not stutter step"},{"box":"art","type":"project","text":"Dramamine Dragon Logo"}]}';
+    var schema = {
+      type: 'object',
+      properties: {
+        sorted: { type: 'array', items: {
+          type: 'object',
+          properties: {
+            box:  { type: 'string', enum: boxIds },
+            type: { type: 'string', enum: ['todo', 'note', 'project'] },
+            text: { type: 'string' }
+          },
+          required: ['box', 'type', 'text'],
+          additionalProperties: false
+        } }
+      },
+      required: ['sorted'],
+      additionalProperties: false
+    };
     var resp = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST', headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({ model: 'claude-sonnet-4-20250514', max_tokens: 8000,
-        system: sysPrompt, messages: [{role:'user', content: 'Brain dump:\n\n' + dumpText}] })
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json',
+        'x-api-key': apiKey,
+        'anthropic-version': '2023-06-01',
+        'anthropic-dangerous-direct-browser-access': 'true',
+        'anthropic-beta': 'server-side-fallback-2026-07-01'
+      },
+      body: JSON.stringify({
+        model: 'claude-opus-5',
+        max_tokens: 16000,
+        fallbacks: 'default',
+        output_config: { format: { type: 'json_schema', schema: schema } },
+        system: sysPrompt,
+        messages: [{ role: 'user', content: 'Brain dump:\n\n' + dumpText }]
+      })
     });
-    var data = await resp.json();
-    var raw = (data.content && data.content[0] && data.content[0].text) ? data.content[0].text : '';
-    raw = raw.replace(/```json|```/g,'').trim();
-    var parsed = JSON.parse(raw);
+    var data = await resp.json().catch(function(){ return {}; });
+    if (!resp.ok) {
+      if (resp.status === 401) { setAIKey(''); setStatus('API key was rejected — hit Sort to enter a new one.'); }
+      else setStatus('Sort failed (' + resp.status + '): ' + ((data.error && data.error.message) || 'try again.'));
+      return null;
+    }
+    if (data.stop_reason === 'refusal') { setStatus('Claude declined to sort these notes.'); return null; }
+    if (data.stop_reason === 'max_tokens') { setStatus('Too much to sort in one go — mark some notes sorted first.'); return null; }
+    // The reply can start with a thinking block — read the text block
+    var textBlock = (data.content || []).filter(function(b){ return b.type === 'text'; })[0];
+    var parsed = JSON.parse(textBlock ? textBlock.text : '{}');
     var items = parsed.sorted || [];
-    if (!items.length) { setDumpStatus('Nothing recognizable.'); btn.disabled=false; btn.textContent='\u26a1 Auto-Sort'; return; }
-    showSortPreview(items, btn, body);
-    setDumpStatus('');
+    if (!items.length) { setStatus('Nothing recognizable.'); return null; }
+    setStatus('');
+    return items;
   } catch(e2) {
     console.error(e2);
-    setDumpStatus('Sort failed. Check connection and try again.');
-    btn.disabled=false; btn.textContent='\u26a1 Auto-Sort';
+    setStatus('Sort failed. Check connection and try again.');
+    return null;
   }
 }
 
-function showSortPreview(items, sortBtn, dumpBody) {
+function showSortPreview(items, onSend, onClose) {
   var old = document.getElementById('sort-preview-overlay');
   if (old) old.remove();
   var metaMap = {};
@@ -6133,7 +6208,7 @@ function showSortPreview(items, sortBtn, dumpBody) {
   phT.textContent='Sort Preview \u2014 '+items.length+' items across '+Object.keys(grouped).length+' boxes';
   var cancelBtn = el('button',''); cancelBtn.textContent='\u2715 Cancel';
   cancelBtn.style.cssText='background:none;border:1px solid var(--br);border-radius:7px;color:var(--mid);font-family:Rajdhani,sans-serif;font-size:.78rem;font-weight:600;letter-spacing:1px;padding:6px 14px;cursor:pointer;transition:all .15s';
-  cancelBtn.onclick=function(){overlay.remove();sortBtn.disabled=false;sortBtn.textContent='\u26a1 Auto-Sort';};
+  cancelBtn.onclick=function(){overlay.remove();onClose();};
   ph.appendChild(phT); ph.appendChild(cancelBtn); panel.appendChild(ph);
 
   var pb = el('div',''); pb.style.cssText='overflow-y:auto;max-height:60vh;padding:20px 24px;display:flex;flex-direction:column;gap:14px';
@@ -6176,13 +6251,12 @@ function showSortPreview(items, sortBtn, dumpBody) {
   sendBtn.textContent='\u2192 Send to Boxes';
   sendBtn.onclick=function(){
     sendSortedToBoxes(grouped);
-    overlay.remove(); sortBtn.disabled=false; sortBtn.textContent='\u26a1 Auto-Sort';
-    dumpBody.innerHTML=''; S.dump=''; save(); renderCanvas();
+    overlay.remove(); onSend(); onClose();
   };
   var discardBtn=el('button','');
   discardBtn.style.cssText='background:var(--s3);color:var(--mid);border:1px solid var(--br);border-radius:9px;font-family:Rajdhani,sans-serif;font-size:.83rem;font-weight:600;padding:12px 20px;cursor:pointer;transition:all .15s';
   discardBtn.textContent='Discard';
-  discardBtn.onclick=function(){overlay.remove();sortBtn.disabled=false;sortBtn.textContent='\u26a1 Auto-Sort';};
+  discardBtn.onclick=function(){overlay.remove();onClose();};
   pf.appendChild(sendBtn); pf.appendChild(discardBtn); panel.appendChild(pf);
   overlay.appendChild(panel); document.body.appendChild(overlay);
 }
@@ -6206,11 +6280,7 @@ function sendSortedToBoxes(grouped) {
         lines.forEach(function(line) {
           var l = line.trim();
           if (!l) return;
-          if (l.startsWith('\u2022') || l.startsWith('•')) {
-            noteLines.push('<p>' + l + '</p>');
-          } else {
-            noteLines.push('<p>' + l + '</p>');
-          }
+          noteLines.push('<p>' + l.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;') + '</p>');
         });
       });
       box.notes = (box.notes||'') + '\n' + noteLines.join('');
