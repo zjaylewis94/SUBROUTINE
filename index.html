@@ -7774,7 +7774,14 @@ initSidebarControls();
 (function(){
   var CFG_KEY = 'subroutine_gh_cfg';
   var LS_KEY  = 'sub_v5';
-  function getCfg(){ try{ return JSON.parse(localStorage.getItem(CFG_KEY)||'{}'); }catch(e){ return {}; } }
+  function getCfg(){
+    var c; try{ c = JSON.parse(localStorage.getItem(CFG_KEY)||'{}'); }catch(e){ return {}; }
+    // Data moved to the private repo — switch any device still pointed at the public one
+    if(String(c.owner||'').toLowerCase()==='zjaylewis94' && String(c.repo||'').toLowerCase()==='subroutine'){
+      c.repo = 'subroutine-data'; delete c._sha; setCfg(c);
+    }
+    return c;
+  }
   function setCfg(c){ try{ localStorage.setItem(CFG_KEY, JSON.stringify(c)); }catch(e){} }
   function ghHeaders(token){ return { 'Authorization':'Bearer '+token, 'Accept':'application/vnd.github+json', 'Content-Type':'application/json' }; }
   function apiURL(c){ return 'https://api.github.com/repos/'+c.owner+'/'+c.repo+'/contents/'+(c.path||'subroutine_data.json')+(c.branch?('?ref='+c.branch):''); }
