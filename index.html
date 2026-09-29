@@ -727,21 +727,21 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);dis
 .gp-clear{font-family:'Rajdhani',sans-serif;font-size:.58rem;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:var(--dim);cursor:pointer;background:none;border:none;padding:2px 5px;border-radius:4px}
 .gp-clear:hover{color:var(--gold);background:var(--gg)}
 .gp-list{display:flex;flex-direction:column;gap:1px;margin-top:3px}
-.gp-item{display:flex;align-items:center;gap:7px;padding:5px 4px;border-bottom:1px solid var(--br);border-radius:6px;background:transparent;transition:background .12s}
+.gp-item{display:flex;align-items:flex-start;gap:7px;padding:5px 4px;border-bottom:1px solid var(--br);border-radius:6px;background:transparent;transition:background .12s}
 .gp-item.gp-dragging{background:var(--gg);opacity:.9;box-shadow:0 2px 8px rgba(0,0,0,.3)}
 .gp-item.gp-done .gp-text{text-decoration:line-through;color:var(--dim)}
 .gp-item.gp-done .gp-num{color:var(--dim)}
-.gp-handle{cursor:grab;color:var(--dim);font-size:.9rem;line-height:1;flex-shrink:0;padding:2px 1px;touch-action:none;user-select:none;letter-spacing:-2px}
+.gp-handle{cursor:grab;color:var(--dim);font-size:.9rem;line-height:1;flex-shrink:0;padding:3px 1px 2px;touch-action:none;user-select:none;letter-spacing:-2px}
 .gp-handle:active{cursor:grabbing;color:var(--gold)}
-.gp-num{font-family:'Rajdhani',sans-serif;font-size:.72rem;font-weight:700;color:var(--gold);width:15px;text-align:right;flex-shrink:0}
-.gp-check{width:16px;height:16px;border-radius:50%;border:2px solid var(--br2);flex-shrink:0;cursor:pointer;accent-color:var(--gold)}
-.gp-text{flex:1;background:transparent;border:none;outline:none;color:var(--text);font-family:'DM Sans',sans-serif;font-size:.82rem;caret-color:var(--gold);min-width:0}
+.gp-num{font-family:'Rajdhani',sans-serif;font-size:.72rem;font-weight:700;color:var(--gold);width:15px;text-align:right;flex-shrink:0;line-height:1.45;padding-top:1px}
+.gp-check{width:16px;height:16px;border-radius:50%;border:2px solid var(--br2);flex-shrink:0;cursor:pointer;accent-color:var(--gold);margin-top:2px}
+.gp-text{flex:1;background:transparent;border:none;outline:none;color:var(--text);font-family:'DM Sans',sans-serif;font-size:.82rem;caret-color:var(--gold);min-width:0;line-height:1.45;padding:0;margin:0;resize:none;overflow:hidden;white-space:pre-wrap;overflow-wrap:anywhere;display:block;height:1.45em}
 .gp-text::placeholder{color:var(--dim)}
-.gp-del{flex-shrink:0;cursor:pointer;color:var(--dim);font-size:1rem;line-height:1;padding:0 3px;opacity:.45;transition:opacity .12s,color .12s}
+.gp-del{flex-shrink:0;cursor:pointer;color:var(--dim);font-size:1rem;line-height:1.2;padding:0 3px;opacity:.45;transition:opacity .12s,color .12s}
 .gp-del:hover{opacity:1;color:var(--danger)}
-.gp-add-row{display:flex;align-items:center;gap:7px;padding:7px 4px 4px}
-.gp-add-plus{font-family:'Rajdhani',sans-serif;font-size:.95rem;font-weight:700;color:var(--gold);width:15px;text-align:right;flex-shrink:0}
-.gp-add-inp{flex:1;background:transparent;border:none;outline:none;color:var(--text);font-family:'DM Sans',sans-serif;font-size:.82rem;caret-color:var(--gold);border-bottom:1px dashed var(--br2);padding-bottom:3px}
+.gp-add-row{display:flex;align-items:flex-start;gap:7px;padding:7px 4px 4px}
+.gp-add-plus{font-family:'Rajdhani',sans-serif;font-size:.95rem;font-weight:700;color:var(--gold);width:15px;text-align:right;flex-shrink:0;line-height:1.25}
+.gp-add-inp{flex:1;background:transparent;border:none;outline:none;color:var(--text);font-family:'DM Sans',sans-serif;font-size:.82rem;caret-color:var(--gold);border-bottom:1px dashed var(--br2);padding:0 0 3px;margin:0;min-width:0;line-height:1.45;resize:none;overflow:hidden;white-space:pre-wrap;overflow-wrap:anywhere;display:block;height:calc(1.45em + 3px)}
 .gp-add-inp::placeholder{color:var(--dim)}
 .gp-empty{font-size:.74rem;color:var(--dim);font-style:italic;padding:7px 4px}
 
@@ -1216,6 +1216,34 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);dis
   .plist-book-head,.dmm-book-head{padding-top:11px;padding-bottom:11px}
 }
 
+/* ── NARROW WINDOWS + PHONES (≤900px) ──
+   The left menu slides in from ☰ instead of being locked open, and the top bar stays pinned so
+   ☰ (and Home) is one tap away however far down you've scrolled. A scrolling <body> kept the
+   top bar from pinning, so the body is left to the page's own scroll. */
+@media(max-width:900px){
+  body{overflow:visible}
+  #topbar{position:sticky;top:0;z-index:80;flex-wrap:wrap;height:auto;min-height:0;padding:8px 12px;gap:6px 10px}
+  #logo{flex:0 0 auto}
+  #tb-date{order:2;width:auto;flex:0 1 auto;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  #sync-status{order:3;white-space:nowrap}
+  #tb-right{order:4;width:auto;flex:0 0 auto;margin-left:auto;flex-wrap:wrap;justify-content:flex-end;overflow:visible;padding-bottom:0}
+  #tb-right > *{flex-shrink:0}
+  #export-btn,#import-btn,#reset-btn,.mt-btn{min-height:32px}
+  #sb{position:fixed;left:0;top:var(--tbh,50px);bottom:0;width:min(86vw,300px)!important;padding-top:0;transform:translateX(-100%);z-index:70;border-right:1px solid var(--br)}
+  #sb.open{transform:translateX(0);box-shadow:8px 0 24px rgba(0,0,0,.45)}
+  #sb-overlay{top:var(--tbh,50px);z-index:65}
+  #sb-overlay.open{display:block}
+  #sb-inner{overscroll-behavior:contain}
+}
+@media(max-width:680px){
+  /* two rows on every page: ☰ logo · date · sync / buttons */
+  #topbar{flex-wrap:wrap;row-gap:6px}
+  #topbar::after{content:'';order:4;flex-basis:100%;height:0}
+  #tb-date{order:2;flex:1 1 0;text-align:right}
+  #sync-status{order:3;min-width:0;overflow:hidden;text-overflow:ellipsis}
+  #tb-right{order:5;flex:1 1 100%;margin-left:0;row-gap:6px}
+}
+html.sb-lock{overflow:hidden}
 </style>
 </head>
 <body>
@@ -2040,7 +2068,7 @@ function makeRow(id, label, color) {
     else if (id==='lists-media')    { curTab='lists'; curSec='media';    curChapter=null; curPage=null; }
     else { curTab=id; curSec='tasks'; curChapter=null; curPage=null; }
     buildSB(); buildTabBar(); buildRSB(); renderCanvas();
-    if (window.innerWidth<=680) closeSB();
+    if (window.innerWidth<=900) closeSB();
   };
   return row;
 }
@@ -2319,6 +2347,7 @@ function applySidebarLayout() {
     if (rsbc) rsbc.textContent='▶';
     return;
   }
+  if (sb.classList.contains('open')) closeSB();
 
   sb.style.width = clamp(S.ui.sbWidth||196, 150, 420) + 'px';
   rsb.style.width = clamp(S.ui.rsbWidth||180, 140, 380) + 'px';
@@ -2349,6 +2378,11 @@ function initSidebarControls() {
   var rsbHandle = document.getElementById('rsb-resize');
   var sbCollapse = document.getElementById('sb-collapse');
   var rsbCollapse = document.getElementById('rsb-collapse');
+  var topbar = document.getElementById('topbar');
+  function setTopbarH(){ if (topbar) document.documentElement.style.setProperty('--tbh', topbar.offsetHeight+'px'); }
+  setTopbarH();
+  window.addEventListener('resize', setTopbarH);
+  if (window.ResizeObserver && topbar) new ResizeObserver(setTopbarH).observe(topbar);
   if (!layout || !sb || !rsb || !sbHandle || !rsbHandle || !sbCollapse || !rsbCollapse) return;
   if (!S.ui) S.ui = {sbWidth:196, rsbWidth:180, sbCollapsed:false, rsbCollapsed:false};
 
@@ -2446,7 +2480,7 @@ function setMode(m) {
   save();
   renderCanvas();
 }
-function goHome() { curTab='home'; curSec='daily'; buildSB(); buildTabBar(); buildRSB(); renderCanvas(); }
+function goHome() { curTab='home'; curSec='daily'; buildSB(); buildTabBar(); buildRSB(); renderCanvas(); closeSB(); }
 
 function syncModeButtons(){
   // Keep the Map/List toolbar buttons in sync with the actual saved view.
@@ -3364,7 +3398,7 @@ function renderDaily(cv) {
   var gratSec = el('div','dj-section');
   var gl = el('div','dj-label'); gl.textContent="Today I'm Grateful For";
   var gta = document.createElement('textarea'); gta.className='dj-input';
-  gta.placeholder='3 things you appreciate today…'; gta.value=dd.grateful||'';
+  gta.placeholder='One thing you appreciate today…'; gta.value=dd.grateful||'';
   gta.oninput=function(){dd.grateful=gta.value;save();};
   gratSec.appendChild(gl); gratSec.appendChild(gta); left.appendChild(gratSec);
 
@@ -3431,21 +3465,30 @@ function renderDaily(cv) {
 
   var gpAddRow = el('div','gp-add-row');
   var gpPlus = el('div','gp-add-plus'); gpPlus.textContent='+';
-  var gpInp = document.createElement('input'); gpInp.className='gp-add-inp'; gpInp.type='text';
+  var gpInp = document.createElement('textarea'); gpInp.className='gp-add-inp'; gpInp.rows=1;
   gpInp.placeholder='Add a step, hit Enter…';
+  gpInp.oninput = function(){ gpOneLine(gpInp); gpFit(gpInp); };
   gpInp.onkeydown = function(e){
-    if(e.key==='Enter'){
+    if(e.key==='Enter' && !e.isComposing){
       e.preventDefault();
       var v = gpInp.value.trim();
       if(v){
         S.gamePlan.push({ id:'gp'+Date.now()+Math.random().toString(36).slice(2,5), t:v, d:false });
-        gpInp.value=''; save(); renderGpList(); gpInp.focus();
+        gpInp.value=''; gpFit(gpInp); save(); renderGpList(); gpInp.focus();
       }
     }
   };
   gpAddRow.appendChild(gpPlus); gpAddRow.appendChild(gpInp);
   gpSec.appendChild(gpAddRow);
   left.appendChild(gpSec);
+
+  // Steps wrap onto new lines instead of cropping: each box grows to fit its text.
+  function gpFit(ta){ if(!ta.isConnected) return; ta.style.height='auto'; ta.style.height=(ta.scrollHeight+ta.offsetHeight-ta.clientHeight)+'px'; }
+  function gpOneLine(ta){ if(/[\r\n]/.test(ta.value)){ var pos=ta.selectionStart; ta.value=ta.value.replace(/\s*[\r\n]+\s*/g,' '); try{ ta.setSelectionRange(pos,pos); }catch(e){} } }
+  function gpFitAll(){ gpSec.querySelectorAll('.gp-text,.gp-add-inp').forEach(gpFit); }
+  if (window._gpFitAll) window.removeEventListener('resize', window._gpFitAll);
+  window._gpFitAll = gpFitAll; window.addEventListener('resize', gpFitAll);
+  requestAnimationFrame(gpFitAll);
 
   // drag-to-reorder (pointer-based: works on mouse + touch)
   var gpDrag = null;
@@ -3488,13 +3531,14 @@ function renderDaily(cv) {
       var num = el('div','gp-num'); num.textContent=(idx+1);
       var cb = document.createElement('input'); cb.type='checkbox'; cb.className='gp-check'; cb.checked=!!item.d;
       cb.onchange = (function(it){ return function(){ it.d=cb.checked; save(); renderGpList(); }; })(item);
-      var txt = document.createElement('input'); txt.className='gp-text'; txt.type='text'; txt.value=item.t||'';
-      txt.oninput = (function(it){ return function(){ it.t=txt.value; save(); }; })(item);
-      txt.onkeydown = function(e){ if(e.key==='Enter'){ e.preventDefault(); gpInp.focus(); } };
+      var txt = document.createElement('textarea'); txt.className='gp-text'; txt.rows=1; txt.value=item.t||'';
+      txt.oninput = (function(it){ return function(){ gpOneLine(txt); it.t=txt.value; gpFit(txt); save(); }; })(item);
+      txt.onkeydown = function(e){ if(e.key==='Enter' && !e.isComposing){ e.preventDefault(); gpInp.focus(); } };
       var del = el('div','gp-del'); del.textContent='×'; del.title='Remove step';
       del.onclick = (function(it){ return function(){ var i=S.gamePlan.indexOf(it); if(i>-1) S.gamePlan.splice(i,1); save(); renderGpList(); }; })(item);
       row.appendChild(h); row.appendChild(num); row.appendChild(cb); row.appendChild(txt); row.appendChild(del);
       gpList.appendChild(row);
+      gpFit(txt);
     });
   }
   gpClrDone.onclick = function(){ S.gamePlan = S.gamePlan.filter(function(x){return !x.d;}); save(); renderGpList(); };
@@ -7788,8 +7832,8 @@ function renderMedia(cv) {
 }
 
 // ─── MOBILE SIDEBAR ───────────────────────────────────────────────
-function toggleSB(){document.getElementById('sb').classList.toggle('open');document.getElementById('sb-overlay').classList.toggle('open');}
-function closeSB(){document.getElementById('sb').classList.remove('open');document.getElementById('sb-overlay').classList.remove('open');}
+function toggleSB(){var open=document.getElementById('sb').classList.toggle('open');document.getElementById('sb-overlay').classList.toggle('open',open);document.documentElement.classList.toggle('sb-lock',open);}
+function closeSB(){document.getElementById('sb').classList.remove('open');document.getElementById('sb-overlay').classList.remove('open');document.documentElement.classList.remove('sb-lock');}
 
 // ─── INIT ─────────────────────────────────────────────────────────
 document.getElementById('import-file').addEventListener('change', function(e){
