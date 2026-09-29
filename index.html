@@ -4382,17 +4382,30 @@ var Sched = (function(){
     // Draw blocks
     getTodayBlocks().forEach(function(blk){ _drawBlock(blk); });
 
-    // Now line
-    var now = new Date(), nowH = now.getHours() + now.getMinutes()/60;
-    if (nowH >= DSTART && nowH <= DEND) {
-      var py = (nowH - DSTART) * 60 * PX_PER_MIN;
-      var nl = el('div',''); nl.id='sched-now-line';
-      nl.style.cssText='position:absolute;left:-46px;right:0;height:2px;background:var(--danger);z-index:8;pointer-events:none;top:'+py+'px';
-      var nd = el('div',''); nd.id='sched-now-dot';
-      nd.style.cssText='position:absolute;left:-9px;width:9px;height:9px;border-radius:50%;background:var(--danger);z-index:9;pointer-events:none;top:'+(py-4)+'px';
+    placeNowLine();
+  }
+
+  // Red "now" line: drawn on render, then moved by the ticker below so it stays live.
+  function placeNowLine() {
+    if (!_canvas || !_canvas.isConnected) return;
+    var nl = _canvas.querySelector('#sched-now-line'), nd = _canvas.querySelector('#sched-now-dot');
+    var now = new Date(), nowH = now.getHours() + now.getMinutes()/60 + now.getSeconds()/3600;
+    if (nowH < DSTART || nowH > DEND) {
+      if (nl) _canvas.removeChild(nl);
+      if (nd) _canvas.removeChild(nd);
+      return;
+    }
+    var py = (nowH - DSTART) * 60 * PX_PER_MIN;
+    if (!nl) {
+      nl = el('div',''); nl.id='sched-now-line';
+      nl.style.cssText='position:absolute;left:-46px;right:0;height:2px;background:var(--danger);z-index:8;pointer-events:none';
+      nd = el('div',''); nd.id='sched-now-dot';
+      nd.style.cssText='position:absolute;left:-9px;width:9px;height:9px;border-radius:50%;background:var(--danger);z-index:9;pointer-events:none';
       _canvas.appendChild(nl);
       _canvas.appendChild(nd);
     }
+    nl.style.top = py+'px';
+    nd.style.top = (py-4)+'px';
   }
 
   function _drawBlock(blk) {
@@ -4606,7 +4619,17 @@ var Sched = (function(){
     _addBlock(title, startMin);
   }
 
-  return { init:init, redraw:redraw };
+  return { init:init, redraw:redraw, tick:placeNowLine };
+})();
+
+// Keep the now line live. Timers pause while the tab is hidden or the device is asleep,
+// so it also catches up the moment the page is back on screen.
+(function(){
+  function tick(){ if (!document.hidden) Sched.tick(); }
+  setInterval(tick, 30000);
+  document.addEventListener('visibilitychange', tick);
+  window.addEventListener('focus', tick);
+  window.addEventListener('pageshow', tick);
 })();
 
 function addDayTask(boxId, inp) {
