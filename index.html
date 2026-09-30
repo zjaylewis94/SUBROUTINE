@@ -1244,6 +1244,121 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);dis
   #tb-right{order:5;flex:1 1 100%;margin-left:0;row-gap:6px}
 }
 html.sb-lock{overflow:hidden}
+/* ── PRODUCTION BOARD + MONTHLY: readability pass ──
+   Hierarchy on the board: project (large, in its color) > book (white) > chapter (small caps label)
+   > task (body text). Contrast: the dim grey and borders are brighter inside these two views, so
+   labels clear 4.5:1. Counts (2/5) replace the wall of 0%s. Row tools (drag, rename, delete, add
+   chapter/book) stay out of the way until you hover (mouse) or tap Edit (touch). */
+#daily-tasks-panel,#cal-wrap{--dim:#a39a90;--br:#36302a;--br2:#4d453c}
+#daily-tasks-panel{min-width:0}   /* with .plist-grid width:100%, the list wraps to the screen instead of widening it */
+
+/* List view */
+.plist-toolbar{gap:8px}
+.plist-edit-btn.on{border-color:var(--gold);color:var(--gold)}
+.plist-grid{grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:18px;width:100%;min-width:0}
+.plist-proj{border-left-width:4px;border-left-color:var(--rc);border-radius:12px;padding:16px 16px 12px}
+.plist-proj-hdr{align-items:flex-start;gap:10px;margin-bottom:12px}
+.plist-proj-name{font-size:1.3rem;line-height:1.05;letter-spacing:1.2px;min-width:0;overflow-wrap:anywhere}
+.plist-proj-pre{display:block;font-family:'DM Mono',monospace;font-size:.6rem;font-weight:500;letter-spacing:2px;color:var(--dim);margin-bottom:4px}
+.plist-proj-pct{font-size:1.05rem;font-weight:600;padding-top:15px}
+.plist-proj-hdr .plist-ptool{margin-top:13px}
+.plist-bar-wrap{height:6px;margin-bottom:7px}
+.plist-proj-meta{font-family:'DM Mono',monospace;font-size:.68rem;letter-spacing:.3px;color:var(--dim);margin-bottom:14px}
+.plist-book{border-radius:10px;margin-bottom:8px}
+.plist-book-head{padding:12px 12px;gap:9px}
+.plist-car{font-size:.7rem;color:var(--dim)}
+.plist-book-name{font-size:1rem;font-weight:600;color:var(--text);line-height:1.25;min-width:0;overflow-wrap:anywhere}
+.plist-count{font-family:'DM Mono',monospace;font-size:.68rem;color:var(--mid);background:var(--s3);border-radius:999px;padding:2px 8px;flex-shrink:0;line-height:1.4}
+.plist-count:empty{display:none}
+.plist-count.full{background:var(--rc);color:#14110e;font-weight:600}
+.plist-book-bar{height:3px;background:var(--s3);margin:-3px 12px 10px;border-radius:2px;overflow:hidden}
+.plist-book-bar > div{height:100%;background:var(--rc);border-radius:2px}
+.plist-book-inner{padding:0 14px 10px;gap:0}
+.plist-chapter{margin-top:8px;padding-top:4px;border-top:1px solid var(--br)}
+.plist-ch-head{padding:7px 0 3px;gap:8px}
+.plist-ch-name{font-family:'Rajdhani',sans-serif;font-size:.8rem;font-weight:700;letter-spacing:1.4px;text-transform:uppercase;color:var(--mid);min-width:0;overflow-wrap:anywhere}
+.plist-ch-inner{padding:0}
+.plist-task{align-items:flex-start;gap:11px;padding:7px 0;font-size:.9rem;line-height:1.35;color:var(--mid)}
+.plist-task span{padding-top:1px;min-width:0;overflow-wrap:anywhere}
+.plist-cb{width:18px;height:18px;border-radius:5px;border-color:#756c62;margin-top:1px}
+.plist-cb.on:after{left:5px;top:1.5px;width:5px;height:9px}
+.plist-task.done{opacity:.5}
+.plist-add,.plist-addbook{font-family:'DM Sans',sans-serif;font-size:.8rem;letter-spacing:0;text-transform:none;color:var(--dim);padding:7px 0}
+.plist-addbook{padding:10px 2px 2px;margin-top:4px}
+.plist-add:hover,.plist-addbook:hover{color:var(--rc,var(--gold))}
+.plist-rowbtn,.plist-ptool{opacity:1}
+@media(hover:hover){
+  .plist-grid:not(.editing) .plist-rowbtn,.plist-grid:not(.editing) .plist-ptool{opacity:0;transition:opacity .12s}
+  .plist-grid:not(.editing) .bk-handle{opacity:.3}
+  .plist-book-head:hover .plist-rowbtn,.plist-ch-head:hover .plist-rowbtn,.plist-proj-hdr:hover .plist-ptool,
+  .plist-rowbtn:focus-visible,.plist-ptool:focus-visible,.plist-rowbtn.arm,.plist-ptool.arm{opacity:1!important}
+}
+@media(hover:none){
+  .plist-grid:not(.editing) .plist-rowbtn,.plist-grid:not(.editing) .plist-ptool,
+  .plist-grid:not(.editing) .bk-handle,.plist-grid:not(.editing) .edit-only{display:none}
+  .plist-edit-btn{min-height:36px}
+}
+@media(max-width:680px){
+  .plist-grid{grid-template-columns:minmax(0,1fr);gap:14px}
+  .plist-proj{padding:14px 14px 10px}
+  .plist-book-inner{padding:0 12px 10px}
+}
+
+/* Map view: same hierarchy and contrast */
+.dmm-proj-meta{color:var(--dim)}
+.dmm-book-name{color:var(--text);font-size:.86rem}
+.dmm-book-pct{color:var(--mid);background:var(--s3);border-radius:999px;padding:1px 7px;line-height:1.4}
+.dmm-book-pct:empty{display:none}
+.dmm-chapter{border-top:1px solid var(--br);margin-top:6px;padding-top:3px}
+.dmm-chapter-name{font-family:'Rajdhani',sans-serif;font-size:.74rem;font-weight:700;letter-spacing:1.3px;text-transform:uppercase;color:var(--mid)}
+.dmm-chapter-inner{padding-left:2px}
+.dmm-task{color:var(--mid);font-size:.78rem;align-items:flex-start;line-height:1.3;padding:4px 2px}
+.dmm-task-cb{margin-top:1px;border-color:#756c62}
+.dmm-mini-add,.dmm-add-book{font-family:'DM Sans',sans-serif;font-size:.72rem;letter-spacing:0;text-transform:none;color:var(--dim)}
+@media(hover:hover){
+  .dmm-row-edit,.dmm-row-del{opacity:0}
+  .dmm-book-head:hover .dmm-row-edit,.dmm-book-head:hover .dmm-row-del,
+  .dmm-chapter-head:hover .dmm-row-edit,.dmm-chapter-head:hover .dmm-row-del{opacity:1}
+}
+
+/* Collapsed left sidebar: keep its expand button off the first tab */
+#sb.collapsed + #main #tab-bar{padding-left:34px}
+
+/* Monthly */
+.cal-dow{color:var(--mid);font-weight:700}
+.cal-day-num{font-size:.8rem;font-weight:600;color:var(--text)}
+.cal-day.past .cal-day-num{color:var(--dim);opacity:1;font-weight:500}
+.cal-day.past::after{opacity:.1}
+.cal-day.other-month .cal-day-num{color:var(--dim);opacity:.75}
+.cal-day:is(:nth-child(7n+8),:nth-child(7n+14)):not(.other-month):not(.today){background:#121010}
+.cal-day.today{background:var(--s2);box-shadow:inset 0 0 0 2px var(--gold)}
+.cal-day.today .cal-day-num{display:inline-flex;align-items:center;justify-content:center;min-width:22px;height:22px;
+  padding:0 5px;margin:-4px 0 0 -4px;border-radius:11px;background:var(--gold);color:#14110e;font-weight:700}
+.cal-event{color:#14110e}
+.cal-event-resize{background:rgba(0,0,0,.16)}
+.cal-agenda{display:none;margin-top:18px}
+.cal-agenda-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:8px}
+.cal-agenda-title{font-family:'Rajdhani',sans-serif;font-size:.95rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--text)}
+.cal-agenda-item{display:flex;align-items:center;gap:10px;width:100%;text-align:left;background:var(--s1);border:1px solid var(--br);
+  border-radius:8px;padding:10px 12px;margin-bottom:6px;color:var(--text);font:inherit;cursor:pointer}
+.cal-agenda-item.past{opacity:.6}
+.cal-agenda-sw{width:10px;height:10px;border-radius:3px;flex-shrink:0}
+.cal-agenda-txt{display:flex;flex-direction:column;gap:2px;min-width:0}
+.cal-agenda-date{font-family:'DM Mono',monospace;font-size:.68rem;color:var(--dim)}
+.cal-agenda-t{font-size:.9rem;font-weight:600;overflow-wrap:anywhere}
+.cal-agenda-empty{font-size:.82rem;color:var(--dim);padding:6px 2px}
+@media(max-width:680px){
+  #cal-wrap{padding:14px 12px 28px}
+  .cal-nav{flex-wrap:wrap;gap:8px;margin-bottom:14px}
+  .cal-title{order:-1;flex-basis:100%;text-align:center;font-size:1.25rem}
+  .cal-nav-btn{flex:1;min-height:38px}
+  .cal-agenda-add{flex:0 0 auto;padding:6px 16px}
+  .cal-dow{font-size:.6rem;letter-spacing:.5px;padding:7px 2px}
+  .cal-day{padding:5px 4px}
+  .cal-day-num{font-size:.74rem}
+  .cal-day.today .cal-day-num{margin:-3px 0 0 -2px}
+  .cal-agenda{display:block}
+}
 </style>
 </head>
 <body>
@@ -1792,6 +1907,7 @@ function hydrateState() {
       S.scheduleStart = '2026-08-10';
       S._schoolSeed_2627b = true;
     }
+    if (S.projects) mergeLibraryGoals();
     if (!S.dailyData) S.dailyData = {};
     if (!S.gamePlan) S.gamePlan = [];
     if (!S.dboxOpen) S.dboxOpen = {};
@@ -2958,7 +3074,7 @@ function renderMonthly(cv) {
         if (col===startCol && isStart) {
           evEl.style.borderRadius = '4px 0 0 4px';
           evEl.style.marginLeft = '2px';
-          var span2 = el('span',''); span2.textContent=ev.title; span2.style.cssText='font-size:.65rem;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block';
+          var span2 = el('span',''); span2.textContent=ev.title; span2.style.cssText='font-size:.66rem;font-weight:700;letter-spacing:.2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block';
           evEl.appendChild(span2);
         } else if (col===startCol) {
           evEl.style.borderRadius = '0';
@@ -3006,7 +3122,40 @@ function renderMonthly(cv) {
   // Resize handled by global document listeners
 
   wrap.appendChild(grid);
+
+  // Phones can't fit event names in the grid, so list the month's events underneath
+  // (shown only at phone width; tap one to edit it).
+  var mStart = dateStr(calYear, calMonth, 1), mEnd = dateStr(calYear, calMonth, daysInMonth);
+  var monthEvents = (S.calEvents||[]).filter(function(ev){ return ev.date <= mEnd && (ev.endDate||ev.date) >= mStart; })
+    .sort(function(a,b){ return a.date<b.date ? -1 : a.date>b.date ? 1 : 0; });
+  var ag = el('div','cal-agenda');
+  var agh = el('div','cal-agenda-head');
+  var agt = el('div','cal-agenda-title'); agt.textContent = monthNames[calMonth]+' events';
+  var aga = el('button','cal-nav-btn cal-agenda-add'); aga.textContent='+ Add';
+  aga.onclick = function(){ openCalModal(today2.slice(0,7)===mStart.slice(0,7) ? today2 : mStart); };
+  agh.appendChild(agt); agh.appendChild(aga); ag.appendChild(agh);
+  if (!monthEvents.length) { var ag0=el('div','cal-agenda-empty'); ag0.textContent='Nothing scheduled this month.'; ag.appendChild(ag0); }
+  monthEvents.forEach(function(ev){
+    var end = ev.endDate||ev.date;
+    var item = el('button','cal-agenda-item'+(end < today2 ? ' past' : '')); item.type='button';
+    var sw = el('span','cal-agenda-sw'); sw.style.background = colors[(ev.colorIdx||0)%colors.length];
+    var dt = el('span','cal-agenda-date'); dt.textContent = fmtAgendaDate(ev.date, end);
+    var tt = el('span','cal-agenda-t'); tt.textContent = ev.title;
+    var txt = el('span','cal-agenda-txt'); txt.appendChild(dt); txt.appendChild(tt);
+    item.appendChild(sw); item.appendChild(txt);
+    item.onclick = function(){ openCalEditModal(ev.id); };
+    ag.appendChild(item);
+  });
+  wrap.appendChild(ag);
   cv.appendChild(wrap);
+}
+function fmtAgendaDate(a, b){
+  var d1 = parseDate(a), s = d1.toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'});
+  if (b && b !== a) {
+    var d2 = parseDate(b);
+    s += ' – ' + d2.toLocaleDateString('en-US', d2.getMonth()===d1.getMonth() ? {day:'numeric'} : {month:'short',day:'numeric'});
+  }
+  return s;
 }
 
 function openCalModal(dateStr2) {
@@ -3718,8 +3867,99 @@ function renderDaily(cv) {
 // ═══════════════════════════════════════════════════════════════
 
 // Seed default project tree on first run
+// ── Library goals → Production Board (one-time merge, Sep 30 2026) ──
+// Adds the development goals of each Library book as boards/books/tasks. Runs in memory
+// only (never saves by itself, so it can't bump _ts or cause a sync conflict at startup);
+// your next real edit saves it. Matches by id, skips anything already there, and only
+// runs once per data set (_librarySeed_0930), so deleting an item keeps it deleted.
+var LIBRARY_GOALS = [
+  { prj:{ id:'prj-library', name:'LIBRARY', color:'#e8a030' }, books:[
+    { id:'bk-lib-archive', name:'The Archive', tasks:[
+      'Decide: keep the Army / OCS and Figma Boards spines?',
+      'Add your Figma board link to the Figma Boards spine',
+      "Make the Archive's lamplit look the shared theme for every book",
+      'Give every book a cover page' ]},
+    { id:'bk-lib-subroutine', name:'Subroutine', tasks:[
+      'Renew the GitHub sync token before Oct 30',
+      'Move personal text out of the public SUBROUTINE code',
+      "Make long Today's Targets wrap like the Game Plan",
+      'Roll the Daily page over to the new day after midnight' ]}
+  ]},
+  { prj:{ id:'prj-educator' }, books:[
+    { id:'bk-teaching', chapter:{ id:'ch-lib-tbapp', name:'Teacher Book app' }, tasks:[
+      'Decide the grading scale (units now total 20–28 pts, not 20)',
+      'Re-sync the Teacher Book with UNIT GUIDES (Unit 2 / 12 wild cards changed)',
+      'Turn on Teacher Book sync (token for subroutine-data)',
+      "Match the Ramhaus wheel's Mediums ring to the 20 units",
+      'Wild-card cover art (ChatGPT prompt + Cover Maker)',
+      'Fill the empty unit folders in Drive (Units 2–10, 12–20)',
+      'Google Classroom: build unit posts from UNIT GUIDES' ]},
+    { id:'bk-headcoach', tasks:[
+      'Merge Head Coach HQ + Sprints & Hurdles into one Coaching Book app' ]},
+    { id:'bk-lib-raminations', name:'Raminations', tasks:[
+      'Design Rammy, the mascot',
+      'Pick the first lesson (one art technique or one track drill)',
+      'Script and storyboard lesson 1 (vertical, under 60 seconds)' ]}
+  ]},
+  { prj:{ id:'prj-life' }, books:[
+    { id:'bk-me', tasks:[ 'Build the private Life Admin book from lifeadmin_book.html (Drive)' ]},
+    { id:'bk-cook', tasks:[ 'Build the Cook Book app (the repo is still empty)' ]}
+  ]},
+  { prj:{ id:'prj-genesis' }, books:[
+    { id:'bk-codex', tasks:[
+      'Build the Codex 2.0 app (private codex repo)',
+      'Pull names and lore that still fit from the original Codex (v35)',
+      'Put the drawing queue on this board (Tiers 1–4)' ]}
+  ]},
+  { prj:{ id:'prj-art' }, books:[
+    { id:'bk-lib-steez', name:'Steez Bank', tasks:[
+      'Pick its final name',
+      'Build it: art ideas sorted by medium' ]},
+    { id:'bk-lib-sketch', name:'Sketch Book', tasks:[
+      'Decide what it holds',
+      'Build it' ]}
+  ]}
+];
+function mergeLibraryGoals(){
+  if (!S || !Array.isArray(S.projects) || S._librarySeed_0930) return false;
+  function addTasks(list, texts){
+    texts.forEach(function(t){
+      if (!list.some(function(x){ return (x.t||'').trim().toLowerCase()===t.toLowerCase(); })) list.push({t:t, d:false});
+    });
+  }
+  LIBRARY_GOALS.forEach(function(g){
+    var prj = S.projects.find(function(p){ return p.id===g.prj.id; });
+    if (!prj) {
+      if (!g.prj.name) return;            // a board you deleted stays deleted
+      prj = { id:g.prj.id, name:g.prj.name, color:g.prj.color, books:[] };
+      S.projects.push(prj);
+    }
+    if (!prj.books) prj.books = [];
+    g.books.forEach(function(gb){
+      var bk = prj.books.find(function(b){ return b.id===gb.id; });
+      if (!bk) {
+        if (!gb.name) return;              // a book you deleted stays deleted
+        bk = { id:gb.id, name:gb.name, tasks:[], chapters:[] };
+        prj.books.push(bk);
+      }
+      if (!bk.tasks) bk.tasks = [];
+      if (gb.chapter) {
+        if (!bk.chapters) bk.chapters = [];
+        var ch = bk.chapters.find(function(c){ return c.id===gb.chapter.id; });
+        if (!ch) { ch = { id:gb.chapter.id, name:gb.chapter.name, tasks:[] }; bk.chapters.push(ch); }
+        if (!ch.tasks) ch.tasks = [];
+        addTasks(ch.tasks, gb.tasks);
+      } else {
+        addTasks(bk.tasks, gb.tasks);
+      }
+    });
+  });
+  S._librarySeed_0930 = true;
+  return true;
+}
+
 function ensureProjects() {
-  if (S.projects) return;
+  if (S.projects) { mergeLibraryGoals(); return; }
   S.projects = [
     { id:'prj-life', name:'LIFE ADMIN', color:'#4da6ff', books:[
       { id:'bk-me', name:'Me', tasks:[], chapters:[
@@ -3751,6 +3991,7 @@ function ensureProjects() {
       ]},
     ]},
   ];
+  mergeLibraryGoals();
   save();
 }
 
@@ -3951,7 +4192,7 @@ function buildBookRow(prj, bk){
   var hasChildren = (bk.chapters&&bk.chapters.length) || (bk.tasks&&bk.tasks.length);
   caret.textContent = expanded?'▾':'▸';
   var nm = el('div','dmm-book-name'); nm.textContent=bk.name;
-  var pl = el('div','dmm-book-pct'); pl.textContent=p+'%';
+  var pl = el('div','dmm-book-pct'); pl.textContent=agg.t?(agg.d+'/'+agg.t):'';
   var eb = makeEditBtn('dmm-row-edit', nm, bk, false);
   var db = makeDelBtn('dmm-row-del','Delete book', function(){ var i=prj.books.indexOf(bk); if(i>-1)prj.books.splice(i,1); save(); renderCanvas(); });
   head.appendChild(dh); head.appendChild(caret); head.appendChild(nm); head.appendChild(pl); head.appendChild(eb); head.appendChild(db);
@@ -3986,7 +4227,7 @@ function buildChapterRow(prj, bk, ch){
   var head = el('div','dmm-chapter-head');
   var caret = el('div','dmm-book-caret'); caret.textContent=expanded?'▾':'▸';
   var nm = el('div','dmm-chapter-name'); nm.textContent=ch.name;
-  var pl = el('div','dmm-book-pct'); pl.textContent=agg.t?(p+'%'):'–';
+  var pl = el('div','dmm-book-pct'); pl.textContent=agg.t?(agg.d+'/'+agg.t):'';
   var eb = makeEditBtn('dmm-row-edit', nm, ch, false);
   var db = makeDelBtn('dmm-row-del','Delete chapter', function(){ var i=(bk.chapters||[]).indexOf(ch); if(i>-1)bk.chapters.splice(i,1); save(); renderCanvas(); });
   head.appendChild(caret); head.appendChild(nm); head.appendChild(pl); head.appendChild(eb); head.appendChild(db);
@@ -4213,26 +4454,32 @@ function makeProjDraggable(node, prj, wrap, world){
 }
 
 // ── LIST VIEW of the project tree (mobile-friendly) ──────────
+var boardEdit = false;   // Edit mode shows drag/rename/delete/add controls (not saved)
 function renderProjectList(panel){
   ensureProjects();
   panel.style.cssText='padding:14px 12px 40px;overflow-y:auto';
   if(!S.dmapExpanded) S.dmapExpanded={};
 
   var bar=el('div','plist-toolbar');
+  var edb=el('button','plist-expand-btn plist-edit-btn'+(boardEdit?' on':'')); edb.textContent=boardEdit?'✓ Done':'✎ Edit';
+  edb.title='Show drag, rename, delete and add-book controls';
+  edb.onclick=function(){ boardEdit=!boardEdit; renderCanvas(); };
   var exb=el('button','plist-expand-btn'); exb.textContent=S.dmapAllExpanded?'⊟ Collapse all':'⊞ Expand all';
   exb.onclick=function(){ setAllExpanded(!S.dmapAllExpanded); };
-  bar.appendChild(exb); panel.appendChild(bar);
+  bar.appendChild(edb); bar.appendChild(exb); panel.appendChild(bar);
 
-  var inner = el('div','plist-grid');
+  var inner = el('div','plist-grid'+(boardEdit?' editing':''));
 
   S.projects.forEach(function(prj){
     var prog = projectProgress(prj);
     var p = Math.round(pct(prog)*100);
     var sec = el('div','plist-proj');
-    sec.style.borderLeft='3px solid '+prj.color;
+    sec.style.setProperty('--rc', prj.color);
 
     var hdr = el('div','plist-proj-hdr');
-    var nm = el('div','plist-proj-name'); nm.textContent='PROJECT_'+prj.name; nm.style.color=prj.color;
+    var nm = el('div','plist-proj-name'); nm.style.color=prj.color;
+    var npre = el('span','plist-proj-pre'); npre.textContent='PROJECT_';
+    nm.appendChild(npre); nm.appendChild(document.createTextNode(prj.name));
     var pc = el('div','plist-proj-pct'); pc.textContent=p+'%'; pc.style.color=prj.color;
     var peb = makeEditBtn('plist-ptool', nm, prj, true);
     var pdb = makeDelBtn('plist-ptool','Delete project', function(){ S.projects=S.projects.filter(function(x){return x.id!==prj.id;}); save(); renderCanvas(); });
@@ -4240,6 +4487,9 @@ function renderProjectList(panel){
     sec.appendChild(hdr);
 
     var bw=el('div','plist-bar-wrap'); var bf=el('div','plist-bar'); bf.style.width=p+'%'; bf.style.background=prj.color; bw.appendChild(bf); sec.appendChild(bw);
+    var nb=(prj.books||[]).length;
+    var meta=el('div','plist-proj-meta'); meta.textContent=nb+(nb===1?' book':' books')+' · '+(prog.t?(prog.d+' of '+prog.t+' done'):'no tasks yet');
+    sec.appendChild(meta);
 
     (prj.books||[]).forEach(function(bk){
       var bagg=bookProgress(bk); var bp=Math.round(pct(bagg)*100);
@@ -4249,17 +4499,18 @@ function renderProjectList(panel){
       var bdh=el('div','bk-handle'); bdh.textContent='⠿'; bdh.title='Drag to reorder';
       var bcar=el('div','plist-car'); bcar.textContent=bkEx?'▾':'▸';
       var bnm=el('div','plist-book-name'); bnm.textContent=bk.name;
-      var bpc=el('div','plist-book-pct'); bpc.textContent=bp+'%';
+      var bpc=el('div','plist-count'+(bagg.t&&bagg.d===bagg.t?' full':'')); bpc.textContent=bagg.t?(bagg.d+'/'+bagg.t):'';
       var beb=makeEditBtn('plist-rowbtn', bnm, bk, false);
       var bdb=makeDelBtn('plist-rowbtn','Delete book', function(){ var i=prj.books.indexOf(bk); if(i>-1)prj.books.splice(i,1); save(); renderCanvas(); });
       bh.appendChild(bdh); bh.appendChild(bcar); bh.appendChild(bnm); bh.appendChild(bpc); bh.appendChild(beb); bh.appendChild(bdb);
       bh.onclick=function(){ S.dmapExpanded['L'+bk.id]=!S.dmapExpanded['L'+bk.id]; save(); renderCanvas(); };
       brow.appendChild(bh);
+      if(bagg.d){ var bbar=el('div','plist-book-bar'); var bbf=el('div',''); bbf.style.width=bp+'%'; bbar.appendChild(bbf); brow.appendChild(bbar); }
       attachBookDrag(bdh, brow, prj, '.plist-book');
       if(bkEx){
         var bin=el('div','plist-book-inner');
         (bk.tasks||[]).forEach(function(t,i){ bin.appendChild(plistTask(prj,bk.tasks,t,i)); });
-        var at=makeInlineAdd('+ task','New task…', function(v){ bk.tasks.push({t:v,d:false}); }); at.className='plist-add'; bin.appendChild(at);
+        var at=makeInlineAdd('+ Add task','New task…', function(v){ bk.tasks.push({t:v,d:false}); }); at.className='plist-add'; bin.appendChild(at);
         (bk.chapters||[]).forEach(function(ch){
           var cagg=countTasks(ch.tasks); var cp=Math.round(pct(cagg)*100);
           var cEx=!!S.dmapExpanded['L'+ch.id];
@@ -4267,7 +4518,7 @@ function renderProjectList(panel){
           var ch_h=el('div','plist-ch-head');
           var ccar=el('div','plist-car'); ccar.textContent=cEx?'▾':'▸';
           var cnm=el('div','plist-ch-name'); cnm.textContent=ch.name;
-          var cpc=el('div','plist-book-pct'); cpc.textContent=cagg.t?cp+'%':'–';
+          var cpc=el('div','plist-count'+(cagg.t&&cagg.d===cagg.t?' full':'')); cpc.textContent=cagg.t?(cagg.d+'/'+cagg.t):'';
           var ceb=makeEditBtn('plist-rowbtn', cnm, ch, false);
           var cdb=makeDelBtn('plist-rowbtn','Delete chapter', function(){ var i=(bk.chapters||[]).indexOf(ch); if(i>-1)bk.chapters.splice(i,1); save(); renderCanvas(); });
           ch_h.appendChild(ccar); ch_h.appendChild(cnm); ch_h.appendChild(cpc); ch_h.appendChild(ceb); ch_h.appendChild(cdb);
@@ -4276,20 +4527,20 @@ function renderProjectList(panel){
           if(cEx){
             var cin=el('div','plist-ch-inner');
             (ch.tasks||[]).forEach(function(t,i){ cin.appendChild(plistTask(prj,ch.tasks,t,i)); });
-            var ct=makeInlineAdd('+ task','New task…', function(v){ ch.tasks.push({t:v,d:false}); }); ct.className='plist-add'; cin.appendChild(ct);
+            var ct=makeInlineAdd('+ Add task','New task…', function(v){ ch.tasks.push({t:v,d:false}); }); ct.className='plist-add'; cin.appendChild(ct);
             crow.appendChild(cin);
           }
           bin.appendChild(crow);
         });
-        var addCh=makeInlineAdd('+ chapter','New chapter…', function(v){ if(!bk.chapters)bk.chapters=[]; bk.chapters.push({id:'ch'+Date.now()+Math.random().toString(36).slice(2,5),name:v,tasks:[]}); });
-        addCh.className='plist-add'; addCh.style.opacity='.75'; bin.appendChild(addCh);
+        var addCh=makeInlineAdd('+ Add chapter','New chapter…', function(v){ if(!bk.chapters)bk.chapters=[]; bk.chapters.push({id:'ch'+Date.now()+Math.random().toString(36).slice(2,5),name:v,tasks:[]}); });
+        addCh.className='plist-add edit-only'; bin.appendChild(addCh);
         brow.appendChild(bin);
       }
       sec.appendChild(brow);
     });
     // add book button
-    var addBk = makeInlineAdd('+ add book','New book…', function(v){ prj.books.push({id:'bk'+Date.now()+Math.random().toString(36).slice(2,5),name:v,tasks:[],chapters:[]}); });
-    addBk.className='plist-addbook';
+    var addBk = makeInlineAdd('+ Add book','New book…', function(v){ prj.books.push({id:'bk'+Date.now()+Math.random().toString(36).slice(2,5),name:v,tasks:[],chapters:[]}); });
+    addBk.className='plist-addbook edit-only';
     sec.appendChild(addBk);
     inner.appendChild(sec);
   });
