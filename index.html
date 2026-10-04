@@ -1244,6 +1244,121 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);dis
   #tb-right{order:5;flex:1 1 100%;margin-left:0;row-gap:6px}
 }
 html.sb-lock{overflow:hidden}
+/* ── PRODUCTION BOARD + MONTHLY: readability pass ──
+   Hierarchy on the board: project (large, in its color) > book (white) > chapter (small caps label)
+   > task (body text). Contrast: the dim grey and borders are brighter inside these two views, so
+   labels clear 4.5:1. Counts (2/5) replace the wall of 0%s. Row tools (drag, rename, delete, add
+   chapter/book) stay out of the way until you hover (mouse) or tap Edit (touch). */
+#daily-tasks-panel,#cal-wrap{--dim:#a39a90;--br:#36302a;--br2:#4d453c}
+#daily-tasks-panel{min-width:0}   /* with .plist-grid width:100%, the list wraps to the screen instead of widening it */
+
+/* List view */
+.plist-toolbar{gap:8px}
+.plist-edit-btn.on{border-color:var(--gold);color:var(--gold)}
+.plist-grid{grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:18px;width:100%;min-width:0}
+.plist-proj{border-left-width:4px;border-left-color:var(--rc);border-radius:12px;padding:16px 16px 12px}
+.plist-proj-hdr{align-items:flex-start;gap:10px;margin-bottom:12px}
+.plist-proj-name{font-size:1.3rem;line-height:1.05;letter-spacing:1.2px;min-width:0;overflow-wrap:anywhere}
+.plist-proj-pre{display:block;font-family:'DM Mono',monospace;font-size:.6rem;font-weight:500;letter-spacing:2px;color:var(--dim);margin-bottom:4px}
+.plist-proj-pct{font-size:1.05rem;font-weight:600;padding-top:15px}
+.plist-proj-hdr .plist-ptool{margin-top:13px}
+.plist-bar-wrap{height:6px;margin-bottom:7px}
+.plist-proj-meta{font-family:'DM Mono',monospace;font-size:.68rem;letter-spacing:.3px;color:var(--dim);margin-bottom:14px}
+.plist-book{border-radius:10px;margin-bottom:8px}
+.plist-book-head{padding:12px 12px;gap:9px}
+.plist-car{font-size:.7rem;color:var(--dim)}
+.plist-book-name{font-size:1rem;font-weight:600;color:var(--text);line-height:1.25;min-width:0;overflow-wrap:anywhere}
+.plist-count{font-family:'DM Mono',monospace;font-size:.68rem;color:var(--mid);background:var(--s3);border-radius:999px;padding:2px 8px;flex-shrink:0;line-height:1.4}
+.plist-count:empty{display:none}
+.plist-count.full{background:var(--rc);color:#14110e;font-weight:600}
+.plist-book-bar{height:3px;background:var(--s3);margin:-3px 12px 10px;border-radius:2px;overflow:hidden}
+.plist-book-bar > div{height:100%;background:var(--rc);border-radius:2px}
+.plist-book-inner{padding:0 14px 10px;gap:0}
+.plist-chapter{margin-top:8px;padding-top:4px;border-top:1px solid var(--br)}
+.plist-ch-head{padding:7px 0 3px;gap:8px}
+.plist-ch-name{font-family:'Rajdhani',sans-serif;font-size:.8rem;font-weight:700;letter-spacing:1.4px;text-transform:uppercase;color:var(--mid);min-width:0;overflow-wrap:anywhere}
+.plist-ch-inner{padding:0}
+.plist-task{align-items:flex-start;gap:11px;padding:7px 0;font-size:.9rem;line-height:1.35;color:var(--mid)}
+.plist-task span{padding-top:1px;min-width:0;overflow-wrap:anywhere}
+.plist-cb{width:18px;height:18px;border-radius:5px;border-color:#756c62;margin-top:1px}
+.plist-cb.on:after{left:5px;top:1.5px;width:5px;height:9px}
+.plist-task.done{opacity:.5}
+.plist-add,.plist-addbook{font-family:'DM Sans',sans-serif;font-size:.8rem;letter-spacing:0;text-transform:none;color:var(--dim);padding:7px 0}
+.plist-addbook{padding:10px 2px 2px;margin-top:4px}
+.plist-add:hover,.plist-addbook:hover{color:var(--rc,var(--gold))}
+.plist-rowbtn,.plist-ptool{opacity:1}
+@media(hover:hover){
+  .plist-grid:not(.editing) .plist-rowbtn,.plist-grid:not(.editing) .plist-ptool{opacity:0;transition:opacity .12s}
+  .plist-grid:not(.editing) .bk-handle{opacity:.3}
+  .plist-book-head:hover .plist-rowbtn,.plist-ch-head:hover .plist-rowbtn,.plist-proj-hdr:hover .plist-ptool,
+  .plist-rowbtn:focus-visible,.plist-ptool:focus-visible,.plist-rowbtn.arm,.plist-ptool.arm{opacity:1!important}
+}
+@media(hover:none){
+  .plist-grid:not(.editing) .plist-rowbtn,.plist-grid:not(.editing) .plist-ptool,
+  .plist-grid:not(.editing) .bk-handle,.plist-grid:not(.editing) .edit-only{display:none}
+  .plist-edit-btn{min-height:36px}
+}
+@media(max-width:680px){
+  .plist-grid{grid-template-columns:minmax(0,1fr);gap:14px}
+  .plist-proj{padding:14px 14px 10px}
+  .plist-book-inner{padding:0 12px 10px}
+}
+
+/* Map view: same hierarchy and contrast */
+.dmm-proj-meta{color:var(--dim)}
+.dmm-book-name{color:var(--text);font-size:.86rem}
+.dmm-book-pct{color:var(--mid);background:var(--s3);border-radius:999px;padding:1px 7px;line-height:1.4}
+.dmm-book-pct:empty{display:none}
+.dmm-chapter{border-top:1px solid var(--br);margin-top:6px;padding-top:3px}
+.dmm-chapter-name{font-family:'Rajdhani',sans-serif;font-size:.74rem;font-weight:700;letter-spacing:1.3px;text-transform:uppercase;color:var(--mid)}
+.dmm-chapter-inner{padding-left:2px}
+.dmm-task{color:var(--mid);font-size:.78rem;align-items:flex-start;line-height:1.3;padding:4px 2px}
+.dmm-task-cb{margin-top:1px;border-color:#756c62}
+.dmm-mini-add,.dmm-add-book{font-family:'DM Sans',sans-serif;font-size:.72rem;letter-spacing:0;text-transform:none;color:var(--dim)}
+@media(hover:hover){
+  .dmm-row-edit,.dmm-row-del{opacity:0}
+  .dmm-book-head:hover .dmm-row-edit,.dmm-book-head:hover .dmm-row-del,
+  .dmm-chapter-head:hover .dmm-row-edit,.dmm-chapter-head:hover .dmm-row-del{opacity:1}
+}
+
+/* Collapsed left sidebar: keep its expand button off the first tab */
+#sb.collapsed + #main #tab-bar{padding-left:34px}
+
+/* Monthly */
+.cal-dow{color:var(--mid);font-weight:700}
+.cal-day-num{font-size:.8rem;font-weight:600;color:var(--text)}
+.cal-day.past .cal-day-num{color:var(--dim);opacity:1;font-weight:500}
+.cal-day.past::after{opacity:.1}
+.cal-day.other-month .cal-day-num{color:var(--dim);opacity:.75}
+.cal-day:is(:nth-child(7n+8),:nth-child(7n+14)):not(.other-month):not(.today){background:#121010}
+.cal-day.today{background:var(--s2);box-shadow:inset 0 0 0 2px var(--gold)}
+.cal-day.today .cal-day-num{display:inline-flex;align-items:center;justify-content:center;min-width:22px;height:22px;
+  padding:0 5px;margin:-4px 0 0 -4px;border-radius:11px;background:var(--gold);color:#14110e;font-weight:700}
+.cal-event{color:#14110e}
+.cal-event-resize{background:rgba(0,0,0,.16)}
+.cal-agenda{display:none;margin-top:18px}
+.cal-agenda-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:8px}
+.cal-agenda-title{font-family:'Rajdhani',sans-serif;font-size:.95rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--text)}
+.cal-agenda-item{display:flex;align-items:center;gap:10px;width:100%;text-align:left;background:var(--s1);border:1px solid var(--br);
+  border-radius:8px;padding:10px 12px;margin-bottom:6px;color:var(--text);font:inherit;cursor:pointer}
+.cal-agenda-item.past{opacity:.6}
+.cal-agenda-sw{width:10px;height:10px;border-radius:3px;flex-shrink:0}
+.cal-agenda-txt{display:flex;flex-direction:column;gap:2px;min-width:0}
+.cal-agenda-date{font-family:'DM Mono',monospace;font-size:.68rem;color:var(--dim)}
+.cal-agenda-t{font-size:.9rem;font-weight:600;overflow-wrap:anywhere}
+.cal-agenda-empty{font-size:.82rem;color:var(--dim);padding:6px 2px}
+@media(max-width:680px){
+  #cal-wrap{padding:14px 12px 28px}
+  .cal-nav{flex-wrap:wrap;gap:8px;margin-bottom:14px}
+  .cal-title{order:-1;flex-basis:100%;text-align:center;font-size:1.25rem}
+  .cal-nav-btn{flex:1;min-height:38px}
+  .cal-agenda-add{flex:0 0 auto;padding:6px 16px}
+  .cal-dow{font-size:.6rem;letter-spacing:.5px;padding:7px 2px}
+  .cal-day{padding:5px 4px}
+  .cal-day-num{font-size:.74rem}
+  .cal-day.today .cal-day-num{margin:-3px 0 0 -2px}
+  .cal-agenda{display:block}
+}
 </style>
 </head>
 <body>
@@ -1792,6 +1907,7 @@ function hydrateState() {
       S.scheduleStart = '2026-08-10';
       S._schoolSeed_2627b = true;
     }
+    if (S.projects) mergeLibraryGoals();
     if (!S.dailyData) S.dailyData = {};
     if (!S.gamePlan) S.gamePlan = [];
     if (!S.dboxOpen) S.dboxOpen = {};
@@ -1868,6 +1984,10 @@ function save() {
     var json = JSON.stringify(S);
     // localStorage is always safe — it's this device only
     try { localStorage.setItem('sub_v5', json); } catch(e) {}
+    // Remember that this device has edits GitHub hasn't seen yet. Only real edits count:
+    // automatic saves at startup (the Sunday chore reset, migrations) are redone after a
+    // reload, so they never block loading newer data from another device.
+    if (_userInteracted) { try { localStorage.setItem('sub_v5_unpushed', String(S._ts)); } catch(e) {} }
     // Hold cloud pushes until we've seen the remote copy, or we risk
     // overwriting newer data from another device with older data from this one.
     if (!_cloudGateOpen) {
@@ -2958,7 +3078,7 @@ function renderMonthly(cv) {
         if (col===startCol && isStart) {
           evEl.style.borderRadius = '4px 0 0 4px';
           evEl.style.marginLeft = '2px';
-          var span2 = el('span',''); span2.textContent=ev.title; span2.style.cssText='font-size:.65rem;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block';
+          var span2 = el('span',''); span2.textContent=ev.title; span2.style.cssText='font-size:.66rem;font-weight:700;letter-spacing:.2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block';
           evEl.appendChild(span2);
         } else if (col===startCol) {
           evEl.style.borderRadius = '0';
@@ -3006,7 +3126,40 @@ function renderMonthly(cv) {
   // Resize handled by global document listeners
 
   wrap.appendChild(grid);
+
+  // Phones can't fit event names in the grid, so list the month's events underneath
+  // (shown only at phone width; tap one to edit it).
+  var mStart = dateStr(calYear, calMonth, 1), mEnd = dateStr(calYear, calMonth, daysInMonth);
+  var monthEvents = (S.calEvents||[]).filter(function(ev){ return ev.date <= mEnd && (ev.endDate||ev.date) >= mStart; })
+    .sort(function(a,b){ return a.date<b.date ? -1 : a.date>b.date ? 1 : 0; });
+  var ag = el('div','cal-agenda');
+  var agh = el('div','cal-agenda-head');
+  var agt = el('div','cal-agenda-title'); agt.textContent = monthNames[calMonth]+' events';
+  var aga = el('button','cal-nav-btn cal-agenda-add'); aga.textContent='+ Add';
+  aga.onclick = function(){ openCalModal(today2.slice(0,7)===mStart.slice(0,7) ? today2 : mStart); };
+  agh.appendChild(agt); agh.appendChild(aga); ag.appendChild(agh);
+  if (!monthEvents.length) { var ag0=el('div','cal-agenda-empty'); ag0.textContent='Nothing scheduled this month.'; ag.appendChild(ag0); }
+  monthEvents.forEach(function(ev){
+    var end = ev.endDate||ev.date;
+    var item = el('button','cal-agenda-item'+(end < today2 ? ' past' : '')); item.type='button';
+    var sw = el('span','cal-agenda-sw'); sw.style.background = colors[(ev.colorIdx||0)%colors.length];
+    var dt = el('span','cal-agenda-date'); dt.textContent = fmtAgendaDate(ev.date, end);
+    var tt = el('span','cal-agenda-t'); tt.textContent = ev.title;
+    var txt = el('span','cal-agenda-txt'); txt.appendChild(dt); txt.appendChild(tt);
+    item.appendChild(sw); item.appendChild(txt);
+    item.onclick = function(){ openCalEditModal(ev.id); };
+    ag.appendChild(item);
+  });
+  wrap.appendChild(ag);
   cv.appendChild(wrap);
+}
+function fmtAgendaDate(a, b){
+  var d1 = parseDate(a), s = d1.toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'});
+  if (b && b !== a) {
+    var d2 = parseDate(b);
+    s += ' – ' + d2.toLocaleDateString('en-US', d2.getMonth()===d1.getMonth() ? {day:'numeric'} : {month:'short',day:'numeric'});
+  }
+  return s;
 }
 
 function openCalModal(dateStr2) {
@@ -3718,8 +3871,99 @@ function renderDaily(cv) {
 // ═══════════════════════════════════════════════════════════════
 
 // Seed default project tree on first run
+// ── Library goals → Production Board (one-time merge, Sep 30 2026) ──
+// Adds the development goals of each Library book as boards/books/tasks. Runs in memory
+// only (never saves by itself, so it can't bump _ts or cause a sync conflict at startup);
+// your next real edit saves it. Matches by id, skips anything already there, and only
+// runs once per data set (_librarySeed_0930), so deleting an item keeps it deleted.
+var LIBRARY_GOALS = [
+  { prj:{ id:'prj-library', name:'LIBRARY', color:'#e8a030' }, books:[
+    { id:'bk-lib-archive', name:'The Archive', tasks:[
+      'Decide: keep the Army / OCS and Figma Boards spines?',
+      'Add your Figma board link to the Figma Boards spine',
+      "Make the Archive's lamplit look the shared theme for every book",
+      'Give every book a cover page' ]},
+    { id:'bk-lib-subroutine', name:'Subroutine', tasks:[
+      'Renew the GitHub sync token before Oct 30',
+      'Move personal text out of the public SUBROUTINE code',
+      "Make long Today's Targets wrap like the Game Plan",
+      'Roll the Daily page over to the new day after midnight' ]}
+  ]},
+  { prj:{ id:'prj-educator' }, books:[
+    { id:'bk-teaching', chapter:{ id:'ch-lib-tbapp', name:'Teacher Book app' }, tasks:[
+      'Decide the grading scale (units now total 20–28 pts, not 20)',
+      'Re-sync the Teacher Book with UNIT GUIDES (Unit 2 / 12 wild cards changed)',
+      'Turn on Teacher Book sync (token for subroutine-data)',
+      "Match the Ramhaus wheel's Mediums ring to the 20 units",
+      'Wild-card cover art (ChatGPT prompt + Cover Maker)',
+      'Fill the empty unit folders in Drive (Units 2–10, 12–20)',
+      'Google Classroom: build unit posts from UNIT GUIDES' ]},
+    { id:'bk-headcoach', tasks:[
+      'Merge Head Coach HQ + Sprints & Hurdles into one Coaching Book app' ]},
+    { id:'bk-lib-raminations', name:'Raminations', tasks:[
+      'Design Rammy, the mascot',
+      'Pick the first lesson (one art technique or one track drill)',
+      'Script and storyboard lesson 1 (vertical, under 60 seconds)' ]}
+  ]},
+  { prj:{ id:'prj-life' }, books:[
+    { id:'bk-me', tasks:[ 'Build the private Life Admin book from lifeadmin_book.html (Drive)' ]},
+    { id:'bk-cook', tasks:[ 'Build the Cook Book app (the repo is still empty)' ]}
+  ]},
+  { prj:{ id:'prj-genesis' }, books:[
+    { id:'bk-codex', tasks:[
+      'Build the Codex 2.0 app (private codex repo)',
+      'Pull names and lore that still fit from the original Codex (v35)',
+      'Put the drawing queue on this board (Tiers 1–4)' ]}
+  ]},
+  { prj:{ id:'prj-art' }, books:[
+    { id:'bk-lib-steez', name:'Steez Bank', tasks:[
+      'Pick its final name',
+      'Build it: art ideas sorted by medium' ]},
+    { id:'bk-lib-sketch', name:'Sketch Book', tasks:[
+      'Decide what it holds',
+      'Build it' ]}
+  ]}
+];
+function mergeLibraryGoals(){
+  if (!S || !Array.isArray(S.projects) || S._librarySeed_0930) return false;
+  function addTasks(list, texts){
+    texts.forEach(function(t){
+      if (!list.some(function(x){ return (x.t||'').trim().toLowerCase()===t.toLowerCase(); })) list.push({t:t, d:false});
+    });
+  }
+  LIBRARY_GOALS.forEach(function(g){
+    var prj = S.projects.find(function(p){ return p.id===g.prj.id; });
+    if (!prj) {
+      if (!g.prj.name) return;            // a board you deleted stays deleted
+      prj = { id:g.prj.id, name:g.prj.name, color:g.prj.color, books:[] };
+      S.projects.push(prj);
+    }
+    if (!prj.books) prj.books = [];
+    g.books.forEach(function(gb){
+      var bk = prj.books.find(function(b){ return b.id===gb.id; });
+      if (!bk) {
+        if (!gb.name) return;              // a book you deleted stays deleted
+        bk = { id:gb.id, name:gb.name, tasks:[], chapters:[] };
+        prj.books.push(bk);
+      }
+      if (!bk.tasks) bk.tasks = [];
+      if (gb.chapter) {
+        if (!bk.chapters) bk.chapters = [];
+        var ch = bk.chapters.find(function(c){ return c.id===gb.chapter.id; });
+        if (!ch) { ch = { id:gb.chapter.id, name:gb.chapter.name, tasks:[] }; bk.chapters.push(ch); }
+        if (!ch.tasks) ch.tasks = [];
+        addTasks(ch.tasks, gb.tasks);
+      } else {
+        addTasks(bk.tasks, gb.tasks);
+      }
+    });
+  });
+  S._librarySeed_0930 = true;
+  return true;
+}
+
 function ensureProjects() {
-  if (S.projects) return;
+  if (S.projects) { mergeLibraryGoals(); return; }
   S.projects = [
     { id:'prj-life', name:'LIFE ADMIN', color:'#4da6ff', books:[
       { id:'bk-me', name:'Me', tasks:[], chapters:[
@@ -3751,6 +3995,7 @@ function ensureProjects() {
       ]},
     ]},
   ];
+  mergeLibraryGoals();
   save();
 }
 
@@ -3951,7 +4196,7 @@ function buildBookRow(prj, bk){
   var hasChildren = (bk.chapters&&bk.chapters.length) || (bk.tasks&&bk.tasks.length);
   caret.textContent = expanded?'▾':'▸';
   var nm = el('div','dmm-book-name'); nm.textContent=bk.name;
-  var pl = el('div','dmm-book-pct'); pl.textContent=p+'%';
+  var pl = el('div','dmm-book-pct'); pl.textContent=agg.t?(agg.d+'/'+agg.t):'';
   var eb = makeEditBtn('dmm-row-edit', nm, bk, false);
   var db = makeDelBtn('dmm-row-del','Delete book', function(){ var i=prj.books.indexOf(bk); if(i>-1)prj.books.splice(i,1); save(); renderCanvas(); });
   head.appendChild(dh); head.appendChild(caret); head.appendChild(nm); head.appendChild(pl); head.appendChild(eb); head.appendChild(db);
@@ -3986,7 +4231,7 @@ function buildChapterRow(prj, bk, ch){
   var head = el('div','dmm-chapter-head');
   var caret = el('div','dmm-book-caret'); caret.textContent=expanded?'▾':'▸';
   var nm = el('div','dmm-chapter-name'); nm.textContent=ch.name;
-  var pl = el('div','dmm-book-pct'); pl.textContent=agg.t?(p+'%'):'–';
+  var pl = el('div','dmm-book-pct'); pl.textContent=agg.t?(agg.d+'/'+agg.t):'';
   var eb = makeEditBtn('dmm-row-edit', nm, ch, false);
   var db = makeDelBtn('dmm-row-del','Delete chapter', function(){ var i=(bk.chapters||[]).indexOf(ch); if(i>-1)bk.chapters.splice(i,1); save(); renderCanvas(); });
   head.appendChild(caret); head.appendChild(nm); head.appendChild(pl); head.appendChild(eb); head.appendChild(db);
@@ -4213,26 +4458,32 @@ function makeProjDraggable(node, prj, wrap, world){
 }
 
 // ── LIST VIEW of the project tree (mobile-friendly) ──────────
+var boardEdit = false;   // Edit mode shows drag/rename/delete/add controls (not saved)
 function renderProjectList(panel){
   ensureProjects();
   panel.style.cssText='padding:14px 12px 40px;overflow-y:auto';
   if(!S.dmapExpanded) S.dmapExpanded={};
 
   var bar=el('div','plist-toolbar');
+  var edb=el('button','plist-expand-btn plist-edit-btn'+(boardEdit?' on':'')); edb.textContent=boardEdit?'✓ Done':'✎ Edit';
+  edb.title='Show drag, rename, delete and add-book controls';
+  edb.onclick=function(){ boardEdit=!boardEdit; renderCanvas(); };
   var exb=el('button','plist-expand-btn'); exb.textContent=S.dmapAllExpanded?'⊟ Collapse all':'⊞ Expand all';
   exb.onclick=function(){ setAllExpanded(!S.dmapAllExpanded); };
-  bar.appendChild(exb); panel.appendChild(bar);
+  bar.appendChild(edb); bar.appendChild(exb); panel.appendChild(bar);
 
-  var inner = el('div','plist-grid');
+  var inner = el('div','plist-grid'+(boardEdit?' editing':''));
 
   S.projects.forEach(function(prj){
     var prog = projectProgress(prj);
     var p = Math.round(pct(prog)*100);
     var sec = el('div','plist-proj');
-    sec.style.borderLeft='3px solid '+prj.color;
+    sec.style.setProperty('--rc', prj.color);
 
     var hdr = el('div','plist-proj-hdr');
-    var nm = el('div','plist-proj-name'); nm.textContent='PROJECT_'+prj.name; nm.style.color=prj.color;
+    var nm = el('div','plist-proj-name'); nm.style.color=prj.color;
+    var npre = el('span','plist-proj-pre'); npre.textContent='PROJECT_';
+    nm.appendChild(npre); nm.appendChild(document.createTextNode(prj.name));
     var pc = el('div','plist-proj-pct'); pc.textContent=p+'%'; pc.style.color=prj.color;
     var peb = makeEditBtn('plist-ptool', nm, prj, true);
     var pdb = makeDelBtn('plist-ptool','Delete project', function(){ S.projects=S.projects.filter(function(x){return x.id!==prj.id;}); save(); renderCanvas(); });
@@ -4240,6 +4491,9 @@ function renderProjectList(panel){
     sec.appendChild(hdr);
 
     var bw=el('div','plist-bar-wrap'); var bf=el('div','plist-bar'); bf.style.width=p+'%'; bf.style.background=prj.color; bw.appendChild(bf); sec.appendChild(bw);
+    var nb=(prj.books||[]).length;
+    var meta=el('div','plist-proj-meta'); meta.textContent=nb+(nb===1?' book':' books')+' · '+(prog.t?(prog.d+' of '+prog.t+' done'):'no tasks yet');
+    sec.appendChild(meta);
 
     (prj.books||[]).forEach(function(bk){
       var bagg=bookProgress(bk); var bp=Math.round(pct(bagg)*100);
@@ -4249,17 +4503,18 @@ function renderProjectList(panel){
       var bdh=el('div','bk-handle'); bdh.textContent='⠿'; bdh.title='Drag to reorder';
       var bcar=el('div','plist-car'); bcar.textContent=bkEx?'▾':'▸';
       var bnm=el('div','plist-book-name'); bnm.textContent=bk.name;
-      var bpc=el('div','plist-book-pct'); bpc.textContent=bp+'%';
+      var bpc=el('div','plist-count'+(bagg.t&&bagg.d===bagg.t?' full':'')); bpc.textContent=bagg.t?(bagg.d+'/'+bagg.t):'';
       var beb=makeEditBtn('plist-rowbtn', bnm, bk, false);
       var bdb=makeDelBtn('plist-rowbtn','Delete book', function(){ var i=prj.books.indexOf(bk); if(i>-1)prj.books.splice(i,1); save(); renderCanvas(); });
       bh.appendChild(bdh); bh.appendChild(bcar); bh.appendChild(bnm); bh.appendChild(bpc); bh.appendChild(beb); bh.appendChild(bdb);
       bh.onclick=function(){ S.dmapExpanded['L'+bk.id]=!S.dmapExpanded['L'+bk.id]; save(); renderCanvas(); };
       brow.appendChild(bh);
+      if(bagg.d){ var bbar=el('div','plist-book-bar'); var bbf=el('div',''); bbf.style.width=bp+'%'; bbar.appendChild(bbf); brow.appendChild(bbar); }
       attachBookDrag(bdh, brow, prj, '.plist-book');
       if(bkEx){
         var bin=el('div','plist-book-inner');
         (bk.tasks||[]).forEach(function(t,i){ bin.appendChild(plistTask(prj,bk.tasks,t,i)); });
-        var at=makeInlineAdd('+ task','New task…', function(v){ bk.tasks.push({t:v,d:false}); }); at.className='plist-add'; bin.appendChild(at);
+        var at=makeInlineAdd('+ Add task','New task…', function(v){ bk.tasks.push({t:v,d:false}); }); at.className='plist-add'; bin.appendChild(at);
         (bk.chapters||[]).forEach(function(ch){
           var cagg=countTasks(ch.tasks); var cp=Math.round(pct(cagg)*100);
           var cEx=!!S.dmapExpanded['L'+ch.id];
@@ -4267,7 +4522,7 @@ function renderProjectList(panel){
           var ch_h=el('div','plist-ch-head');
           var ccar=el('div','plist-car'); ccar.textContent=cEx?'▾':'▸';
           var cnm=el('div','plist-ch-name'); cnm.textContent=ch.name;
-          var cpc=el('div','plist-book-pct'); cpc.textContent=cagg.t?cp+'%':'–';
+          var cpc=el('div','plist-count'+(cagg.t&&cagg.d===cagg.t?' full':'')); cpc.textContent=cagg.t?(cagg.d+'/'+cagg.t):'';
           var ceb=makeEditBtn('plist-rowbtn', cnm, ch, false);
           var cdb=makeDelBtn('plist-rowbtn','Delete chapter', function(){ var i=(bk.chapters||[]).indexOf(ch); if(i>-1)bk.chapters.splice(i,1); save(); renderCanvas(); });
           ch_h.appendChild(ccar); ch_h.appendChild(cnm); ch_h.appendChild(cpc); ch_h.appendChild(ceb); ch_h.appendChild(cdb);
@@ -4276,20 +4531,20 @@ function renderProjectList(panel){
           if(cEx){
             var cin=el('div','plist-ch-inner');
             (ch.tasks||[]).forEach(function(t,i){ cin.appendChild(plistTask(prj,ch.tasks,t,i)); });
-            var ct=makeInlineAdd('+ task','New task…', function(v){ ch.tasks.push({t:v,d:false}); }); ct.className='plist-add'; cin.appendChild(ct);
+            var ct=makeInlineAdd('+ Add task','New task…', function(v){ ch.tasks.push({t:v,d:false}); }); ct.className='plist-add'; cin.appendChild(ct);
             crow.appendChild(cin);
           }
           bin.appendChild(crow);
         });
-        var addCh=makeInlineAdd('+ chapter','New chapter…', function(v){ if(!bk.chapters)bk.chapters=[]; bk.chapters.push({id:'ch'+Date.now()+Math.random().toString(36).slice(2,5),name:v,tasks:[]}); });
-        addCh.className='plist-add'; addCh.style.opacity='.75'; bin.appendChild(addCh);
+        var addCh=makeInlineAdd('+ Add chapter','New chapter…', function(v){ if(!bk.chapters)bk.chapters=[]; bk.chapters.push({id:'ch'+Date.now()+Math.random().toString(36).slice(2,5),name:v,tasks:[]}); });
+        addCh.className='plist-add edit-only'; bin.appendChild(addCh);
         brow.appendChild(bin);
       }
       sec.appendChild(brow);
     });
     // add book button
-    var addBk = makeInlineAdd('+ add book','New book…', function(v){ prj.books.push({id:'bk'+Date.now()+Math.random().toString(36).slice(2,5),name:v,tasks:[],chapters:[]}); });
-    addBk.className='plist-addbook';
+    var addBk = makeInlineAdd('+ Add book','New book…', function(v){ prj.books.push({id:'bk'+Date.now()+Math.random().toString(36).slice(2,5),name:v,tasks:[],chapters:[]}); });
+    addBk.className='plist-addbook edit-only';
     sec.appendChild(addBk);
     inner.appendChild(sec);
   });
@@ -7908,59 +8163,338 @@ initSidebarControls();
 
 <!-- GitHub Sync — replaces Firebase. Same _fbLoad/_fbSave interface the app already calls. -->
 <script>
+// How sync stays safe (rewritten Oct 4, 2026 after a stale phone overwrote a day of plans):
+// - Each device remembers WHICH GitHub version its data came from (baseSha), not just a time.
+//   Timestamps can't be trusted: any automatic save (like the Sunday chore reset) stamps old
+//   data with "now".
+// - On open, on switching back to the app, and every 90 s while it's open, the device checks
+//   GitHub. Unchanged: carry on. Changed by another device and nothing unsaved here: load it.
+//   Changed on both: ask, and keep a copy of whichever side you don't pick.
+// - Uploads send baseSha. If GitHub moved on, it refuses (409) and we check again instead of
+//   overwriting. Nothing ever re-uploads blindly.
+// - Every save is a commit, so Version history can bring back any earlier copy.
 (function(){
   var CFG_KEY = 'subroutine_gh_cfg';
   var LS_KEY  = 'sub_v5';
+  var DIRTY_KEY = 'sub_v5_unpushed';
+  var BK_KEY = 'sub_v5_backups';
+  var NOTE_KEY = 'sub_sync_note';
   function getCfg(){
     var c; try{ c = JSON.parse(localStorage.getItem(CFG_KEY)||'{}'); }catch(e){ return {}; }
     // Data moved to the private repo — switch any device still pointed at the public one
     if(String(c.owner||'').toLowerCase()==='zjaylewis94' && String(c.repo||'').toLowerCase()==='subroutine'){
-      c.repo = 'subroutine-data'; delete c._sha; setCfg(c);
+      c.repo = 'subroutine-data'; delete c._sha; delete c.baseSha; setCfg(c);
     }
+    if(c.baseSha===undefined && c._sha) c.baseSha = c._sha;   // carry over from the old sync
     return c;
   }
   function setCfg(c){ try{ localStorage.setItem(CFG_KEY, JSON.stringify(c)); }catch(e){} }
+  function configured(c){ return !!(c && c.token && c.owner && c.repo); }
+  function setBase(c, sha){ c.baseSha = sha; c._sha = sha; setCfg(c); }
   function ghHeaders(token){ return { 'Authorization':'Bearer '+token, 'Accept':'application/vnd.github+json', 'Content-Type':'application/json' }; }
-  function apiURL(c){ return 'https://api.github.com/repos/'+c.owner+'/'+c.repo+'/contents/'+(c.path||'subroutine_data.json')+(c.branch?('?ref='+c.branch):''); }
+  function repoURL(c){ return 'https://api.github.com/repos/'+c.owner+'/'+c.repo; }
+  function filePath(c){ return c.path||'subroutine_data.json'; }
+  function fileURL(c, ref){ var r = ref || c.branch; return repoURL(c)+'/contents/'+filePath(c)+(r?('?ref='+encodeURIComponent(r)):''); }
+  function decodeB64(b){ return decodeURIComponent(escape(atob(String(b).replace(/\n/g,'')))); }
+  function encodeB64(t){ return btoa(unescape(encodeURIComponent(t))); }
+  function isDirty(){ try{ return !!localStorage.getItem(DIRTY_KEY); }catch(e){ return false; } }
+  function clearDirtyUpTo(ts){ try{ var v=+localStorage.getItem(DIRTY_KEY)||0; if(!v || v<=ts) localStorage.removeItem(DIRTY_KEY); }catch(e){} }
+  function deviceLabel(){
+    var u = navigator.userAgent||'';
+    if(/iPhone/.test(u)) return 'iPhone';
+    if(/iPad/.test(u) || (/Macintosh/.test(u) && navigator.maxTouchPoints>1)) return 'iPad';
+    if(/Android/.test(u)) return 'Android';
+    if(/Windows/.test(u)) return 'Windows PC';
+    if(/Macintosh/.test(u)) return 'Mac';
+    return 'Browser';
+  }
+  function fmtWhen(d){
+    var now = new Date(), y = new Date(now); y.setDate(now.getDate()-1);
+    var t = d.toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'});
+    if(d.toDateString()===now.toDateString()) return 'Today · '+t;
+    if(d.toDateString()===y.toDateString()) return 'Yesterday · '+t;
+    return d.toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'})+' · '+t;
+  }
+  function openGate(){ if(typeof openCloudGate==='function') openCloudGate(); }
 
-  // LOAD remote JSON → returns parsed state object or null
-  window._fbLoad = async function(){
-    var c = getCfg();
-    if(!c.token || !c.owner || !c.repo) return null;
+  // Read the file on GitHub (or an older version with ref). Returns {sha,data}, {missing:true},
+  // or null when offline / refused. 'no-cache' revalidates every time, so it's never stale.
+  async function fetchRemote(c, ref){
     try{
-      var res = await fetch(apiURL(c), { headers: ghHeaders(c.token) });
-      if(res.status===404) return null;                 // file not created yet
+      var res = await fetch(fileURL(c, ref), { headers: ghHeaders(c.token), cache:'no-cache' });
+      if(res.status===404) return { missing:true };
       if(!res.ok){ console.warn('GitHub load failed:', res.status); return null; }
-      var j = await res.json();
-      c._sha = j.sha; setCfg(c);                          // remember blob sha for next write
-      var content = decodeURIComponent(escape(atob(j.content.replace(/\n/g,''))));
-      return JSON.parse(content);
+      var j = await res.json(), b64 = j.content;
+      if(!b64 || j.encoding==='none'){   // files over 1 MB come back without content
+        var rb = await fetch(repoURL(c)+'/git/blobs/'+j.sha, { headers: ghHeaders(c.token), cache:'no-cache' });
+        if(!rb.ok) return null;
+        b64 = (await rb.json()).content;
+      }
+      return { sha:j.sha, data: JSON.parse(decodeB64(b64)) };
     }catch(e){ console.warn('GitHub load error:', e); return null; }
+  }
+  // Old interface, kept for anything that still calls it. It no longer changes what this
+  // device thinks it's synced to.
+  window._fbLoad = async function(){
+    var c = getCfg(); if(!configured(c)) return null;
+    var r = await fetchRemote(c); return (r && r.data) ? r.data : null;
   };
 
-  // SAVE accepts a JSON string (matches the old Firebase signature). Debounced.
-  var saveTimer=null, pending=null;
+  // Keep up to 3 copies of this device's data from before it was replaced.
+  function backupLocal(label){
+    try{
+      var cur = localStorage.getItem(LS_KEY); if(!cur) return;
+      var list = []; try{ list = JSON.parse(localStorage.getItem(BK_KEY)||'[]'); }catch(e){}
+      list.unshift({ at: Date.now(), label: label, json: cur });
+      list = list.slice(0,3);
+      while(list.length){
+        try{ localStorage.setItem(BK_KEY, JSON.stringify(list)); return; }catch(e){ list.pop(); }
+      }
+    }catch(e){}
+  }
+  function getBackups(){ try{ return JSON.parse(localStorage.getItem(BK_KEY)||'[]'); }catch(e){ return []; } }
+
+  var reloading = false;
+  function adopt(r, note){
+    var c = getCfg();
+    var last = +sessionStorage.getItem('sub_adopt_at')||0;
+    if(Date.now()-last < 15000){ ghFlash('Sync paused — open Sync to check','var(--danger)'); return; }   // never loop
+    try{ sessionStorage.setItem('sub_adopt_at', String(Date.now())); }catch(e){}
+    backupLocal('This device before loading GitHub’s copy');
+    try{ localStorage.setItem(LS_KEY, JSON.stringify(r.data)); }catch(e){ ghFlash('Couldn’t store the newer data','var(--danger)'); return; }
+    setBase(c, r.sha);
+    try{ localStorage.removeItem(DIRTY_KEY); }catch(e){}
+    if(note){ try{ sessionStorage.setItem(NOTE_KEY, note); }catch(e){} }
+    reloading = true; pending = null;
+    location.reload();
+  }
+
+  // A modal you have to answer (tapping outside does nothing), so a stray tap can't pick a side.
+  function choiceModal(title, msg, buttons){
+    var old = document.getElementById('sync-choice'); if(old) old.remove();
+    var ov = document.createElement('div'); ov.className='uimodal'; ov.id='sync-choice';
+    var box = document.createElement('div'); box.className='uimodal-box';
+    var t = document.createElement('div'); t.className='uimodal-title'; t.textContent=title; box.appendChild(t);
+    var m = document.createElement('div'); m.className='uimodal-msg'; m.textContent=msg; box.appendChild(m);
+    var bw = document.createElement('div'); bw.className='uimodal-btns'; bw.style.flexWrap='wrap';
+    buttons.forEach(function(b){
+      var el2 = document.createElement('button'); el2.className='uimodal-btn '+(b.primary?'ok':''); el2.textContent=b.label;
+      el2.onclick = function(){ ov.remove(); b.onClick(); };
+      bw.appendChild(el2);
+    });
+    box.appendChild(bw); ov.appendChild(box); document.body.appendChild(ov);
+  }
+
+  var conflictOpen = false;
+  function conflict(r){
+    if(conflictOpen) return; conflictOpen = true;
+    var when = (r.data && r.data._ts) ? fmtWhen(new Date(r.data._ts)) : 'recently';
+    choiceModal('Two different versions',
+      'Another device saved changes ('+when+') that this device hasn’t loaded, and this device has changes that aren’t on GitHub yet.\n\n'+
+      'Pick which one to keep. The other one isn’t lost: open Sync → Version history to bring it back.',
+      [
+        { label:'Use the other device’s', primary:true, onClick:function(){ conflictOpen=false; adopt(r, 'Loaded the other device’s version. This device’s copy is in Version history.'); } },
+        { label:'Keep this device’s', onClick:function(){ conflictOpen=false; var c=getCfg(); setBase(c, r.sha); openGate(); pending = JSON.stringify(S); pendingTs = S._ts||Date.now(); doSave(); } }
+      ]);
+  }
+
+  // Compare this device with GitHub and settle it. Safe to call any time.
+  var checking = false, recheck = false;
+  function pushIfUnsent(){
+    // Edits that never reached GitHub (app closed mid-save, offline) go up now.
+    if(pending===null && isDirty() && typeof S!=='undefined'){ pending = JSON.stringify(S); pendingTs = S._ts||Date.now(); }
+    if(pending!==null && !pushing){ if(saveTimer) clearTimeout(saveTimer); doSave(); }
+  }
+  async function reconcile(){
+    var c = getCfg();
+    if(!configured(c)){ openGate(); return; }
+    if(reloading || conflictOpen) return;
+    if(checking || pushing){ recheck = true; return; }    // run again once the current step finishes
+    checking = true;
+    try{
+      var r = await fetchRemote(c);
+      if(pushing){ recheck = true; return; }               // an upload started meanwhile; check after it
+      c = getCfg();                                        // an upload may have moved us forward
+      if(!r || r.missing){ openGate(); if(r) pushIfUnsent(); return; }   // offline, or first save creates it
+      if(c.baseSha && r.sha===c.baseSha){ openGate(); pushIfUnsent(); return; }   // nobody else saved since
+      if(!isDirty()){ adopt(r, 'Loaded the latest from your other device.'); return; }
+      conflict(r);
+    } finally {
+      checking = false;
+      if(recheck && !reloading && !conflictOpen){ recheck = false; setTimeout(reconcile, 400); }
+    }
+  }
+
+  // SAVE: called with the full JSON on every change. Debounced; uploads only on top of the
+  // version this device last synced with.
+  var saveTimer=null, pending=null, pendingTs=0, pushing=false, retryTimer=null;
   window._fbSave = async function(json){
     var c = getCfg();
-    if(!c.token || !c.owner || !c.repo) return;
-    pending = json;
+    if(!configured(c)) return;
+    pending = json; pendingTs = (typeof S!=='undefined' && S._ts) || Date.now();
     if(saveTimer) clearTimeout(saveTimer);
     saveTimer = setTimeout(doSave, 1500);
   };
   async function doSave(){
     var c = getCfg();
-    if(!c.token || pending===null) return;
-    var body = { message:'subroutine update '+new Date().toISOString(), content: btoa(unescape(encodeURIComponent(pending))), branch: c.branch||undefined };
-    if(c._sha) body.sha = c._sha;
+    if(!configured(c) || pending===null || reloading) return;
+    if(pushing){ if(saveTimer) clearTimeout(saveTimer); saveTimer = setTimeout(doSave, 800); return; }
+    pushing = true;
+    var json = pending, ts = pendingTs; pending = null;
+    var body = { message:'subroutine update '+new Date().toISOString()+' · '+deviceLabel(), content: encodeB64(json), branch: c.branch||undefined };
+    if(c.baseSha) body.sha = c.baseSha;
     try{
-      var res = await fetch('https://api.github.com/repos/'+c.owner+'/'+c.repo+'/contents/'+(c.path||'subroutine_data.json'), { method:'PUT', headers: ghHeaders(c.token), body: JSON.stringify(body) });
-      if(res.ok){ var j=await res.json(); c._sha=j.content.sha; setCfg(c); ghFlash('✓ Synced','var(--ok)'); }
-      else if(res.status===409){ delete c._sha; setCfg(c); var r2=await fetch(apiURL(c),{headers:ghHeaders(c.token)}); if(r2.ok){var jj=await r2.json();c._sha=jj.sha;setCfg(c);return doSave();} }
-      else { ghFlash('Sync failed ('+res.status+')','var(--danger)'); }
-    }catch(e){ ghFlash('Sync error','var(--danger)'); }
-    pending=null;
+      var res = await fetch(repoURL(c)+'/contents/'+filePath(c), { method:'PUT', headers: ghHeaders(c.token), body: JSON.stringify(body), cache:'no-store' });
+      if(res.ok){
+        var j = await res.json(); setBase(c, j.content.sha); clearDirtyUpTo(ts);
+        ghFlash('✓ Synced','var(--ok)');
+      } else if(res.status===409 || (res.status===422 && /sha/i.test(await res.text().catch(function(){return '';})))){
+        // GitHub has a version this device hasn't seen. Don't overwrite it: keep our change
+        // queued and settle it (load theirs if nothing here is unsaved, otherwise ask).
+        if(pending===null){ pending = json; pendingTs = ts; }
+        pushing = false; reconcile(); return;
+      } else if(res.status===401 || res.status===403){
+        if(pending===null){ pending = json; pendingTs = ts; }
+        ghFlash('Sync failed — check your token in Sync','var(--danger)');
+      } else {
+        if(pending===null){ pending = json; pendingTs = ts; }
+        ghFlash('Sync failed ('+res.status+') — will retry','var(--danger)');
+        scheduleRetry();
+      }
+    }catch(e){
+      if(pending===null){ pending = json; pendingTs = ts; }
+      ghFlash('Offline — will sync when back','var(--dim)');
+      scheduleRetry();
+    }
+    pushing = false;
+    if(recheck){ recheck = false; setTimeout(reconcile, 400); }
+    else if(pending!==null && !retryTimer){ if(saveTimer) clearTimeout(saveTimer); saveTimer = setTimeout(doSave, 1500); }
   }
-  function ghFlash(msg,color){ var el=document.getElementById('sync-status'); if(el){ el.textContent=msg; el.style.color=color||'var(--dim)'; setTimeout(function(){ el.textContent=''; },2500); } }
+  function scheduleRetry(){ if(retryTimer) return; retryTimer = setTimeout(function(){ retryTimer=null; doSave(); }, 30000); }
+  function flushNow(){ if(pending!==null){ if(saveTimer) clearTimeout(saveTimer); doSave(); } }
+  function ghFlash(msg,color){ var el=document.getElementById('sync-status'); if(el){ el.textContent=msg; el.style.color=color||'var(--dim)'; setTimeout(function(){ el.textContent=''; },3500); } }
+
+  // ── Version history ──
+  function summary(d){
+    var lines = [];
+    var gp = (d.gamePlan||[]);
+    lines.push('Game Plan: '+gp.length+(gp.length===1?' step':' steps')+(gp.length?' — '+gp.slice(0,5).map(function(x){return x.t;}).join(', ')+(gp.length>5?', …':''):''));
+    var g = (d.lists&&d.lists.grocery)||[];
+    lines.push('Shopping list: '+g.length+(g.length===1?' item':' items')+(g.length?' — '+g.slice(0,5).map(function(x){return x.t;}).join(', ')+(g.length>5?', …':''):''));
+    var open=0; (d.projects||[]).forEach(function(p){ (p.books||[]).forEach(function(b){ (b.tasks||[]).forEach(function(t){ if(!t.d) open++; }); (b.chapters||[]).forEach(function(ch){ (ch.tasks||[]).forEach(function(t){ if(!t.d) open++; }); }); }); });
+    lines.push('Production Board: '+open+' open tasks');
+    lines.push('Calendar: '+((d.calEvents||[]).length)+' events');
+    if(d._ts) lines.push('Last edited: '+fmtWhen(new Date(d._ts)));
+    return lines.join('\n');
+  }
+  async function restoreData(data, label){
+    var c = getCfg();
+    backupLocal('This device before restoring '+label);
+    data = JSON.parse(JSON.stringify(data)); data._ts = Date.now();
+    var json = JSON.stringify(data);
+    try{ localStorage.setItem(LS_KEY, json); }catch(e){ uiAlert('Couldn’t store that version on this device.',{title:'Restore failed'}); return; }
+    try{ localStorage.setItem(DIRTY_KEY, String(data._ts)); }catch(e){}
+    if(configured(c)){
+      // Save it as the newest version on GitHub. Everything before it stays in history.
+      // Base it on GitHub's current copy; the upload happens right after the reload
+      // (this device is marked as having unsent changes).
+      var cur = await fetchRemote(c);
+      if(cur && cur.sha) setBase(c, cur.sha);
+    }
+    pending = null;
+    try{ sessionStorage.setItem(NOTE_KEY, 'Restored the version from '+label+'.'); }catch(e){}
+    reloading = true; location.reload();
+  }
+  function histModal(){
+    var old = document.getElementById('gh-history'); if(old) old.remove();
+    var ov = document.createElement('div'); ov.id='gh-history';
+    ov.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.72);z-index:99999;display:flex;align-items:center;justify-content:center;padding:16px';
+    var box = document.createElement('div');
+    box.style.cssText='background:var(--s1);border:1px solid var(--br2);border-radius:14px;padding:20px;max-width:520px;width:100%;max-height:86vh;overflow-y:auto;font-family:DM Sans,sans-serif;color:var(--text)';
+    ov.appendChild(box); document.body.appendChild(ov);
+    ov.onclick = function(e){ if(e.target===ov) ov.remove(); };
+    return { ov:ov, box:box };
+  }
+  function hBtn(label, primary){
+    var b = document.createElement('button');
+    b.textContent = label;
+    b.style.cssText = primary
+      ? 'background:var(--gold);border:none;border-radius:7px;color:#111;padding:9px 14px;cursor:pointer;font-family:Rajdhani,sans-serif;font-weight:700;letter-spacing:1px'
+      : 'background:none;border:1px solid var(--br2);border-radius:7px;color:var(--mid);padding:9px 14px;cursor:pointer;font-family:Rajdhani,sans-serif;font-weight:600;letter-spacing:1px';
+    return b;
+  }
+  function hRow(main, sub){
+    var r = document.createElement('button');
+    r.style.cssText='display:block;width:100%;text-align:left;background:var(--s2);border:1px solid var(--br2);border-radius:9px;padding:11px 13px;margin-bottom:7px;color:var(--text);cursor:pointer;font:inherit';
+    var a = document.createElement('div'); a.style.cssText='font-weight:600;font-size:.9rem'; a.textContent = main;
+    var b = document.createElement('div'); b.style.cssText='font-size:.74rem;color:#a39a90;margin-top:2px'; b.textContent = sub;
+    r.appendChild(a); r.appendChild(b); return r;
+  }
+  function hHead(text){ var h=document.createElement('div'); h.style.cssText='font-family:Rajdhani,sans-serif;font-size:.78rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#a39a90;margin:14px 0 8px'; h.textContent=text; return h; }
+  function preview(title, data, label, back){
+    var m = histModal(), box = m.box;
+    var t = document.createElement('div'); t.style.cssText='font-family:Rajdhani,sans-serif;font-size:1.05rem;font-weight:700;letter-spacing:1px;margin-bottom:10px'; t.textContent = title; box.appendChild(t);
+    var p = document.createElement('div'); p.style.cssText='white-space:pre-wrap;font-size:.84rem;line-height:1.55;color:var(--mid);background:var(--s2);border:1px solid var(--br2);border-radius:9px;padding:12px'; p.textContent = summary(data); box.appendChild(p);
+    var note = document.createElement('div'); note.style.cssText='font-size:.74rem;color:#a39a90;margin:10px 0 14px;line-height:1.5'; note.textContent='Restoring makes this the newest version on every device. What you have now is kept in Version history, so you can switch back.'; box.appendChild(note);
+    var row = document.createElement('div'); row.style.cssText='display:flex;gap:8px;justify-content:space-between';
+    var bk = hBtn('← Back'), go = hBtn('Restore this version', true);
+    bk.onclick = function(){ m.ov.remove(); back(); };
+    go.onclick = function(){ go.disabled = true; go.textContent='Restoring…'; restoreData(data, label); };
+    row.appendChild(bk); row.appendChild(go); box.appendChild(row);
+  }
+  async function openVersionHistory(page){
+    page = page || 1;
+    var c = getCfg();
+    var m = histModal(), box = m.box;
+    var t = document.createElement('div'); t.style.cssText='font-family:Rajdhani,sans-serif;font-size:1.05rem;font-weight:700;letter-spacing:1px'; t.textContent='🕘 VERSION HISTORY'; box.appendChild(t);
+    var d = document.createElement('div'); d.style.cssText='font-size:.76rem;color:#a39a90;margin:4px 0 4px;line-height:1.5'; d.textContent='Every save is kept. Tap a time to see what it held, then restore it.'; box.appendChild(d);
+    var bks = getBackups();
+    if(bks.length && page===1){
+      box.appendChild(hHead('Saved on this device'));
+      bks.forEach(function(b){
+        var r = hRow(fmtWhen(new Date(b.at)), b.label);
+        r.onclick = function(){ var data; try{ data = JSON.parse(b.json); }catch(e){ return; } m.ov.remove(); preview(fmtWhen(new Date(b.at)), data, fmtWhen(new Date(b.at)), function(){ openVersionHistory(); }); };
+        box.appendChild(r);
+      });
+    }
+    if(!configured(c)){ box.appendChild(hHead('GitHub')); var n0=document.createElement('div'); n0.style.cssText='font-size:.8rem;color:var(--dim)'; n0.textContent='Sync isn’t set up on this device.'; box.appendChild(n0); }
+    else {
+      box.appendChild(hHead('On GitHub'));
+      var load = document.createElement('div'); load.style.cssText='font-size:.8rem;color:var(--dim)'; load.textContent='Loading…'; box.appendChild(load);
+      try{
+        var url = repoURL(c)+'/commits?path='+encodeURIComponent(filePath(c))+'&per_page=100&page='+page+(c.branch?('&sha='+encodeURIComponent(c.branch)):'');
+        var res = await fetch(url, { headers: ghHeaders(c.token), cache:'no-cache' });
+        if(!res.ok) throw new Error(res.status);
+        var commits = await res.json();
+        load.remove();
+        // Saves come every few seconds, so group them into sittings (a gap of 10+ minutes
+        // starts a new one) and offer the last save of each.
+        var groups = [];
+        commits.forEach(function(cm){
+          var at = new Date(cm.commit.author.date);
+          var dev = (cm.commit.message.split(' · ')[1]||'').trim();
+          var g = groups[groups.length-1];
+          if(g && (g.oldest - at) < 10*60*1000){ g.oldest = at; g.count++; if(dev && g.devices.indexOf(dev)<0) g.devices.push(dev); }
+          else groups.push({ sha: cm.sha, at: at, oldest: at, count: 1, devices: dev?[dev]:[] });
+        });
+        if(!groups.length){ var n1=document.createElement('div'); n1.style.cssText='font-size:.8rem;color:var(--dim)'; n1.textContent='No saved versions found.'; box.appendChild(n1); }
+        groups.forEach(function(g, i){
+          var sub = (g.count===1 ? '1 save' : g.count+' saves')+(g.devices.length?' · '+g.devices.join(', '):'')+(i===0&&page===1?' · current':'');
+          var r = hRow(fmtWhen(g.at), sub);
+          r.onclick = async function(){
+            r.style.opacity='.6';
+            var v = await fetchRemote(c, g.sha);
+            if(!v || !v.data){ r.style.opacity='1'; uiAlert('Couldn’t load that version. Check your connection and try again.',{title:'Version history'}); return; }
+            m.ov.remove(); preview(fmtWhen(g.at), v.data, fmtWhen(g.at), function(){ openVersionHistory(page); });
+          };
+          box.appendChild(r);
+        });
+        if(commits.length===100){ var more = hBtn('Show older'); more.style.marginTop='6px'; more.onclick=function(){ m.ov.remove(); openVersionHistory(page+1); }; box.appendChild(more); }
+      }catch(e){ load.textContent='Couldn’t load history from GitHub ('+(e.message||'offline')+').'; }
+    }
+    var close = hBtn('Close'); close.style.cssText += ';display:block;margin:14px 0 0 auto'; close.onclick=function(){ m.ov.remove(); }; box.appendChild(close);
+  }
+  window.openVersionHistory = openVersionHistory;
 
   // ── Settings panel ──
   function openSyncSettings(){
@@ -7969,80 +8503,76 @@ initSidebarControls();
     var ov = document.createElement('div'); ov.id='gh-modal';
     ov.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:99999;display:flex;align-items:center;justify-content:center;padding:20px';
     var box = document.createElement('div');
-    box.style.cssText='background:var(--s1);border:1px solid var(--br2);border-radius:14px;padding:24px;max-width:460px;width:100%;font-family:DM Sans,sans-serif';
+    box.style.cssText='background:var(--s1);border:1px solid var(--br2);border-radius:14px;padding:24px;max-width:460px;width:100%;font-family:DM Sans,sans-serif;max-height:90vh;overflow-y:auto';
     function fld(label,id,val,type,hint){ return '<div style="margin-bottom:11px"><label style="display:block;font-size:.64rem;letter-spacing:1px;text-transform:uppercase;color:var(--dim);margin-bottom:4px">'+label+'</label><input id="'+id+'" type="'+(type||'text')+'" value="'+(val||'').replace(/"/g,'&quot;')+'" style="width:100%;background:var(--s2);border:1px solid var(--br2);border-radius:7px;color:var(--text);padding:8px 10px;font-family:DM Sans,sans-serif;font-size:.82rem;outline:none">'+(hint?'<div style="font-size:.6rem;color:var(--dim);margin-top:3px">'+hint+'</div>':'')+'</div>'; }
+    var btn = 'background:none;border:1px solid var(--br2);border-radius:7px;color:var(--mid);padding:8px 12px;cursor:pointer;font-family:Rajdhani,sans-serif;font-weight:600;letter-spacing:1px;font-size:.72rem';
     box.innerHTML =
       '<div style="font-family:Rajdhani,sans-serif;font-size:1.05rem;font-weight:700;letter-spacing:1px;color:var(--text);margin-bottom:4px">⇅ GITHUB SYNC</div>'+
-      '<div style="font-size:.72rem;color:var(--dim);margin-bottom:18px;line-height:1.5">Your data saves to a JSON file in your repo. On another device, enter the same info and it pulls your latest. Create a <b>fine-grained token</b> at github.com/settings/tokens with <b>Contents: Read and write</b> on this repo.</div>'+
+      '<div style="font-size:.72rem;color:var(--dim);margin-bottom:14px;line-height:1.5">Your data saves to a JSON file in your repo. On another device, enter the same info and it pulls your latest. Create a <b>fine-grained token</b> at github.com/settings/tokens with <b>Contents: Read and write</b> on this repo.</div>'+
+      '<button id="gh-history-btn" style="'+btn+';width:100%;margin-bottom:14px;padding:10px 12px;font-size:.8rem;color:var(--text)">🕘 VERSION HISTORY — bring back an earlier copy</button>'+
       fld('Owner (username)','gh-owner',c.owner||'zjaylewis94')+
       fld('Repo','gh-repo',c.repo||'subroutine-data')+
       fld('Branch (optional)','gh-branch',c.branch||'','','leave blank for default')+
       fld('Data file path','gh-path',c.path||'subroutine_data.json')+
       fld('Token','gh-token',c.token||'','password','stored only in this browser')+
-      '<div style="display:flex;gap:8px;margin-top:18px;justify-content:space-between;align-items:center">'+
-        '<button id="gh-pull" style="background:none;border:1px solid var(--br2);border-radius:7px;color:var(--dim);padding:8px 12px;cursor:pointer;font-family:Rajdhani,sans-serif;font-weight:600;letter-spacing:1px;font-size:.7rem">PULL NOW</button>'+
+      '<div style="display:flex;gap:8px;margin-top:18px;justify-content:space-between;align-items:center;flex-wrap:wrap">'+
+        '<button id="gh-pull" style="'+btn+'">PULL NOW</button>'+
         '<div style="display:flex;gap:8px">'+
-          '<button id="gh-cancel" style="background:none;border:1px solid var(--br2);border-radius:7px;color:var(--dim);padding:8px 14px;cursor:pointer;font-family:Rajdhani,sans-serif;font-weight:600;letter-spacing:1px">CLOSE</button>'+
+          '<button id="gh-cancel" style="'+btn+';padding:8px 14px">CLOSE</button>'+
           '<button id="gh-save" style="background:var(--gold);border:none;border-radius:7px;color:#111;padding:8px 16px;cursor:pointer;font-family:Rajdhani,sans-serif;font-weight:700;letter-spacing:1px">SAVE & SYNC</button>'+
         '</div>'+
       '</div>';
     ov.appendChild(box); document.body.appendChild(ov);
-    function readForm(){ return { owner:document.getElementById('gh-owner').value.trim(), repo:document.getElementById('gh-repo').value.trim(), branch:document.getElementById('gh-branch').value.trim(), path:document.getElementById('gh-path').value.trim()||'subroutine_data.json', token:document.getElementById('gh-token').value.trim() }; }
+    function readForm(){ var o = getCfg(); var f = { owner:document.getElementById('gh-owner').value.trim(), repo:document.getElementById('gh-repo').value.trim(), branch:document.getElementById('gh-branch').value.trim(), path:document.getElementById('gh-path').value.trim()||'subroutine_data.json', token:document.getElementById('gh-token').value.trim() };
+      // Pointing at a different file means we no longer know which version we're based on
+      if(o.owner===f.owner && o.repo===f.repo && (o.branch||'')===f.branch && (o.path||'subroutine_data.json')===f.path){ f.baseSha = o.baseSha; f._sha = o._sha; }
+      return f; }
     document.getElementById('gh-cancel').onclick=function(){ ov.remove(); };
+    document.getElementById('gh-history-btn').onclick=function(){ setCfg(readForm()); ov.remove(); openVersionHistory(); };
     ov.onclick=function(e){ if(e.target===ov) ov.remove(); };
     document.getElementById('gh-pull').onclick=async function(){
       setCfg(readForm()); ghFlash('Pulling…','var(--gold)');
-      var remote = await window._fbLoad();
-      if(remote){ if(await uiConfirmP('Load data from GitHub onto this device? This replaces what is here now.',{title:'Pull from GitHub',okLabel:'Load',danger:true})){ localStorage.setItem(LS_KEY, JSON.stringify(remote)); location.reload(); } }
-      else { uiAlert('No data file found yet on GitHub. Hit SAVE & SYNC first to create it.',{title:'Nothing to pull'}); }
+      var r = await fetchRemote(getCfg());
+      if(r && r.data){ if(await uiConfirmP('Load the GitHub copy onto this device? What’s here now is kept in Version history.',{title:'Pull from GitHub',okLabel:'Load'})){ try{ sessionStorage.removeItem('sub_adopt_at'); }catch(e){} adopt(r, 'Loaded the GitHub copy.'); } }
+      else if(r && r.missing){ uiAlert('No data file found yet on GitHub. Hit SAVE & SYNC first to create it.',{title:'Nothing to pull'}); }
+      else { uiAlert('Couldn’t reach GitHub. Check your connection and token.',{title:'Pull failed'}); }
     };
     document.getElementById('gh-save').onclick=async function(){
       setCfg(readForm()); ov.remove(); ghFlash('Connecting…','var(--gold)');
-      var remote = await window._fbLoad();
-      if(remote && remote._ts && (!S._ts || remote._ts > S._ts)){
-        if(await uiConfirmP('GitHub has newer data than this device.\n\nLoad it? (Cancel keeps this device\u2019s version and pushes it up, overwriting GitHub.)',{title:'Newer data found',okLabel:'Load from GitHub'})){ localStorage.setItem(LS_KEY, JSON.stringify(remote)); location.reload(); return; }
-      }
-      if(typeof S!=='undefined'){ pending=JSON.stringify(S); doSave(); }   // push immediately
+      var c2 = getCfg(), r = await fetchRemote(c2);
+      if(!r){ ghFlash('Couldn’t reach GitHub','var(--danger)'); return; }
+      if(r.missing || (c2.baseSha && r.sha===c2.baseSha)){ openGate(); pending=JSON.stringify(S); pendingTs=S._ts||Date.now(); doSave(); return; }
+      // GitHub has something this device hasn't synced with: always ask here.
+      choiceModal('GitHub has a different version',
+        'GitHub’s copy was last edited '+((r.data&&r.data._ts)?fmtWhen(new Date(r.data._ts)):'at an unknown time')+'. Which one should every device use?\n\nThe one you don’t pick stays in Version history.',
+        [
+          { label:'Use GitHub’s', primary:true, onClick:function(){ try{ sessionStorage.removeItem('sub_adopt_at'); }catch(e){} adopt(r, 'Loaded the GitHub copy.'); } },
+          { label:'Use this device’s', onClick:function(){ setBase(getCfg(), r.sha); openGate(); pending=JSON.stringify(S); pendingTs=S._ts||Date.now(); doSave(); } }
+        ]);
     };
   }
   window.openSyncSettings = openSyncSettings;
   // keep the old function name alive in case anything calls it
   window.syncNow = openSyncSettings;
 
-  // Wire the Sync button + auto-pull newer data on load
+  // Wire the Sync button, then check GitHub on open, on return, and every 90 s.
   document.addEventListener('DOMContentLoaded', function(){
     var sb=document.getElementById('reset-btn') || document.getElementById('sync-btn');
     if(sb){ sb.onclick = openSyncSettings; sb.removeAttribute('onclick'); }
-    var c=getCfg();
-    if(c.token && c.owner && c.repo && typeof S!=='undefined'){
-      window._fbLoad().then(function(remote){
-        var remoteNewer = !!(remote && remote._ts && (!S._ts || remote._ts > S._ts));
-        if(remoteNewer){
-          // Did the person change anything on this device while we were fetching?
-          var dirty = (typeof _editedDuringLoad!=='undefined') && _editedDuringLoad;
-          if(!dirty){
-            localStorage.setItem(LS_KEY, JSON.stringify(remote));
-            location.reload();
-            return;
-          }
-          // Conflict — never silently discard either side.
-          var when = new Date(remote._ts).toLocaleString();
-          uiModal({
-            title:'Sync conflict',
-            msg:'Another device saved newer data ('+when+'), but you\u2019ve made changes on this device since opening it.\n\nLoad the newer version (your changes here are lost), or keep this device\u2019s version (it will overwrite GitHub)?',
-            okLabel:'Load newer', cancelLabel:'Keep mine',
-            onOk:function(){ localStorage.setItem(LS_KEY, JSON.stringify(remote)); location.reload(); },
-            onCancel:function(){ if(typeof openCloudGate==='function') openCloudGate(); }
-          });
-          return;
-        }
-        if(typeof openCloudGate==='function') openCloudGate();
-      }).catch(function(){ if(typeof openCloudGate==='function') openCloudGate(); });
-    } else {
-      // No cloud configured — local-only mode, nothing to guard against
-      if(typeof openCloudGate==='function') openCloudGate();
-    }
+    var note = null; try{ note = sessionStorage.getItem(NOTE_KEY); sessionStorage.removeItem(NOTE_KEY); }catch(e){}
+    if(note) setTimeout(function(){ ghFlash(note,'var(--ok)'); }, 600);
+    reconcile();
+    var lastCheck = Date.now();
+    function check(){ if(document.hidden) return; if(Date.now()-lastCheck < 15000) return; lastCheck = Date.now(); reconcile(); }
+    document.addEventListener('visibilitychange', function(){ if(document.hidden) flushNow(); else check(); });
+    window.addEventListener('pageshow', function(e){ if(e.persisted) check(); });
+    window.addEventListener('focus', check);
+    window.addEventListener('online', function(){ flushNow(); check(); });
+    setInterval(function(){ if(!document.hidden && pending===null && !pushing) { lastCheck = 0; check(); } }, 90000);
   });
+
+  // For testing
+  window._syncDebug = { reconcile: reconcile, getCfg: getCfg, isDirty: isDirty, backups: getBackups, flushNow: flushNow };
 })();
 </script>
 </body>
