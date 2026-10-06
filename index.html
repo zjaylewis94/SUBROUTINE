@@ -718,7 +718,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);dis
 /* Targets */
 .target-row{display:flex;align-items:flex-start;gap:8px;padding:6px 0;border-bottom:1px solid var(--br)}
 .target-num{font-family:'Rajdhani',sans-serif;font-size:.72rem;font-weight:700;color:var(--gold);width:16px;flex-shrink:0;padding-top:2px}
-.target-inp{flex:1;background:transparent;border:none;outline:none;color:var(--text);font-family:'DM Sans',sans-serif;font-size:.84rem;caret-color:var(--gold)}
+.target-inp{flex:1;background:transparent;border:none;outline:none;color:var(--text);font-family:'DM Sans',sans-serif;font-size:.84rem;caret-color:var(--gold);min-width:0;line-height:1.45;padding:0;margin:0;resize:none;overflow:hidden;white-space:pre-wrap;overflow-wrap:anywhere;display:block;height:1.45em}
 .target-inp::placeholder{color:var(--dim)}
 .target-done{width:18px;height:18px;border-radius:50%;border:2px solid var(--br2);flex-shrink:0;cursor:pointer;transition:all .15s;margin-top:1px;accent-color:var(--gold)}
 
@@ -814,6 +814,9 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);dis
 .dtask-box-hdr-arr{font-size:.6rem;color:var(--dim);transition:transform .2s}
 .dtask-box-hdr-arr.open{transform:rotate(90deg)}
 .dtask-box-body{padding:8px 14px 12px;display:flex;flex-direction:column;gap:4px}
+.dtask-clear{display:block;margin:8px 0 0 auto;background:none;border:1px solid var(--br2);border-radius:7px;color:#a39a90;font-family:'Rajdhani',sans-serif;font-weight:700;font-size:.74rem;letter-spacing:1px;text-transform:uppercase;padding:7px 12px;cursor:pointer}
+.dtask-clear:hover{color:var(--text);border-color:var(--mid)}
+.dtask-clear.arm{color:var(--danger);border-color:var(--danger)}
 .dtask-item{display:flex;align-items:center;gap:10px;padding:6px 8px;border-radius:7px;transition:background .12s}
 .dtask-item:hover{background:var(--s2)}
 .dtask-item input[type=checkbox]{flex-shrink:0;cursor:pointer;width:15px;height:15px}
@@ -3614,18 +3617,35 @@ function renderDaily(cv) {
   var tgtSec = el('div','dj-section');
   var tgtL = el('div','dj-label'); tgtL.textContent="Today's Targets";
   tgtSec.appendChild(tgtL);
+  // Targets wrap onto new lines like the Game Plan: each box grows to fit its text.
+  function tgtFit(ta){ if(!ta.isConnected) return; ta.style.height='auto'; ta.style.height=(ta.scrollHeight+ta.offsetHeight-ta.clientHeight)+'px'; }
+  function tgtFitAll(){ tgtSec.querySelectorAll('.target-inp').forEach(tgtFit); }
+  if (window._tgtFitAll) window.removeEventListener('resize', window._tgtFitAll);
+  window._tgtFitAll = tgtFitAll; window.addEventListener('resize', tgtFitAll);
+  requestAnimationFrame(tgtFitAll);
   dd.targets.forEach(function(tgt, i) {
     var row = el('div','target-row');
     var num = el('div','target-num'); num.textContent=(i+1)+'.';
-    var inp = document.createElement('input'); inp.className='target-inp';
+    var inp = document.createElement('textarea'); inp.className='target-inp'; inp.rows=1;
     inp.placeholder='Target '+(i+1)+'…'; inp.value=tgt.t||'';
-    inp.oninput=(function(t2){return function(){t2.t=inp.value;save();};})(tgt);
+    inp.oninput=(function(t2){return function(){
+      if(/[\r\n]/.test(inp.value)){ var pos=inp.selectionStart; inp.value=inp.value.replace(/\s*[\r\n]+\s*/g,' '); try{ inp.setSelectionRange(pos,pos); }catch(e){} }   // pasted line breaks → spaces
+      t2.t=inp.value; tgtFit(inp); save();
+    };})(tgt);
+    inp.onkeydown=function(e){
+      if(e.key==='Enter' && !e.isComposing){
+        e.preventDefault();   // Enter moves to the next target instead of adding a line
+        var all=tgtSec.querySelectorAll('.target-inp'); var next=all[i+1];
+        if(next) next.focus(); else inp.blur();
+      }
+    };
     var cb = document.createElement('input'); cb.type='checkbox'; cb.className='target-done';
     cb.checked=!!tgt.d;
     cb.onchange=(function(t2,inp2){return function(){t2.d=cb.checked;inp2.style.textDecoration=t2.d?'line-through':'';inp2.style.color=t2.d?'var(--dim)':'var(--text)';save();};})(tgt,inp);
     if(tgt.d){inp.style.textDecoration='line-through';inp.style.color='var(--dim)';}
     row.appendChild(num); row.appendChild(inp); row.appendChild(cb);
     tgtSec.appendChild(row);
+    tgtFit(inp);
   });
   left.appendChild(tgtSec);
 
@@ -6845,9 +6865,50 @@ function buildTaskList(box, color) {
     newRow.querySelector('.task-text').focus();
   };
 
+  // ── Clear checked: removes checked tasks (two taps). A checked task that still has
+  // unchecked subtasks stays, so clearing never takes unfinished work with it.
+  var clr=el('button','dtask-clear');
+  clr.type='button';
+  function domChecked(){ return listEl.querySelectorAll('.task-row input[type=checkbox]:checked').length; }
+  function updateClr(){
+    var n=domChecked();
+    clr.style.display=n?'':'none';
+    if(!clr._armed) clr.textContent='🧹 Clear '+n+' checked';
+  }
+  listEl.addEventListener('change', function(){ clr._armed=false; clr.classList.remove('arm'); updateClr(); });
+  clr.onclick=function(e){
+    e.stopPropagation();
+    var n=domChecked(); if(!n) return;
+    if(!clr._armed){
+      clr._armed=true; clr.classList.add('arm'); clr.textContent='Tap again to clear '+n;
+      clearTimeout(clr._t); clr._t=setTimeout(function(){ clr._armed=false; clr.classList.remove('arm'); updateClr(); }, 3000);
+      return;
+    }
+    clearTimeout(clr._t); clearTimeout(saveTimer);
+    // Read the list as it is on screen (a just-ticked box may not be saved yet)
+    var cur=[];
+    listEl.querySelectorAll('.task-row').forEach(function(row){
+      var cb=row.querySelector('input[type=checkbox]'); var sp=row.querySelector('.task-text');
+      var text=(sp?sp.textContent:'').trim();
+      if(text) cur.push({t:text,d:cb?cb.checked:false,depth:parseInt(row.dataset.depth)||0});
+    });
+    function prune(nodes){
+      var out=[];
+      (nodes||[]).forEach(function(nd){
+        var kids=prune(nd.children);
+        if(!nd.d || kids.length){ nd.children=kids; out.push(nd); }
+      });
+      return out;
+    }
+    box.tasks=prune(buildNested(cur));
+    save(); renderCanvas();
+  };
+  updateClr();
+
   var container=el('div','');
   container.appendChild(listEl);
   container.appendChild(addGhost);
+  container.appendChild(clr);
   return container;
 }
 
