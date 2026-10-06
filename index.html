@@ -1359,6 +1359,52 @@ html.sb-lock{overflow:hidden}
   .cal-day.today .cal-day-num{margin:-3px 0 0 -2px}
   .cal-agenda{display:block}
 }
+/* ── SHOPPING LIST: fixed sections, items you keep ──
+   Items live in set sections (no category picking). Checking one off means "got it": it stays in
+   its section, and one tap puts it back on the list next time. */
+.gr-top{display:flex;flex-direction:column;gap:10px;margin:4px 0 6px}
+.gr-quick{display:flex;gap:7px}
+.gr-quick .add-inp{font-size:.95rem;padding:11px 12px}
+.gr-hint{font-size:.74rem;color:#a39a90;min-height:1em}
+.gr-hint b{color:var(--lists);font-weight:600}
+.gr-modes{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.gr-mode{background:var(--s1);border:1px solid var(--br2);border-radius:999px;color:var(--mid);font-family:'Rajdhani',sans-serif;
+  font-weight:700;font-size:.78rem;letter-spacing:1px;text-transform:uppercase;padding:7px 14px;cursor:pointer}
+.gr-mode.on{background:var(--lists);border-color:var(--lists);color:#14110e}
+.gr-count{margin-left:auto;font-family:'DM Mono',monospace;font-size:.72rem;color:#a39a90}
+.gr-sec{margin-top:16px}
+.gr-sec-h{display:flex;align-items:center;gap:8px;padding:6px 2px 6px;border-bottom:1px solid var(--br2)}
+.gr-sec-ico{font-size:1rem;width:22px;text-align:center}
+.gr-sec-name{font-family:'Rajdhani',sans-serif;font-weight:700;font-size:.9rem;letter-spacing:1.4px;text-transform:uppercase;color:var(--text);flex:1}
+.gr-sec-n{font-family:'DM Mono',monospace;font-size:.7rem;color:#14110e;background:var(--lists);border-radius:999px;padding:1px 8px}
+.gr-sec-n.zero{background:var(--s3);color:#a39a90}
+.gr-sec.empty .gr-sec-h{border-bottom-color:var(--br)}
+.gr-sec.empty .gr-sec-name{color:#a39a90}
+.gr-items{display:flex;flex-direction:column}
+.gr-row{display:flex;align-items:center;gap:11px;min-height:42px;padding:4px 4px;border-bottom:1px solid var(--br)}
+.gr-row:last-child{border-bottom:none}
+.gr-row.flash{background:rgba(240,192,64,.12);transition:background 1.2s}
+.gr-cb{width:22px;height:22px;border-radius:6px;border:2px solid #756c62;flex-shrink:0;cursor:pointer;position:relative;background:none;padding:0}
+.gr-cb.on{background:var(--lists);border-color:var(--lists)}
+.gr-cb.on:after{content:'';position:absolute;left:6px;top:2px;width:6px;height:11px;border:solid #14110e;border-width:0 2.5px 2.5px 0;transform:rotate(45deg)}
+.gr-name{flex:1;font-size:.95rem;color:var(--text);line-height:1.3;cursor:pointer;min-width:0;overflow-wrap:anywhere}
+.gr-row.got .gr-name{color:#8f867c}
+.gr-row.got:not(.trip) .gr-cb{background:none;border:1.5px dashed #756c62}
+.gr-row.got:not(.trip) .gr-cb:after{content:'+';border:none;transform:none;left:0;top:0;width:100%;height:100%;display:flex;align-items:center;justify-content:center;color:#a39a90;font-size:1rem;font-weight:700;line-height:1}
+.gr-row.got.trip .gr-name{text-decoration:line-through}
+.gr-tag{font-family:'DM Mono',monospace;font-size:.62rem;color:#8f867c;flex-shrink:0}
+.gr-edit{background:none;border:none;color:#8f867c;font-size:.85rem;cursor:pointer;padding:6px;flex-shrink:0}
+.gr-edit:hover{color:var(--lists)}
+.gr-subhead{font-family:'DM Mono',monospace;font-size:.62rem;letter-spacing:1px;text-transform:uppercase;color:#8f867c;padding:8px 4px 2px}
+.gr-add{font-size:.82rem;color:#a39a90;cursor:pointer;padding:8px 4px;display:inline-block}
+.gr-add:hover{color:var(--lists)}
+.gr-add-inp{width:100%;margin:4px 0 2px}
+.gr-editrow{display:flex;flex-wrap:wrap;gap:6px;align-items:center;padding:8px 4px;border-bottom:1px solid var(--br);background:var(--s1);border-radius:8px}
+.gr-editrow .add-inp{flex:1 1 160px}
+.gr-editrow select{flex:1 1 130px;background:var(--s2);border:1px solid var(--br2);border-radius:8px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:.85rem;padding:9px 8px}
+.gr-del{background:none;border:1px solid var(--br2);border-radius:8px;color:#a39a90;padding:8px 10px;cursor:pointer;font-family:'Rajdhani',sans-serif;font-weight:700;letter-spacing:1px}
+.gr-del.arm{color:var(--danger);border-color:var(--danger)}
+.gr-empty{font-size:.85rem;color:#a39a90;padding:14px 4px}
 </style>
 </head>
 <body>
@@ -7714,6 +7760,76 @@ function renderChores(cv) {
   wrap.appendChild(rb); cv.appendChild(wrap);
 }
 
+// ── Shopping list sections ──
+// Fixed sections, roughly in store-walk order. Items store the section id in `cat`.
+var GROCERY_SECTIONS = [
+  { id:'fruit',       name:'Fruit',        ico:'🍎' },
+  { id:'veggies',     name:'Veggies',      ico:'🥦' },
+  { id:'bread',       name:'Bread',        ico:'🍞' },
+  { id:'meat',        name:'Meat',         ico:'🥩' },
+  { id:'dairy',       name:'Dairy & Eggs', ico:'🥚' },
+  { id:'rice',        name:'Rice & Pasta', ico:'🍚' },
+  { id:'pantry',      name:'Pantry',       ico:'🥫' },
+  { id:'condiments',  name:'Condiments',   ico:'🧂' },
+  { id:'snacks',      name:'Snacks',       ico:'🥜' },
+  { id:'junk',        name:'Junk Food',    ico:'🍫' },
+  { id:'frozen',      name:'Frozen Food',  ico:'🧊' },
+  { id:'drinks',      name:'Drinks',       ico:'🥤' },
+  { id:'supplements', name:'Supplements',  ico:'💊' },
+  { id:'pet',         name:'Pet Food',     ico:'🐾' },
+  { id:'household',   name:'Household',    ico:'🧻' },
+  { id:'toiletries',  name:'Toiletries',   ico:'🧴' },
+  { id:'misc',        name:'Misc.',        ico:'📦' }
+];
+// Quick add files an item by its name. Checked in this order, so "frozen fruit" lands in Frozen
+// and "protein powder" in Supplements. Anything unknown goes to Misc. (move it with ✎).
+var GROCERY_WORDS = [
+  ['snacks',      ['rice cake','rice cakes','fruit snack','fruit snacks','protein bar','granola bar']],
+  ['junk',        ['tortilla chips','cheez-it','cheese cracker','cheese crackers','candy bar']],
+  ['frozen',      ['frozen','ice cream','popsicle','waffle','nugget','pizza roll','hot pocket','tater tot','fries','frozen pizza','burrito']],
+  ['pet',         ['cat food','dog food','cat litter','litter','kibble','pet','cat treat','dog treat']],
+  ['supplements', ['protein powder','pre workout','pre-workout','preworkout','creatine','vitamin','multivitamin','fish oil','supplement','electrolyte','bcaa','collagen','whey']],
+  ['household',   ['paper towel','toilet paper','trash bag','dish soap','detergent','laundry','bleach','sponge','foil','plastic wrap','ziploc','napkin','batteries','battery','light bulb','cleaner','lysol','wipes','tissue']],
+  ['toiletries',  ['toothpaste','toothbrush','shampoo','conditioner','body wash','soap','deodorant','razor','floss','lotion','sunscreen','mouthwash','q-tip','chapstick','cologne']],
+  ['condiments',  ['thousand island','ketchup','mustard','mayo','mayonnaise','sauce','dressing','ranch','salsa','olive oil','oil','vinegar','honey','syrup','salt','black pepper','spice','seasoning','sriracha','bbq','jam','jelly','peanut butter','sugar','creamer']],
+  ['rice',        ['rice','pasta','noodle','spaghetti','ramen','quinoa','macaroni','mac and cheese','mac n cheese','penne']],
+  ['dairy',       ['milk','cheese','egg','yogurt','butter','cream cheese','sour cream','cottage cheese']],
+  ['drinks',      ['water','soda','coke','pepsi','sprite','juice','cold brew','coffee','tea','gatorade','energy drink','monster','celsius','sparkling','beer','wine','kombucha','lemonade','powerade']],
+  ['junk',        ['chips','candy','chocolate','cookie','cookies','donut','donuts','cake','doritos','cheetos','takis','oreo','oreos','pop tart','pop tarts','snickers','gummy','gummies','hot cheetos']],
+  ['snacks',      ['granola','bar','nuts','almonds','peanuts','trail mix','jerky','popcorn','pretzel','cracker','crackers','uncrustable','uncrustables']],
+  ['bread',       ['bread','bagel','tortilla','bun','roll','muffin','croissant','pita','english muffin','wrap']],
+  ['meat',        ['chicken','beef','steak','pork','bacon','sausage','turkey','ham','salmon','fish','shrimp','tuna','ground beef','ground turkey','chorizo','hot dog','deli meat','lunch meat','meat']],
+  ['fruit',       ['apple','banana','grape','berry','berries','strawberry','strawberries','blueberry','blueberries','raspberry','raspberries','orange','lemon','lime','mango','pineapple','peach','pear','melon','watermelon','cantaloupe','avocado','fruit','cherry','cherries','kiwi','plum']],
+  ['veggies',     ['lettuce','spinach','tomato','tomatoes','onion','garlic','potato','potatoes','carrot','broccoli','bell pepper','pepper','cucumber','celery','corn','mushroom','zucchini','cabbage','kale','salad','veggie','vegetable','cilantro','jalapeno','jalapeño','green beans','asparagus','sweet potato','sweet potatoes']],
+  ['pantry',      ['cereal','oats','oatmeal','flour','beans','soup','canned','can of','broth','pancake mix','baking']]
+];
+function guessGrocerySection(name){
+  var n = ' '+String(name||'').toLowerCase().replace(/[^a-z0-9ñé' -]+/g,' ')+' ';
+  for (var i=0;i<GROCERY_WORDS.length;i++){
+    var words = GROCERY_WORDS[i][1];
+    for (var j=0;j<words.length;j++){
+      var w = words[j].replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
+      if (new RegExp('[^a-z]'+w+'(s|es)?[^a-z]').test(n)) return GROCERY_WORDS[i][0];
+    }
+  }
+  return 'misc';
+}
+function grocerySection(id){ for(var i=0;i<GROCERY_SECTIONS.length;i++){ if(GROCERY_SECTIONS[i].id===id) return GROCERY_SECTIONS[i]; } return GROCERY_SECTIONS[GROCERY_SECTIONS.length-1]; }
+// One-time move of old free-text categories into the fixed sections. In memory only (saved with
+// your next edit), same as the other startup migrations, so it can't trip a sync conflict.
+var OLD_GROCERY_CATS = { 'fruit':'fruit','produce':'veggies','veggies':'veggies','vegetables':'veggies','bread':'bread','wheat bread':'bread','carbs':'rice',
+  'protein':'meat','meat':'meat','dairy':'dairy','drinks':'drinks','snacks':'snacks','junk food':'junk','frozen':'frozen','supplements':'supplements',
+  'pets':'pet','pet':'pet','household':'household','other':'misc','misc':'misc','condiments':'condiments' };
+function migrateGrocery(){
+  if (!S.lists || !Array.isArray(S.lists.grocery) || S.lists._groceryV2) return;
+  S.lists.grocery.forEach(function(it){
+    var guess = guessGrocerySection(it.t);
+    if (guess==='misc') guess = OLD_GROCERY_CATS[String(it.cat||'').trim().toLowerCase()] || 'misc';
+    it.cat = guess;
+  });
+  S.lists._groceryV2 = true;
+}
+
 function renderShopping(cv){
   var wrap=el('div',''); wrap.style.maxWidth='660px';
   var h1=el('div','pg-h1'); h1.style.color='var(--lists)'; h1.appendChild(tx('🛒 Shopping List'));
@@ -7730,41 +7846,136 @@ function renderShopping(cv){
 
   // ══ GROCERIES ══
   wrap.appendChild(sectionTitle('🥕 Groceries'));
-  var items=S.lists.grocery; var done=items.filter(function(i){return i.d;}).length;
-  var pct=items.length?Math.round(done/items.length*100):0;
-  var prog=el('div','prog'); var pb=el('div','prog-bar'); var pf=el('div','prog-fill');
-  pf.style.width=pct+'%'; pf.style.background='var(--lists)'; pb.appendChild(pf);
-  var pl=el('div','prog-lbl'); pl.style.color='var(--lists)'; pl.appendChild(tx(done+'/'+items.length+' grabbed'));
-  prog.appendChild(pb); prog.appendChild(pl); wrap.appendChild(prog);
-  var cats=[]; items.forEach(function(i){var c=i.cat||'Other';if(cats.indexOf(c)===-1)cats.push(c);});
-  cats.sort();
-  cats.forEach(function(cat){
-    var si=items.filter(function(i){return(i.cat||'Other')===cat;});
-    var sh=el('div','sh'); sh.appendChild(tx(cat.toUpperCase())); wrap.appendChild(sh);
-    var g=el('div','cl-wrap'); si.forEach(function(i){g.appendChild(mkListRow(i,'grocery'));}); wrap.appendChild(g);
+  migrateGrocery();
+  var items = S.lists.grocery;
+  var TRIP_MS = 12*60*60*1000;   // what you checked off in the last 12 h counts as this trip's cart
+  var now = Date.now();
+  function onTrip(it){ return it.d && it.gotAt && (now - it.gotAt) < TRIP_MS; }
+  var view = 'need'; try { view = localStorage.getItem('sub_groc_view') || 'need'; } catch(e){}
+  var needN = items.filter(function(i){ return !i.d; }).length;
+  var cartN = items.filter(onTrip).length;
+
+  var top = el('div','gr-top');
+  var qr = el('div','gr-quick');
+  var qi = document.createElement('input'); qi.className='add-inp'; qi.id='groc-inp'; qi.placeholder='Add an item…';
+  qi.autocomplete='off';
+  var qb = el('button','add-btn'); qb.appendChild(tx('ADD'));
+  qr.appendChild(qi); qr.appendChild(qb); top.appendChild(qr);
+  var hint = el('div','gr-hint'); hint.id='groc-hint';
+  if (window._grocLast) { hint.appendChild(tx(window._grocLast.msg+' ')); var hb=el('b',''); hb.appendChild(tx(window._grocLast.sec)); hint.appendChild(hb); }
+  else hint.appendChild(tx('It goes into the right section on its own. Wrong spot? Tap ✎ to move it.'));
+  top.appendChild(hint);
+  var modes = el('div','gr-modes');
+  [['need','To get'],['all','Everything']].forEach(function(m){
+    var b = el('button','gr-mode'+(view===m[0]?' on':'')); b.appendChild(tx(m[1]));
+    b.onclick = function(){ try{ localStorage.setItem('sub_groc_view', m[0]); }catch(e){} window._grocLast=null; renderCanvas(); };
+    modes.appendChild(b);
   });
-  if(!S.lists.groceryCats) S.lists.groceryCats=[];
-  var allCats=cats.slice();
-  S.lists.groceryCats.forEach(function(c){ if(allCats.indexOf(c)===-1) allCats.push(c); });
-  if(allCats.indexOf('Other')===-1) allCats.push('Other');
-  allCats.sort();
-  var ar=el('div','add-row'); ar.style.marginTop='14px';
-  var inp=document.createElement('input'); inp.className='add-inp'; inp.id='groc-inp'; inp.placeholder='Item…'; inp.style.flex='2';
-  var ci=document.createElement('select'); ci.id='groc-cat';
-  ci.style.cssText='flex:1;background:var(--s1);border:1px solid var(--br);border-radius:8px;color:var(--text);font-family:DM Sans,sans-serif;font-size:.82rem;padding:8px 10px;outline:none;cursor:pointer';
-  allCats.forEach(function(c){ var o=document.createElement('option'); o.value=c; o.textContent=c; ci.appendChild(o); });
-  var btn=el('button','add-btn'); btn.appendChild(tx('ADD'));
-  btn.onclick=function(){addGrocery(inp,ci);}; inp.onkeydown=function(e){if(e.key==='Enter')addGrocery(inp,ci);};
-  ar.appendChild(inp); ar.appendChild(ci); ar.appendChild(btn); wrap.appendChild(ar);
-  var clr=el('button','ghost-btn'); clr.style.marginTop='8px'; clr.style.width='100%'; clr.appendChild(tx('🧹 Clear checked groceries'));
-  clr.onclick=function(){S.lists.grocery=S.lists.grocery.filter(function(i){return !i.d;});save();renderCanvas();};
-  wrap.appendChild(clr);
-  var nc=el('div','cat-newrow');
-  var ncInp=document.createElement('input'); ncInp.className='add-inp'; ncInp.placeholder='New category…'; ncInp.style.flex='1';
-  var ncBtn=el('button','add-btn'); ncBtn.appendChild(tx('+ CATEGORY'));
-  function addCat(){ var v=ncInp.value.trim(); if(!v) return; if(S.lists.groceryCats.indexOf(v)===-1) S.lists.groceryCats.push(v); ncInp.value=''; save(); renderCanvas(); }
-  ncBtn.onclick=addCat; ncInp.onkeydown=function(e){ if(e.key==='Enter') addCat(); };
-  nc.appendChild(ncInp); nc.appendChild(ncBtn); wrap.appendChild(nc);
+  var cnt = el('div','gr-count'); cnt.appendChild(tx(needN+' to get'+(cartN?' · '+cartN+' in cart':''))); modes.appendChild(cnt);
+  top.appendChild(modes);
+  wrap.appendChild(top);
+
+  function addItem(name, secId, msg){
+    name = name.trim(); if (!name) return;
+    var low = name.toLowerCase();
+    var existing = items.filter(function(i){ return i.t.trim().toLowerCase()===low; })[0];
+    if (existing) {
+      // Already on file: just put it back on the list
+      existing.d = false; delete existing.gotAt;
+      window._grocLast = { msg: (msg||name)+' is back on the list in', sec: grocerySection(existing.cat).name, id: existing.id };
+    } else {
+      var it = { id:'g'+Date.now()+Math.random().toString(36).slice(2,5), t:name, d:false, cat:secId };
+      items.push(it);
+      window._grocLast = { msg: (msg||name)+' →', sec: grocerySection(secId).name, id: it.id };
+    }
+    save(); renderCanvas();
+  }
+  function quickAdd(){ var v=qi.value.trim(); if(!v) return; addItem(v, guessGrocerySection(v), 'Added '+v); setTimeout(function(){ var i=document.getElementById('groc-inp'); if(i) i.focus(); },0); }
+  qb.onclick = quickAdd; qi.onkeydown = function(e){ if(e.key==='Enter'){ e.preventDefault(); quickAdd(); } };
+
+  function grRow(it){
+    var row = el('div','gr-row'+(it.d?' got':'')+(onTrip(it)?' trip':'')+(window._grocLast&&window._grocLast.id===it.id?' flash':''));
+    row.setAttribute('data-lid', it.id);
+    var cb = el('button','gr-cb'+(it.d?' on':'')); cb.type='button';
+    cb.setAttribute('aria-label', it.d ? 'Put '+it.t+' back on the list' : 'Got '+it.t);
+    function toggle(){ it.d = !it.d; if (it.d) it.gotAt = Date.now(); else delete it.gotAt; window._grocLast=null; save(); renderCanvas(); }
+    cb.onclick = toggle;
+    var nm = el('div','gr-name'); nm.appendChild(tx(it.t)); nm.onclick = toggle;
+    row.appendChild(cb); row.appendChild(nm);
+    var ed = el('button','gr-edit'); ed.type='button'; ed.appendChild(tx('✎')); ed.title='Rename, move or delete';
+    ed.onclick = function(e){ e.stopPropagation(); row.replaceWith(grEditRow(it)); };
+    row.appendChild(ed);
+    return row;
+  }
+  function grEditRow(it){
+    var r = el('div','gr-editrow');
+    var ni = document.createElement('input'); ni.className='add-inp'; ni.value=it.t;
+    var sel = document.createElement('select');
+    GROCERY_SECTIONS.forEach(function(sc){ var o=document.createElement('option'); o.value=sc.id; o.textContent=sc.ico+' '+sc.name; if(sc.id===it.cat) o.selected=true; sel.appendChild(o); });
+    var ok = el('button','add-btn'); ok.appendChild(tx('SAVE'));
+    var del = el('button','gr-del'); del.appendChild(tx('DELETE'));
+    function commit(){ var v=ni.value.trim(); if(v) it.t=v; it.cat=sel.value; window._grocLast=null; save(); renderCanvas(); }
+    ok.onclick = commit;
+    ni.onkeydown = function(e){ e.stopPropagation(); if(e.key==='Enter'){ e.preventDefault(); commit(); } else if(e.key==='Escape'){ renderCanvas(); } };
+    del.onclick = function(){
+      if (del._armed){ S.lists.grocery = S.lists.grocery.filter(function(x){ return x.id!==it.id; }); window._grocLast=null; save(); renderCanvas(); return; }
+      del._armed = true; del.classList.add('arm'); del.textContent='SURE?';
+      setTimeout(function(){ del._armed=false; del.classList.remove('arm'); del.textContent='DELETE'; }, 2500);
+    };
+    r.appendChild(ni); r.appendChild(sel); r.appendChild(ok); r.appendChild(del);
+    setTimeout(function(){ ni.focus(); }, 0);
+    return r;
+  }
+  function addRow(sec){
+    var a = el('div','gr-add'); a.appendChild(tx('+ Add to '+sec.name));
+    a.onclick = function(){
+      var inp = document.createElement('input'); inp.className='add-inp gr-add-inp'; inp.placeholder='Add to '+sec.name+'… (Enter to add more)';
+      a.replaceWith(inp); inp.focus();
+      inp.onkeydown = function(e){
+        if (e.key==='Enter'){ e.preventDefault(); var v=inp.value.trim(); if(!v) return; window._grocKeep = sec.id; addItem(v, sec.id, 'Added '+v+' to'); }
+        else if (e.key==='Escape'){ window._grocKeep=null; renderCanvas(); }
+      };
+      // Leaving the box only closes it (no redraw, so a ✎ you just tapped stays open).
+      // Anything typed but not added stays in the box.
+      inp.onblur = function(){ setTimeout(function(){ if(inp.isConnected && document.activeElement!==inp && !inp.value.trim()){ inp.replaceWith(addRow(sec)); } }, 150); };
+    };
+    return a;
+  }
+
+  var shown = 0;
+  var known = GROCERY_SECTIONS.map(function(x){ return x.id; });
+  function secOf(i){ return known.indexOf(i.cat)>-1 ? i.cat : 'misc'; }   // anything unrecognized shows in Misc.
+  GROCERY_SECTIONS.forEach(function(sec){
+    var mine = items.filter(function(i){ return secOf(i)===sec.id; });
+    var need = mine.filter(function(i){ return !i.d; });
+    var cart = mine.filter(onTrip);
+    var have = mine.filter(function(i){ return i.d && !onTrip(i); });
+    if (view==='need' && !need.length && !cart.length) return;
+    shown++;
+    var box = el('div','gr-sec'+(mine.length?'':' empty'));
+    var h = el('div','gr-sec-h');
+    var ic = el('div','gr-sec-ico'); ic.appendChild(tx(sec.ico));
+    var nm = el('div','gr-sec-name'); nm.appendChild(tx(sec.name));
+    var n = el('div','gr-sec-n'+(need.length?'':' zero')); n.appendChild(tx(String(need.length)));
+    h.appendChild(ic); h.appendChild(nm); h.appendChild(n); box.appendChild(h);
+    var list = el('div','gr-items');
+    need.forEach(function(i){ list.appendChild(grRow(i)); });
+    if (cart.length){ var ch=el('div','gr-subhead'); ch.appendChild(tx('In the cart')); list.appendChild(ch); cart.forEach(function(i){ list.appendChild(grRow(i)); }); }
+    if (view==='all' && have.length){ var hh=el('div','gr-subhead'); hh.appendChild(tx('Got it · tap to add again')); list.appendChild(hh); have.forEach(function(i){ list.appendChild(grRow(i)); }); }
+    box.appendChild(list);
+    if (view==='all') box.appendChild(addRow(sec));
+    wrap.appendChild(box);
+    if (window._grocKeep===sec.id) {
+      // keep the section's add box open for the next item
+      setTimeout(function(){ var a=box.querySelector('.gr-add'); if(a){ a.click(); } }, 0);
+    }
+  });
+  if (!shown) {
+    var em = el('div','gr-empty');
+    em.appendChild(tx(items.length ? 'Nothing to get. Type above, or tap Everything to put a usual item back on the list.' : 'Nothing here yet. Type an item above and it lands in the right section.'));
+    wrap.appendChild(em);
+  }
+  window._grocKeep = null;
 
   // ══ WISHLIST ══
   wrap.appendChild(sectionTitle('⭐ Wishlist'));
@@ -7872,7 +8083,7 @@ function mkListRow(item,type){
 }
 
 function addChore(inp){var t=inp.value.trim();if(!t)return;S.lists.chores.push({id:'c'+Date.now(),t:t,d:false});inp.value='';save();renderCanvas();setTimeout(function(){var i=document.getElementById('chore-inp');if(i)i.focus();},0);}
-function addGrocery(inp,ci){var t=inp.value.trim();if(!t)return;S.lists.grocery.push({id:'g'+Date.now()+Math.random().toString(36).slice(2,5),t:t,d:false,cat:(ci.value||'Other').trim()||'Other'});inp.value='';save();renderCanvas();setTimeout(function(){var i=document.getElementById('groc-inp');if(i)i.focus();},0);}
+function addGrocery(inp){var t=inp.value.trim();if(!t)return;S.lists.grocery.push({id:'g'+Date.now()+Math.random().toString(36).slice(2,5),t:t,d:false,cat:guessGrocerySection(t)});inp.value='';save();renderCanvas();}
 function addWish(inp,sel){var t=inp.value.trim();if(!t)return;S.lists.wishlist.push({id:'w'+Date.now(),t:t,d:false,p:sel.value||'low'});inp.value='';save();renderCanvas();setTimeout(function(){var i=document.getElementById('wish-inp');if(i)i.focus();},0);}
 
 // ─── QUOTES LIST ─────────────────────────────────────────────
