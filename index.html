@@ -6969,9 +6969,38 @@ function buildTaskList(box, color) {
     // ── CHECKBOX ──
     var cb=document.createElement('input'); cb.type='checkbox'; cb.checked=!!item.d;
     cb.style.cssText='flex-shrink:0;width:14px;height:14px;cursor:pointer;accent-color:'+color;
+    function paintRow(r, on){
+      var t=r.querySelector('.task-text'); if(!t) return;
+      t.style.textDecoration=on?'line-through':'none';
+      t.style.opacity=on?'0.4':'1';
+    }
+    // The rows nested under this one: every following row deeper than it, up to the next sibling.
+    function childRows(){
+      var rows=Array.prototype.slice.call(listEl.querySelectorAll('.task-row'));
+      var my=parseInt(row.dataset.depth)||0, out=[];
+      for(var i=rows.indexOf(row)+1;i<rows.length;i++){
+        if((parseInt(rows[i].dataset.depth)||0)<=my) break;
+        out.push(rows[i]);
+      }
+      return out;
+    }
     cb.onchange=function(){
-      sp.style.textDecoration=cb.checked?'line-through':'none';
-      sp.style.opacity=cb.checked?'0.4':'1';
+      paintRow(row, cb.checked);
+      // Checking a parent checks all its subtasks. Unchecking it undoes only the ones that check
+      // ticked, so subtasks you'd already finished on your own stay done.
+      if(cb.checked){
+        row._cascaded=[];
+        childRows().forEach(function(r){
+          var c=r.querySelector('input[type=checkbox]');
+          if(c && !c.checked){ c.checked=true; paintRow(r,true); row._cascaded.push(r); }
+        });
+      } else if(row._cascaded){
+        row._cascaded.forEach(function(r){
+          var c=r.querySelector('input[type=checkbox]');
+          if(c && r.isConnected){ c.checked=false; paintRow(r,false); }
+        });
+        row._cascaded=null;
+      }
       scheduleSave();
       scheduleResort(1400);   // let the tick register before the row moves
     };
