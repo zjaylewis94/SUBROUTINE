@@ -7,18 +7,17 @@ Public repo. The data lives in the private `subroutine-data` repo.
 ## Privacy rule
 This repo and its Pages site are public. **Never put planner data, names, or personal details in `index.html` or anything
 else here.** New content belongs in Zach's saved data, which syncs to the private repo, not in `SEED`.
-- `SEED` already holds personal starter content from before the data moved (the Army tracker, recommendation names,
-  client names, the manifesto fallback in `hydrateState()`). Don't add more, and don't copy it into other repos.
-- The `PRE-LOAD MERGED SAVE` block near the end of the app script hard-codes a full April 2026 save (`INJECTED_TS`).
-  It's personal data on a public page, and it should come out.
+- `SEED` is neutral placeholder content: a new device shows it only until Sync loads the real planner.
+  The personal starter content, the manifesto fallback and a hard-coded April 2026 save were removed on Oct 30, 2026.
+  They're still in git history.
 - Planner data was committed here as `subroutine_data.json` until Sep 27, 2026 (`0f41352` removed it). It's gone from
   `main`, but it's still in git history. Clearing that needs a history rewrite on `main`, which is Zach's call.
 
 ## The file
-- `index.html` is the whole app: a single self-contained file (~9,100 lines), vanilla JS, no build step. Keep it that way.
-  - CSS: lines ~15–1423.
-  - App script: ~1460–8674.
-  - GitHub sync: a second `<script>` at the end, ~8677–9089.
+- `index.html` is the whole app: a single self-contained file (~8,900 lines), vanilla JS, no build step. Keep it that way.
+  - CSS: lines ~15–1427.
+  - App script: ~1464–8463.
+  - GitHub sync: a second `<script>` at the end, ~8466–8878.
 - One global state object `S`. `save()` stamps `S._ts`, writes localStorage, and hands the JSON to `window._fbSave`
   (the name is left over from Firebase; it's GitHub sync now). `renderApp()` rebuilds the sidebar, tab bar, right sidebar and canvas.
 - Navigation is `curTab` (a box id, `home`, or `lists`) plus `curSec`. `renderCanvasInner()` dispatches on them.
@@ -39,11 +38,13 @@ else here.** New content belongs in Zach's saved data, which syncs to the privat
   - Fitness has Program (`S.fitness`).
   - There's also an optional `tracker` (nested checklist).
 - **Lists** (`curTab==='lists'`): chores (reset on Sunday by `doChoreReset()`), shopping, manifesto, quotes, media.
-- **Shopping list** (`renderShopping()`, `S.lists.grocery`, fixed `GROCERY_SECTIONS`). It's a **Bank** (every item ever added,
-  A–Z, tap to put on or take off the run) plus **This run** (what to get on the next trip; check off into "In the cart").
-  **Reset run** takes everything off the run and leaves the Bank alone. The view is saved in `sub_groc_view` (`need` = run, `all` = Bank).
-  An item is on the run when `!d`, in the cart when `d` and `gotAt`, and Bank-only when `d` with no `gotAt`.
-  It reuses the old fields, so older cached copies still read it sensibly.
+- **Shopping list** (`renderShopping()`, `S.lists.grocery`, fixed `GROCERY_SECTIONS`). Zach's names for the two views:
+  - **The Pantry**: the master list, every item ever added, A–Z. Tap an item to put it on or take it off the Shopping List.
+  - **Shopping List**: what to get on the next trip. Checked items go to "In the cart".
+  - **Reset list** empties the Shopping List and leaves The Pantry alone.
+  - The view is saved in `sub_groc_view` (`need` = Shopping List, `all` = The Pantry).
+  - An item is on the list when `!d`, in the cart when `d` and `gotAt`, and Pantry-only when `d` with no `gotAt`.
+    It reuses the old fields, so older cached copies still read it sensibly.
 - **Schedule:** `S.weekSchedule` (bell schedule by weekday, from `S.scheduleStart`), `S.timeBlocks` (one-off blocks; `startMin` counts from `DSTART`), `S.scheduleSkips`.
 - **Tasks by Box** (Daily):
   - Tasks are `{t, d, children}`.
