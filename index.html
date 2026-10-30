@@ -1403,10 +1403,14 @@ html.sb-lock{overflow:hidden}
 .gr-cb.on{background:var(--lists);border-color:var(--lists)}
 .gr-cb.on:after{content:'';position:absolute;left:6px;top:2px;width:6px;height:11px;border:solid #14110e;border-width:0 2.5px 2.5px 0;transform:rotate(45deg)}
 .gr-name{flex:1;font-size:.95rem;color:var(--text);line-height:1.3;cursor:pointer;min-width:0;overflow-wrap:anywhere}
-.gr-row.got .gr-name{color:#8f867c}
-.gr-row.got:not(.trip) .gr-cb{background:none;border:1.5px dashed #756c62}
-.gr-row.got:not(.trip) .gr-cb:after{content:'+';border:none;transform:none;left:0;top:0;width:100%;height:100%;display:flex;align-items:center;justify-content:center;color:#a39a90;font-size:1rem;font-weight:700;line-height:1}
-.gr-row.got.trip .gr-name{text-decoration:line-through}
+.gr-row.cart .gr-name{color:#8f867c;text-decoration:line-through}
+.gr-row.bank:not(.on) .gr-name{color:#b8afa5}
+.gr-row.bank:not(.on) .gr-cb{border:1.5px dashed #756c62}
+.gr-row.bank:not(.on) .gr-cb:after{content:'+';position:absolute;left:0;top:0;width:100%;height:100%;display:flex;align-items:center;justify-content:center;color:#a39a90;font-size:1rem;font-weight:700;line-height:1}
+.gr-row.bank.on{background:rgba(240,192,64,.08);border-radius:6px}
+.gr-row.bank.on .gr-name{color:var(--text);font-weight:500}
+.gr-reset{background:none;border:1px solid var(--br2);border-radius:999px;color:#a39a90;padding:6px 12px;cursor:pointer;font-family:'Rajdhani',sans-serif;font-weight:700;letter-spacing:1px;font-size:.8rem}
+.gr-reset:hover{color:var(--lists);border-color:var(--lists)}
 .gr-tag{font-family:'DM Mono',monospace;font-size:.62rem;color:#8f867c;flex-shrink:0}
 .gr-edit{background:none;border:none;color:#8f867c;font-size:.85rem;cursor:pointer;padding:6px;flex-shrink:0}
 .gr-edit:hover{color:var(--lists)}
@@ -8122,13 +8126,22 @@ var OLD_GROCERY_CATS = { 'fruit':'fruit','produce':'veggies','veggies':'veggies'
   'protein':'meat','meat':'meat','dairy':'dairy','drinks':'drinks','snacks':'snacks','junk food':'junk','frozen':'frozen','supplements':'supplements',
   'pets':'pet','pet':'pet','household':'household','other':'misc','misc':'misc','condiments':'condiments' };
 function migrateGrocery(){
-  if (!S.lists || !Array.isArray(S.lists.grocery) || S.lists._groceryV2) return;
-  S.lists.grocery.forEach(function(it){
-    var guess = guessGrocerySection(it.t);
-    if (guess==='misc') guess = OLD_GROCERY_CATS[String(it.cat||'').trim().toLowerCase()] || 'misc';
-    it.cat = guess;
-  });
-  S.lists._groceryV2 = true;
+  if (!S.lists || !Array.isArray(S.lists.grocery)) return;
+  if (!S.lists._groceryV2) {
+    S.lists.grocery.forEach(function(it){
+      var guess = guessGrocerySection(it.t);
+      if (guess==='misc') guess = OLD_GROCERY_CATS[String(it.cat||'').trim().toLowerCase()] || 'misc';
+      it.cat = guess;
+    });
+    S.lists._groceryV2 = true;
+  }
+  // Bank + run (Oct 30, 2026): a checked item used to leave the cart after 12 h on its own.
+  // Now it stays in the cart until Reset run, so anything checked before then goes back to the Bank.
+  if (!S.lists._groceryV3) {
+    var cut = Date.now() - 12*60*60*1000;
+    S.lists.grocery.forEach(function(it){ if (it.gotAt && it.gotAt < cut) delete it.gotAt; });
+    S.lists._groceryV3 = true;
+  }
 }
 
 function renderShopping(cv){
@@ -8146,63 +8159,90 @@ function renderShopping(cv){
   }
 
   // ══ GROCERIES ══
+  // The Bank is every item you've ever added. This run is what you're getting on the next trip.
+  // Per item: on the run when !d or gotAt (gotAt = checked off into the cart); in the Bank only
+  // when d and no gotAt. Reset run takes everything off the run and leaves the Bank alone.
   wrap.appendChild(sectionTitle('🥕 Groceries'));
   migrateGrocery();
   var items = S.lists.grocery;
-  var TRIP_MS = 12*60*60*1000;   // what you checked off in the last 12 h counts as this trip's cart
-  var now = Date.now();
-  function onTrip(it){ return it.d && it.gotAt && (now - it.gotAt) < TRIP_MS; }
+  function onRun(it){ return !it.d || !!it.gotAt; }
+  function inCart(it){ return !!(it.d && it.gotAt); }
+  function putOnRun(it){ it.d = false; delete it.gotAt; }
+  function takeOffRun(it){ it.d = true; delete it.gotAt; }
   var view = 'need'; try { view = localStorage.getItem('sub_groc_view') || 'need'; } catch(e){}
+  if (view!=='all') view = 'need';
+  var bank = view==='all';
   var needN = items.filter(function(i){ return !i.d; }).length;
-  var cartN = items.filter(onTrip).length;
+  var cartN = items.filter(inCart).length;
 
   var top = el('div','gr-top');
   var qr = el('div','gr-quick');
-  var qi = document.createElement('input'); qi.className='add-inp'; qi.id='groc-inp'; qi.placeholder='Add an item…';
+  var qi = document.createElement('input'); qi.className='add-inp'; qi.id='groc-inp'; qi.placeholder='Add to this run…';
   qi.autocomplete='off';
   var qb = el('button','add-btn'); qb.appendChild(tx('ADD'));
   qr.appendChild(qi); qr.appendChild(qb); top.appendChild(qr);
   var hint = el('div','gr-hint'); hint.id='groc-hint';
   if (window._grocLast) { hint.appendChild(tx(window._grocLast.msg+' ')); var hb=el('b',''); hb.appendChild(tx(window._grocLast.sec)); hint.appendChild(hb); }
-  else hint.appendChild(tx('It goes into the right section on its own. Wrong spot? Tap ✎ to move it.'));
+  else hint.appendChild(tx(bank ? 'Tap an item to put it on this run. Tap again to take it off.'
+                                : 'Typed items go on this run and into the Bank. Pick usuals from the Bank.'));
   top.appendChild(hint);
   var modes = el('div','gr-modes');
-  [['need','To get'],['all','Everything']].forEach(function(m){
+  [['need','🛒 This run'],['all','📋 Bank']].forEach(function(m){
     var b = el('button','gr-mode'+(view===m[0]?' on':'')); b.appendChild(tx(m[1]));
     b.onclick = function(){ try{ localStorage.setItem('sub_groc_view', m[0]); }catch(e){} window._grocLast=null; renderCanvas(); };
     modes.appendChild(b);
   });
-  var cnt = el('div','gr-count'); cnt.appendChild(tx(needN+' to get'+(cartN?' · '+cartN+' in cart':''))); modes.appendChild(cnt);
+  var cnt = el('div','gr-count');
+  cnt.appendChild(tx(bank ? items.length+' in the Bank · '+(needN+cartN)+' on this run'
+                          : needN+' to get'+(cartN?' · '+cartN+' in cart':'')));
+  modes.appendChild(cnt);
+  if (!bank && needN+cartN) {
+    var rs = el('button','gr-reset'); rs.type='button'; rs.appendChild(tx('↺ Reset run'));
+    rs.onclick = function(){
+      uiConfirm('Take everything off this run? Your Bank stays as it is.', function(){
+        items.forEach(takeOffRun); window._grocLast=null; save(); renderCanvas();
+      }, {title:'Reset run', okLabel:'Reset'});
+    };
+    modes.appendChild(rs);
+  }
   top.appendChild(modes);
   wrap.appendChild(top);
 
-  function addItem(name, secId, msg){
+  // toRun: also put it on this run (the quick add). Otherwise it only goes in the Bank.
+  function addItem(name, secId, toRun){
     name = name.trim(); if (!name) return;
     var low = name.toLowerCase();
     var existing = items.filter(function(i){ return i.t.trim().toLowerCase()===low; })[0];
     if (existing) {
-      // Already on file: just put it back on the list
-      existing.d = false; delete existing.gotAt;
-      window._grocLast = { msg: (msg||name)+' is back on the list in', sec: grocerySection(existing.cat).name, id: existing.id };
+      if (toRun) { putOnRun(existing); window._grocLast = { msg: existing.t+' is on this run, in', sec: grocerySection(existing.cat).name, id: existing.id }; }
+      else window._grocLast = { msg: existing.t+' is already in the Bank, in', sec: grocerySection(existing.cat).name, id: existing.id };
     } else {
-      var it = { id:'g'+Date.now()+Math.random().toString(36).slice(2,5), t:name, d:false, cat:secId };
+      var it = { id:'g'+Date.now()+Math.random().toString(36).slice(2,5), t:name, d:!toRun, cat:secId };
       items.push(it);
-      window._grocLast = { msg: (msg||name)+' →', sec: grocerySection(secId).name, id: it.id };
+      window._grocLast = { msg: 'Added '+name+(toRun?' →':' to the Bank →'), sec: grocerySection(secId).name, id: it.id };
     }
     save(); renderCanvas();
   }
-  function quickAdd(){ var v=qi.value.trim(); if(!v) return; addItem(v, guessGrocerySection(v), 'Added '+v); setTimeout(function(){ var i=document.getElementById('groc-inp'); if(i) i.focus(); },0); }
+  function quickAdd(){ var v=qi.value.trim(); if(!v) return; addItem(v, guessGrocerySection(v), true); setTimeout(function(){ var i=document.getElementById('groc-inp'); if(i) i.focus(); },0); }
   qb.onclick = quickAdd; qi.onkeydown = function(e){ if(e.key==='Enter'){ e.preventDefault(); quickAdd(); } };
 
   function grRow(it){
-    var row = el('div','gr-row'+(it.d?' got':'')+(onTrip(it)?' trip':'')+(window._grocLast&&window._grocLast.id===it.id?' flash':''));
+    var on = onRun(it), cart = inCart(it);
+    var row = el('div','gr-row'+(bank?' bank'+(on?' on':''):'')+(!bank&&cart?' cart':'')+(window._grocLast&&window._grocLast.id===it.id?' flash':''));
     row.setAttribute('data-lid', it.id);
-    var cb = el('button','gr-cb'+(it.d?' on':'')); cb.type='button';
-    cb.setAttribute('aria-label', it.d ? 'Put '+it.t+' back on the list' : 'Got '+it.t);
-    function toggle(){ it.d = !it.d; if (it.d) it.gotAt = Date.now(); else delete it.gotAt; window._grocLast=null; save(); renderCanvas(); }
+    var cb = el('button','gr-cb'+((bank?on:cart)?' on':'')); cb.type='button';
+    cb.setAttribute('aria-label', bank ? (on ? 'Take '+it.t+' off this run' : 'Put '+it.t+' on this run')
+                                       : (cart ? 'Put '+it.t+' back on the list' : 'Got '+it.t));
+    function toggle(){
+      if (bank) { if (on) takeOffRun(it); else putOnRun(it); }
+      else if (cart) putOnRun(it);
+      else { it.d = true; it.gotAt = Date.now(); }
+      window._grocLast=null; save(); renderCanvas();
+    }
     cb.onclick = toggle;
     var nm = el('div','gr-name'); nm.appendChild(tx(it.t)); nm.onclick = toggle;
     row.appendChild(cb); row.appendChild(nm);
+    if (bank && cart) { var tg = el('div','gr-tag'); tg.appendChild(tx('IN CART')); row.appendChild(tg); }
     var ed = el('button','gr-edit'); ed.type='button'; ed.appendChild(tx('✎')); ed.title='Rename, move or delete';
     ed.onclick = function(e){ e.stopPropagation(); row.replaceWith(grEditRow(it)); };
     row.appendChild(ed);
@@ -8214,7 +8254,7 @@ function renderShopping(cv){
     var sel = document.createElement('select');
     GROCERY_SECTIONS.forEach(function(sc){ var o=document.createElement('option'); o.value=sc.id; o.textContent=sc.ico+' '+sc.name; if(sc.id===it.cat) o.selected=true; sel.appendChild(o); });
     var ok = el('button','add-btn'); ok.appendChild(tx('SAVE'));
-    var del = el('button','gr-del'); del.appendChild(tx('DELETE'));
+    var del = el('button','gr-del'); del.appendChild(tx('DELETE')); del.title='Delete from the Bank';
     function commit(){ var v=ni.value.trim(); if(v) it.t=v; it.cat=sel.value; window._grocLast=null; save(); renderCanvas(); }
     ok.onclick = commit;
     ni.onkeydown = function(e){ e.stopPropagation(); if(e.key==='Enter'){ e.preventDefault(); commit(); } else if(e.key==='Escape'){ renderCanvas(); } };
@@ -8223,7 +8263,13 @@ function renderShopping(cv){
       del._armed = true; del.classList.add('arm'); del.textContent='SURE?';
       setTimeout(function(){ del._armed=false; del.classList.remove('arm'); del.textContent='DELETE'; }, 2500);
     };
-    r.appendChild(ni); r.appendChild(sel); r.appendChild(ok); r.appendChild(del);
+    r.appendChild(ni); r.appendChild(sel); r.appendChild(ok);
+    if (!bank) {   // drop it from this run without buying it; it stays in the Bank
+      var off = el('button','gr-del'); off.appendChild(tx('OFF RUN'));
+      off.onclick = function(){ takeOffRun(it); window._grocLast=null; save(); renderCanvas(); };
+      r.appendChild(off);
+    }
+    r.appendChild(del);
     setTimeout(function(){ ni.focus(); }, 0);
     return r;
   }
@@ -8233,7 +8279,7 @@ function renderShopping(cv){
       var inp = document.createElement('input'); inp.className='add-inp gr-add-inp'; inp.placeholder='Add to '+sec.name+'… (Enter to add more)';
       a.replaceWith(inp); inp.focus();
       inp.onkeydown = function(e){
-        if (e.key==='Enter'){ e.preventDefault(); var v=inp.value.trim(); if(!v) return; window._grocKeep = sec.id; addItem(v, sec.id, 'Added '+v+' to'); }
+        if (e.key==='Enter'){ e.preventDefault(); var v=inp.value.trim(); if(!v) return; window._grocKeep = sec.id; addItem(v, sec.id, false); }
         else if (e.key==='Escape'){ window._grocKeep=null; renderCanvas(); }
       };
       // Leaving the box only closes it (no redraw, so a ✎ you just tapped stays open).
@@ -8246,25 +8292,29 @@ function renderShopping(cv){
   var shown = 0;
   var known = GROCERY_SECTIONS.map(function(x){ return x.id; });
   function secOf(i){ return known.indexOf(i.cat)>-1 ? i.cat : 'misc'; }   // anything unrecognized shows in Misc.
+  function byName(a,b){ return a.t.localeCompare(b.t, undefined, {sensitivity:'base'}); }
   GROCERY_SECTIONS.forEach(function(sec){
     var mine = items.filter(function(i){ return secOf(i)===sec.id; });
     var need = mine.filter(function(i){ return !i.d; });
-    var cart = mine.filter(onTrip);
-    var have = mine.filter(function(i){ return i.d && !onTrip(i); });
-    if (view==='need' && !need.length && !cart.length) return;
+    var cart = mine.filter(inCart);
+    if (!bank && !need.length && !cart.length) return;
     shown++;
     var box = el('div','gr-sec'+(mine.length?'':' empty'));
     var h = el('div','gr-sec-h');
     var ic = el('div','gr-sec-ico'); ic.appendChild(tx(sec.ico));
     var nm = el('div','gr-sec-name'); nm.appendChild(tx(sec.name));
-    var n = el('div','gr-sec-n'+(need.length?'':' zero')); n.appendChild(tx(String(need.length)));
+    var onN = bank ? need.length+cart.length : need.length;
+    var n = el('div','gr-sec-n'+(onN?'':' zero')); n.appendChild(tx(String(onN)));
+    if (bank) n.title = onN+' of '+mine.length+' on this run';
     h.appendChild(ic); h.appendChild(nm); h.appendChild(n); box.appendChild(h);
     var list = el('div','gr-items');
-    need.forEach(function(i){ list.appendChild(grRow(i)); });
-    if (cart.length){ var ch=el('div','gr-subhead'); ch.appendChild(tx('In the cart')); list.appendChild(ch); cart.forEach(function(i){ list.appendChild(grRow(i)); }); }
-    if (view==='all' && have.length){ var hh=el('div','gr-subhead'); hh.appendChild(tx('Got it · tap to add again')); list.appendChild(hh); have.forEach(function(i){ list.appendChild(grRow(i)); }); }
+    if (bank) mine.slice().sort(byName).forEach(function(i){ list.appendChild(grRow(i)); });
+    else {
+      need.forEach(function(i){ list.appendChild(grRow(i)); });
+      if (cart.length){ var ch=el('div','gr-subhead'); ch.appendChild(tx('In the cart')); list.appendChild(ch); cart.forEach(function(i){ list.appendChild(grRow(i)); }); }
+    }
     box.appendChild(list);
-    if (view==='all') box.appendChild(addRow(sec));
+    if (bank) box.appendChild(addRow(sec));
     wrap.appendChild(box);
     if (window._grocKeep===sec.id) {
       // keep the section's add box open for the next item
@@ -8273,7 +8323,12 @@ function renderShopping(cv){
   });
   if (!shown) {
     var em = el('div','gr-empty');
-    em.appendChild(tx(items.length ? 'Nothing to get. Type above, or tap Everything to put a usual item back on the list.' : 'Nothing here yet. Type an item above and it lands in the right section.'));
+    em.appendChild(tx(items.length ? 'Nothing on this run. Open the Bank and tap what you need, or type an item above.' : 'Nothing here yet. Type an item above and it lands in the right section.'));
+    if (items.length) {
+      var gb = el('button','gr-mode'); gb.style.marginTop='10px'; gb.appendChild(tx('📋 Open the Bank'));
+      gb.onclick = function(){ try{ localStorage.setItem('sub_groc_view','all'); }catch(e){} window._grocLast=null; renderCanvas(); };
+      em.appendChild(el('br','')); em.appendChild(gb);
+    }
     wrap.appendChild(em);
   }
   window._grocKeep = null;
