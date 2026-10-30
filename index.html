@@ -1403,10 +1403,14 @@ html.sb-lock{overflow:hidden}
 .gr-cb.on{background:var(--lists);border-color:var(--lists)}
 .gr-cb.on:after{content:'';position:absolute;left:6px;top:2px;width:6px;height:11px;border:solid #14110e;border-width:0 2.5px 2.5px 0;transform:rotate(45deg)}
 .gr-name{flex:1;font-size:.95rem;color:var(--text);line-height:1.3;cursor:pointer;min-width:0;overflow-wrap:anywhere}
-.gr-row.got .gr-name{color:#8f867c}
-.gr-row.got:not(.trip) .gr-cb{background:none;border:1.5px dashed #756c62}
-.gr-row.got:not(.trip) .gr-cb:after{content:'+';border:none;transform:none;left:0;top:0;width:100%;height:100%;display:flex;align-items:center;justify-content:center;color:#a39a90;font-size:1rem;font-weight:700;line-height:1}
-.gr-row.got.trip .gr-name{text-decoration:line-through}
+.gr-row.cart .gr-name{color:#8f867c;text-decoration:line-through}
+.gr-row.pantry:not(.on) .gr-name{color:#b8afa5}
+.gr-row.pantry:not(.on) .gr-cb{border:1.5px dashed #756c62}
+.gr-row.pantry:not(.on) .gr-cb:after{content:'+';position:absolute;left:0;top:0;width:100%;height:100%;display:flex;align-items:center;justify-content:center;color:#a39a90;font-size:1rem;font-weight:700;line-height:1}
+.gr-row.pantry.on{background:rgba(240,192,64,.08);border-radius:6px}
+.gr-row.pantry.on .gr-name{color:var(--text);font-weight:500}
+.gr-reset{background:none;border:1px solid var(--br2);border-radius:999px;color:#a39a90;padding:6px 12px;cursor:pointer;font-family:'Rajdhani',sans-serif;font-weight:700;letter-spacing:1px;font-size:.8rem}
+.gr-reset:hover{color:var(--lists);border-color:var(--lists)}
 .gr-tag{font-family:'DM Mono',monospace;font-size:.62rem;color:#8f867c;flex-shrink:0}
 .gr-edit{background:none;border:none;color:#8f867c;font-size:.85rem;cursor:pointer;padding:6px;flex-shrink:0}
 .gr-edit:hover{color:var(--lists)}
@@ -1474,218 +1478,41 @@ var BOX_META = [
 
 // ─── SEED ────────────────────────────────────────────────────────
 var SEED = {
+  // Neutral starter content only: this file is public. A new device shows this until Sync loads
+  // the real planner from the private subroutine-data repo, and a saved planner never re-reads it.
   dump: '',
   calEvents: [],   // {id, title, date, endDate, colorIdx}
   timeBlocks: [],  // {id, date, time, title, colorIdx}
   boxes: {
-    army: {
-      tasks: [],
-      projects: 'OCS Board Prep [active]\nArmy PT & Fitness [active]\nLand Nav Training [planning]\nFinancial Plan for Deployment [planning]\nEMT School Research [someday]\nGI Bill / VA Strategy [someday]\n',
-      notes: 'FULL PATH: Army → EMT School → Firefighter → GI Bill/VA → reset finances → buy house → flip houses → build wealth\n\nASVAB Score: 110+ ✓\n',
-      chapters: [
-        { id:'ch-a1', label:'OCS Prep', pages:[
-          {id:'p-a1a', icon:'📝', label:'Overview', content:''},
-          {id:'p-a1b', icon:'📋', label:'Study Plan', content:''},
-          {id:'p-a1c', icon:'💪', label:'PT Goals', content:'255 LBS ✓\n38 in waist\n18 min 2 mile\n2 min plank\n50 push ups\n'},
-        ]},
-        { id:'ch-a2', label:'After Army', pages:[
-          {id:'p-a2a', icon:'📝', label:'EMT Research', content:''},
-          {id:'p-a2b', icon:'💰', label:'GI Bill Plan', content:''},
-        ]},
-      ],
-      tracker: [
-        {t:'PASS LIVE SCAN',d:true,c:[]},
-        {t:'SCORE HIGH ON ASVAB [110+]',d:true,c:[]},
-        {t:'PASS MEPS',d:true,c:[]},
-        {t:'GET CLEAN PISS',d:true,c:[]},
-        {t:'TELL WILEY',d:true,c:[]},
-        {t:'COMPLETE PACKET',d:true,c:[
-          {t:'FILL IN THE BLANKS',d:true,c:[]},
-          {t:'GATHER PAPERS',d:true,c:[
-            {t:'HIGH SCHOOL DIPLOMA',d:true,c:[]},
-            {t:'MEDICAL DOCS',d:true,c:[]},
-            {t:'COLLEGE DEGREE',d:true,c:[]},
-            {t:'LETTER OF RECS',d:true,c:[
-              {t:'MARIAH',d:true,c:[]},
-              {t:'RYAN',d:true,c:[]},
-              {t:'LT DAN',d:true,c:[]},
-            ]},
-            {t:'LETTER OF INTENT',d:true,c:[]},
-            {t:'RESUME',d:true,c:[]},
-            {t:'OFFICIAL COLLEGE TRANSCRIPTS',d:true,c:[
-              {t:'UCR',d:true,c:[]},
-              {t:'NU',d:true,c:[]},
-            ]},
-          ]},
-        ]},
-        {t:'SIGN CONTRACT',d:false,c:[]},
-        {t:'TELL MOSHER',d:false,c:[]},
-        {t:'TELL SORENSON AND HR',d:false,c:[]},
-        {t:'GET IN SHAPE FOR BASIC',d:false,c:[
-          {t:'255 LBS',d:true,c:[]},
-          {t:'38 IN WAIST',d:false,c:[]},
-          {t:'18 MIN 2 MILE',d:false,c:[]},
-          {t:'2 MIN PLANK',d:false,c:[]},
-          {t:'50 PUSH UPS',d:false,c:[]},
-        ]},
-        {t:'PREP THINGS FOR BASIC',d:false,c:[
-          {t:'G-SHOCK',d:true,c:[]},
-          {t:'HOKAS',d:true,c:[]},
-          {t:'BOOTS',d:true,c:[]},
-          {t:'LITTER BOT',d:false,c:[]},
-          {t:'AUTOMATIC FEEDER',d:false,c:[]},
-          {t:'CANCEL UNNEEDED SUBSCRIPTIONS',d:false,c:[]},
-          {t:'FILL OUT BAH PAPERS',d:false,c:[]},
-          {t:'PLAN GOING AWAY PARTY AT SHAMS',d:false,c:[]},
-          {t:'NEW LAPTOP OR FIX THE ONE I HAVE',d:true,c:[]},
-        ]},
-        {t:'DO MY "LAST" THINGS',d:false,c:[
-          {t:"HELL'S KITCHEN",d:false,c:[]},
-          {t:'GLEN IVY',d:false,c:[]},
-          {t:'IN N OUT',d:false,c:[]},
-          {t:'TACO STAND',d:true,c:[]},
-        ]},
-      ],
-    },
-    teaching: {
-      tasks: [
-      ],
-      projects: 'Ramhaus [active]\nCurriculum Planning [active]\nStill Life Displays [active]\nTrack Website Edit [active]\nInterview Prep [active]\nLesson Organization System [active]\n',
-      notes: 'Still life displays:\n  Left side — [Left and Right] lighting\n  Right side — [Front, Middle, and Back] lighting\n\n--- GRADING SCALE ---\n0-4 Scale: 0=F(0%) / 1=D(33%) / 1.5=D+(37.5%) / 2=C(50%) / 2.5=B(62.5%) / 2.8=B+(70%) / 3=A-(75%) / 3.5=A(87.5%) / 4=A+(100%)\nGrade %: A=75-100 / B=62-74.9 / C=50-61.9 / D=33-49.9 / F=0-32.9\n\n--- ART RUBRIC ---\nCreativity: 4=Super unique / 3=Original ideas / 2=Borrowed ideas / 1=Copied everything\nRequired Content: 4=All that and some / 3=All of them / 2=Most of them / 1=Nope\nNeatness: 4=Perfect / 3=Mostly neat / 2=Almost neat / 1=Messy\nEffort: 4=Above and beyond / 3=Good effort / 2=More effort needed / 1=Minimal effort\n\nTeaching Framework: INSPIRE -> DESIGN -> CREATE -> PRESENT & REFLECT\n\n--- INTERVIEW TIPS ---\n• Use team talk (we not I)\n• Always tie it back to TEAM\n• Use real life examples\n• Talk about feedback from year one and how I will implement it\n• Summarize what was said in the interview\n• Say something unique about me\n\n--- LESSON ORGANIZATION TEMPLATE ---\n[UNIT] (Element or Principle)\n-> [LESSON] (bonus if ties into art style)\n-> [SKILL] (worksheet)\n-> [PROJECT] (application)\nFILE includes: Worksheets/packets / Examples / Lecture notes / Displays / Simplified version* / Master/teacher copies (primes)\n',
-      chapters: [
-        { id:'ch-t1', label:'Ramhaus', pages:[
-          {id:'p-t1a', icon:'📝', label:'Concept', content:''},
-          {id:'p-t1b', icon:'🗺️', label:'Room Layout', content:''},
-          {id:'p-t1c', icon:'📋', label:'To Do', content:''},
-        ]},
-        { id:'ch-t3', label:'Classroom', pages:[
-          {id:'p-t3a', icon:'🎨', label:'Supply Stations', content:'Pencils, erasers, sharpeners\nSketchbooks / paper\nPaint station — brushes, cups, palettes\nColored pencils & markers\nScissors & tape\n'},
-          {id:'p-t3b', icon:'🖼️', label:'Project Zones', content:'Drawing & sketching tables\nPainting zone (protected surfaces)\nMixed media / collage area\nDigital / laptop station\n'},
-          {id:'p-t3c', icon:'✨', label:'Display Areas', content:'Left back wall — [L+R] lighting\nRight back wall — [Front, Middle, Back] lighting\nStudent gallery wall\nInspiration board\n'},
-          {id:'p-t3d', icon:'📋', label:'Reference Zone', content:'Assignment sheets / project briefs\nExample work & rubrics\nVisual art vocabulary wall\nStep-by-step technique guides\n"What do I do next?" flow chart\n'},
-          {id:'p-t3e', icon:'📦', label:'Storage', content:'Student WIP storage (cubbies/folders)\nSupply closet — bulk materials\nFinished work portfolio storage\nEquipment (cameras, tablets, etc.)\n'},
-        ]},
-      ],
-      classroom: { areas: [] },
-    },
-    coaching: {
-      tasks: [
-      ],
-      projects: 'Finish Season Strong [active]\nNext Season Planning [planning]\nTeam Merch & Logo [planning]\nTrack Room Organization [active]\nTrack Bank System [planning]\nSnack Bar Operations [active]\nUnified Sports [active]\nSchool Events [active]\nHurdle Clinic [planning]\nLand vs Sea [planning]\nSpring Break Beach Party [planning]\nTrack & Field Beach Day [planning]\nCoaching Handbook [active]\nSeason Planning System [active]\nCoaching Data Program [planning]\nCoaching Card Redesign [active]\n',
-      notes: "Recruiting pitch for next year — document what worked this season.\n\n--- HEAD COACH RESPONSIBILITIES ---\n• Attendance / Lettering points / Parent-coach meetings / Timers / Buses / Rosters / Fundraisers / Track funds / Coaching office / Meet workers\n\n--- H-CREW SYSTEM ---\n• Need a 10-man crew — one at each hurdle stack\n• Preassign athletes — whoever isn't hurdling\n• Each hurdle race is right after a distance event so no sprinter has an excuse\n\n--- THE HURDLE COMMANDMENTS ---\n• Thou shall not go over a backwards hurdle\n• Thou shall not stutter step\n• Thou shall clap if a teammate falls\n• Thou shall not coward away from a hurdle\n• Thou shall keep arms and legs inside the ride at all times\n\n--- STATIC STRETCHES ---\nStanding: Legs apart down the middle / Legs apart side to side / Right over left / Left over right / Flamingos\nSitting: Butterfly's / Right leg out left in / Left leg out right in / Pretzels / Figure 4's / Calves (single)\n\n--- SEASON STRUCTURE ---\nPre Season: Conditioning / Circuits / Lifting\nSeason: Strength work / Speed work / Recovery\nPost Season: Specialized workouts / Speed work\n\n--- WEIGHT TRAINING ---\nPower/speed based / Olympic lifts / Switch to front squats / Plyos / Medicine ball workouts / Rubber bands\n\n--- COACHING CARD IDEAS ---\nMultiple cards: Race plan / Hurdle spaces / Wicket drill / Practice\n\n--- LAND VS SEA EVENTS ---\n100 / 200 / 4x50 / 4x100\n\n--- COACHING DATA PROGRAM ---\nRecords notes/workouts/data -> segment into athlete packets -> pass on knowledge\n\n--- TRACK & FIELD BEACH DAY — Huntington Beach Sat 6/4/22 ---\nActivities: Football / Bonfire / Volleyball\nShopping: Ice chest / Firewood / Snacks / Drinks / Ice / Umbrella\nPacking: Sunscreen / Extra towels / Snacks / Drinks / Football / Lawn chairs / Fire starters / Lighter / Firewood / Ice chest / Hoodie & sweats\nKids list: Sunscreen / Towels / Snacks / Water/drinks / Hoodie & warm clothes\n",
-      chapters: [
-        { id:'ch-c1', label:'This Season', pages:[
-          {id:'p-c1a', icon:'📝', label:'Notes', content:''},
-          {id:'p-c1b', icon:'✅', label:'Meet Checklist', content:''},
-        ]},
-        { id:'ch-c2', label:'Next Season', pages:[
-          {id:'p-c2a', icon:'📝', label:'Ideas', content:''},
-          {id:'p-c2b', icon:'👥', label:'Recruiting', content:''},
-        ]},
-        { id:'ch-c3', label:'Admin', pages:[
-          {id:'p-c3a', icon:'💰', label:'Track Bank', content:''},
-          {id:'p-c3b', icon:'🛒', label:'Snack Bar', content:''},
-          {id:'p-c3c', icon:'🎨', label:'Merch & Logo', content:''},
-        ]},
-      ],
-    },
-    art: {
-      tasks: [
-      ],
-      projects: 'Personal Art Practice [paused]\nHealth & Fitness Oasis [planning]\nBlender / 3D Print Hustle [planning]\nProject Genesis — Indie Game [active]\nRedondo Rags [active]\nRing Design [planning]\nPun Draw Challenge [planning]\nSecurkitty / Millikitty [planning]\nCat Shaped Cup [planning]\nTravel Mask Design [planning]\nBeer Labels [planning]\nLane Penetrators [planning]\nAmanda Logo [active]\nMariah Portrait & Watercolor [active]\nMikey Positive Vibes Logo [active]\nMother Cover-Up Tattoo [planning]\nGrandma American Flag Mural [planning]\nClay Bust of a Head [planning]\nJugger Fridge [planning]\nDramamine Dragon Logo [active]\nTattooing Practice [active]\nUnreal + Blender Studies [active]\nResin Cast Apple [planning]\nHeart Hand Bookends [planning]\nScrapbook [someday]\n3D Print Liquor Display Light Boxes [planning]\nGameCube Keychain [planning]\nFist Cast Installation [planning]\n',
-      notes: "Art Project System: A=Fun stuff / B=Functional/Utility/Repairs / C=Art\n\nClient Projects:\n• Amanda — logo (text her about progress)\n• Mariah — portrait on Procreate + watercolor stencil\n• Mikey — Positive Vibes logo\n• Mother — cover up tattoo\n• Grandma — American Flag Mural\n\nClay Bust of a Head: wood podium / mini pipe / more clay\nJugger Fridge — model parts with clay / oven bake vs air dry vs 3D print\n\nResin Cast Apple: buy resin / get drill back / drill cavity for battery pack + lights\n\nBlender/Unreal Goals: Donut / Unreal engine / House objects / Dream space\n\nRedondo Rags design notes: fancy corn husk behind name / rounded corn point / husk more ribbon-like / about 5x4 size\n\nFist Cast Art Idea: have people cast their fist / paint them / stack diagonally on a wood plank\n",
-      chapters: [
-        { id:'ch-ar1', label:'Project Genesis', pages:[
-          {id:'p-ar1a', icon:'📝', label:'Concept', content:''},
-          {id:'p-ar1b', icon:'🎮', label:'Mechanics', content:''},
-          {id:'p-ar1c', icon:'🎨', label:'Art Direction', content:''},
-        ]},
-        { id:'ch-ar2', label:'Oasis Concept', pages:[
-          {id:'p-ar2a', icon:'📝', label:'Vision', content:'Glen Ivy meets high-end athletic club.\nSpa + gym + gentleman\'s/women\'s lounge.\n'},
-          {id:'p-ar2b', icon:'🏗️', label:'Design Ideas', content:''},
-        ]},
-        { id:'ch-ar3', label:'3D Print Hustle', pages:[
-          {id:'p-ar3a', icon:'📝', label:'Research', content:''},
-          {id:'p-ar3b', icon:'📦', label:'Products', content:''},
-        ]},
-      ],
-    },
-    house: {
-      tasks: [
-      ],
-      projects: 'Garage Design & Build-Out [active]\nCatio Build-Out [active]\nRoom Setup [active]\nNew House Vision Plan [planning]\nTiki Bar Bathroom [someday]\nBuy a House [someday]\nHouse Flipping Pipeline [someday]\n',
-      notes: 'Room wishlist: Desk / Under table PC mount / Bed frame / Overhead bed lights\n\nCatio wishlist: More plants / Rug / Fake or real grass / Chairs / Lights / Mini burner\n\nGarage wishlist:\n• Racks\n• 3D print station\n• 3D projects queue\n• Big trash can / Push broom\n• Flashlight stand\n• PC case decor\n• Phone/wallet/watch stand\n• Running medals display\n• Rammy trophy\n• Magnetic hat ram horns\n• Ring idea display\n• Geo solids\n• Battery storage/holder\n• Desk/drawer organizer\n• Light-affected 3D sculptures with dual meaning\n\nNew House Vision:\nIdeas by room: Bedroom / Kitchen (coffee shop/bar area + coffee mug rack hooks) / Laundry room / Bathroom\nDream stuff vs realistic stuff\n\nFinance: Pay Mariah $2700 / Sam paperwork (W-2s + paystub) / Update monthly expenses / Budget money\n',
-      chapters: [
-        { id:'ch-h1', label:'Garage', pages:[
-          {id:'p-h1a', icon:'📝', label:'Plan', content:''},
-          {id:'p-h1b', icon:'📦', label:'Storage Ideas', content:''},
-        ]},
-        { id:'ch-h2', label:'Tiki Bar Bath', pages:[
-          {id:'p-h2a', icon:'📝', label:'Inspo', content:''},
-          {id:'p-h2b', icon:'🔨', label:'Build Plan', content:''},
-        ]},
-      ],
-    },
-    personal: {
-      tasks: [
-      ],
-      projects: 'Gun Upgrades [planning]\nCar Restoration [active]\nWorkout & Fitness [active]\nDental Work [active]\nFinancial Reset [active]\nVegas Trip [planning]\n',
-      notes: "Daily Routine:\n• No social media\n• Get up at 6am\n• Make breakfast / Shower / Get dressed / Brush teeth + fix hair / Drink water / Feed cats\n• Pack for school: lunch / toned paper / coffee / bag\nAM: Get gas / Go for run\nAt school: Prepare for day\nNoon: Grade work / Eat lunch / Update credit sheets\nPM: Plan tomorrow / Unpack and repack / Shower\n\nChores: Refill cat litter / Make bed / Change litter / Meal prep / Check mail / Do dishes / Take out trash / Dry clothes / Clip nails / Feed cats / Put load 1 in / Put load 2 in / Put clothes away / Fold clothes\n\nMurphy Progression Plan:\nWeightless: 1/4=0.5mi/5x5-10-15 | 1/2=0.5mi/10x5-10-15/0.5mi | 3/4=0.75mi/15x5-10-15/0.75mi | Full=1mi/20x5-10-15/1mi\nWeighted: same structure\n\nCar Parts Needed:\n• Front bumper: tie downs / front splitter / bondo to seal cracks / fasten back onto car\n• Spoiler: sand polish clear coat / 3M double tape back on\n• Fuse box / Lights (sand polish clear coat) / Dents / Gross interior wires\n• Alternator / Battery / Sun visor fixture replacement / Paint on seat / Fix coolant\n\nDental Plan: Check RUSD insurance -> schedule appointment -> wisdom teeth too -> teeth whitening (Hims purple toothpaste)\n\nWorkout Plan: Figure out lifts per day / Numbers for all 9 weeks / Print plans\n",
-      chapters: [
-        { id:'ch-p1', label:'Car Project', pages:[
-          {id:'p-p1a', icon:'📝', label:'Diagnosis', content:'Get OBD2 scan first.\n'},
-          {id:'p-p1b', icon:'🔧', label:'Parts & Costs', content:''},
-        ]},
-        { id:'ch-p2', label:'Fitness', pages:[
-          {id:'p-p2a', icon:'💪', label:'Current Plan', content:''},
-          {id:'p-p2b', icon:'📊', label:'Progress', content:''},
-        ]},
-      ],
-    },
-    finance: {
-      tasks: [],
-      projects: "Budget Reset [active]\nDebt Payoff Plan [planning]\nSavings Goal [planning]\nInvestment Research [someday]\n",
-      notes: "Pay Mariah $2700\nSam paperwork (W-2s + paystub)\nUpdate monthly expenses\nBudget money\n\nMonthly bills:\n- Rent\n- Utilities\n- Car payment / insurance\n- Phone\n- Subscriptions (audit + cancel unneeded)\n",
-      chapters: [
-        { id:"ch-f1", label:"Budget", pages:[
-          {id:"p-f1a", icon:"📊", label:"Monthly Budget", content:""},
-          {id:"p-f1b", icon:"📋", label:"Bills & Subs", content:""},
-        ]},
-        { id:"ch-f2", label:"Goals", pages:[
-          {id:"p-f2a", icon:"🎯", label:"Short Term", content:""},
-          {id:"p-f2b", icon:"🏦", label:"Long Term", content:""},
-        ]},
-      ],
-    },
-    fitness: {
-      tasks: [],
-      projects: "Army PT & Fitness [active]\nWorkout & Fitness [active]\n",
-      notes: "Workout Plan: Figure out lifts per day / Numbers for all 9 weeks / Print plans\n\nMurphy Progression Plan:\nWeightless: 1/4=0.5mi/5x5-10-15 | 1/2=0.5mi/10x5-10-15/0.5mi | 3/4=0.75mi/15x5-10-15/0.75mi | Full=1mi/20x5-10-15/1mi\nWeighted: same structure\n",
-      chapters: [
-        { id:"ch-fit1", label:"Program", pages:[
-          {id:"p-fit1a", icon:"💪", label:"Program", content:""},
-        ]},
-        { id:"ch-fit2", label:"Tracking", pages:[
-          {id:"p-fit2a", icon:"📊", label:"Metrics", content:""},
-          {id:"p-fit2b", icon:"📝", label:"Notes", content:""},
-        ]},
-      ],
-    },
-    cookbook: {
-      tasks: [],
-      projects: "Meal Prep System [active]\nMacro Planning [planning]\n",
-      notes: "Meal Prep Notes:\n• Protein sources: steak, chicken, smoked salmon, beef pucks\n• Snacks: protein bars, granola bars, uncrustables\n• Drinks: cold brew, water, protein shakes\n",
-      chapters: [
-        { id:"ch-ck1", label:"Recipes", pages:[
-          {id:"p-ck1a", icon:"🍳", label:"Favorites", content:""},
-          {id:"p-ck1b", icon:"🥩", label:"Protein Meals", content:""},
-        ]},
-        { id:"ch-ck2", label:"Meal Plan", pages:[
-          {id:"p-ck2a", icon:"📅", label:"Weekly Menu", content:""},
-          {id:"p-ck2b", icon:"🛒", label:"Staples List", content:""},
-        ]},
-      ],
-    },
+    teaching: { tasks: [], projects: '', notes: '', classroom: { areas: [] }, chapters: [
+      { id:'ch-t1', label:'Planning', pages:[ {id:'p-t1a', icon:'📝', label:'Notes', content:''}, {id:'p-t1c', icon:'📋', label:'To Do', content:''} ]},
+      { id:'ch-t3', label:'Classroom', pages:[ {id:'p-t3a', icon:'🎨', label:'Supply Stations', content:''}, {id:'p-t3e', icon:'📦', label:'Storage', content:''} ]},
+    ]},
+    coaching: { tasks: [], projects: '', notes: '', chapters: [
+      { id:'ch-c1', label:'This Season', pages:[ {id:'p-c1a', icon:'📝', label:'Notes', content:''}, {id:'p-c1b', icon:'✅', label:'Meet Checklist', content:''} ]},
+      { id:'ch-c2', label:'Next Season', pages:[ {id:'p-c2a', icon:'📝', label:'Ideas', content:''} ]},
+    ]},
+    art: { tasks: [], projects: '', notes: '', chapters: [
+      { id:'ch-ar1', label:'Ideas', pages:[ {id:'p-ar1a', icon:'📝', label:'Notes', content:''} ]},
+    ]},
+    house: { tasks: [], projects: '', notes: '', chapters: [
+      { id:'ch-h1', label:'Projects', pages:[ {id:'p-h1a', icon:'📝', label:'Plan', content:''} ]},
+    ]},
+    personal: { tasks: [], projects: '', notes: '', chapters: [
+      { id:'ch-p1', label:'Notes', pages:[ {id:'p-p1a', icon:'📝', label:'Notes', content:''} ]},
+    ]},
+    finance: { tasks: [], projects: '', notes: '', chapters: [
+      { id:'ch-f1', label:'Budget', pages:[ {id:'p-f1a', icon:'📊', label:'Monthly Budget', content:''}, {id:'p-f1b', icon:'📋', label:'Bills & Subs', content:''} ]},
+      { id:'ch-f2', label:'Goals', pages:[ {id:'p-f2a', icon:'🎯', label:'Short Term', content:''}, {id:'p-f2b', icon:'🏦', label:'Long Term', content:''} ]},
+    ]},
+    fitness: { tasks: [], projects: '', notes: '', chapters: [
+      { id:'ch-fit1', label:'Program', pages:[ {id:'p-fit1a', icon:'💪', label:'Program', content:''} ]},
+      { id:'ch-fit2', label:'Tracking', pages:[ {id:'p-fit2a', icon:'📊', label:'Metrics', content:''}, {id:'p-fit2b', icon:'📝', label:'Notes', content:''} ]},
+    ]},
+    cookbook: { tasks: [], projects: '', notes: '', chapters: [
+      { id:'ch-ck1', label:'Recipes', pages:[ {id:'p-ck1a', icon:'🍳', label:'Favorites', content:''} ]},
+      { id:'ch-ck2', label:'Meal Plan', pages:[ {id:'p-ck2a', icon:'📅', label:'Weekly Menu', content:''} ]},
+    ]},
   },
   fitness: {
     currentBlock: 0,
@@ -1704,90 +1531,13 @@ var SEED = {
   lists: {
     lastReset: '',
     chores: [
-      {id:'c1',t:'Clear & refill litter',d:false},{id:'c2',t:'Take out trash',d:false},
-      {id:'c3',t:'Do dishes',d:false},{id:'c4',t:'Clean up room',d:false},
-      {id:'c5',t:'Do laundry',d:false},{id:'c6',t:'Fold clothes',d:false},
-      {id:'c7',t:'Wash car',d:false},{id:'c8',t:'Check mail',d:false},
-      {id:'c9',t:'Sweep the floors',d:false},{id:'c10',t:'Get gas',d:false},
-      {id:'c11',t:'Meal prep',d:false},{id:'c12',t:'Grocery shop',d:false},
+      {id:'c2',t:'Take out trash',d:false},{id:'c3',t:'Do dishes',d:false},
+      {id:'c5',t:'Do laundry',d:false},{id:'c12',t:'Grocery shop',d:false},
     ],
-    grocery: [
-      {id:'g1',t:'Cold brew',d:false,cat:'Drinks'},{id:'g2',t:'Potatoes',d:false,cat:'Produce'},
-      {id:'g3',t:'Steak',d:false,cat:'Protein'},{id:'g4',t:'Chicken',d:false,cat:'Protein'},
-      {id:'g5',t:'Smoked salmon',d:false,cat:'Protein'},{id:'g6',t:'Cheese',d:false,cat:'Dairy'},
-      {id:'g7',t:'Protein shakes',d:false,cat:'Supplements'},{id:'g8',t:'Protein bars',d:false,cat:'Supplements'},
-      {id:'g9',t:'Uncrustables',d:false,cat:'Snacks'},{id:'g10',t:'Gummies',d:false,cat:'Snacks'},
-      {id:'g11',t:'Granola bars',d:false,cat:'Snacks'},{id:'g12',t:'Beef pucks',d:false,cat:'Protein'},
-      {id:'g13',t:'English muffins',d:false,cat:'Bread'},{id:'g14',t:'Water',d:false,cat:'Drinks'},
-      {id:'g15',t:'Soda',d:false,cat:'Drinks'},{id:'g16',t:'Veggies',d:false,cat:'Produce'},
-    ],
-    quotes: [
-      {id:'q1',t:"So who are you to tell me I ain't living right"},
-      {id:'q2',t:"I love you more than I hate me"},
-      {id:'q3',t:"We're not by blood but you're my brother"},
-      {id:'q4',t:"I'm going back to what got me here, cocky and weird. and not being knocked off my dear"},
-      {id:'q5',t:"if you peek its 6 foot deep you seek"},
-      {id:'q6',t:"You want a friend for life just listen to me"},
-      {id:'q7',t:"I CANT DROWN MY DEMONS THEY KNOW HOW TO SWIM"},
-      {id:'q8',t:"life's a bitch and then you die"},
-      {id:'q9',t:"Justice won't be served by a hashtag"},
-      {id:'q10',t:"how high is high enough? Until we are eye n eye with the higher ups"},
-      {id:'q11',t:"A wolf in a sheep's clothing"},
-      {id:'q12',t:"(There Are) No Spheres"},
-      {id:'q13',t:"the more dangerous the neighborhood the better the tacos"},
-      {id:'q14',t:"Democracy is too fucking slow"},
-      {id:'q15',t:"...Same thing we do everyday pinky"},
-      {id:'q16',t:"when the power of love overcomes the love of power, the world will know peace."},
-      {id:'q17',t:"For example what does the Billboard say come and play come in play forget about the movement"},
-      {id:'q18',t:"I use to be a black sheet but now I'm just a goat"},
-      {id:'q19',t:"comparison is the thief of joy"},
-      {id:'q20',t:"happiness is reality minus expectations"},
-      {id:'q21',t:"Do you feel it now mister crabs?"},
-      {id:'q22',t:"oh... oh I feel it"},
-      {id:'q23',t:"sometimes I feel like I wasted my whole life chasing my pipe dreams with shots and a whole lot of beer"},
-      {id:'q24',t:"I was 16 just a blink ago. I was 21 just a drink ago"},
-      {id:'q25',t:"Guess every team doesn't come complete with niggas like ours"},
-      {id:'q26',t:"champagne taste on a beer budget"},
-      {id:'q27',t:"death can take me if I can't be free. I am not like you. I'm a dying breed"},
-      {id:'q28',t:"I think I'm at the wrong church"},
-      {id:'q29',t:"Mozambique here"},
-      {id:'q30',t:"and all I know of love Is how to live without it"},
-      {id:'q31',t:"I know you to well my friend, for I am just like you"},
-      {id:'q32',t:"Alone, but together. We always make it less than it seems. It's funny how if you have feelings your weak! So we say less than what we mean"},
-      {id:'q33',t:"Being an artist is the best excuse for being crazy"},
-      {id:'q34',t:"Heaven is what you make it. Hell is what we go through"},
-      {id:'q35',t:"cradle to the grave. Womb to the tomb"},
-      {id:'q36',t:"Word is Bond"},
-      {id:'q37',t:"The greater the fire of knowledge grows the farther I can see into the forest of the unknown"},
-      {id:'q38',t:"Idk what you see when you look at me but I don't like what I see in The mirror"},
-      {id:'q39',t:"When I stumble, I'm aware, it's just part of the dance"},
-      {id:'q40',t:"Trespass in the domain of the gods"},
-      {id:'q41',t:"I exist so you can see what a master looks like"},
-      {id:'q42',t:"You can't have a cake and eat it too"},
-      {id:'q43',t:"Do not pray for easy lives! Pray to be stronger men"},
-      {id:'q44',t:"Pleasure is the removal of pain and desire"},
-      {id:'q45',t:"The Less You care The More You Live"},
-    
-    ],
-    media: {
-      movies: ['A Bronx Tale','Downsizing','Batman Ninja','Surrogates','Enemy at the Gates','In Time (2011)','Home Front','Yesterday','48 HRS','Paul','CB4','Easy Money','Back to School','Stripes','I Care a Lot','You Must Love Dawn','The Bike Riders','They Live','War Machine','Naruto Movies'],
-      games: ['Skate 3 — PS3','SSX Tricky — GameCube','Army of Two — PS3','Need for Speed: Underground 2 — PS2'],
-      gear: {
-        'Game Cube': ['AV cables','Controller'],
-        'PS1': ['Power cables','AV cables'],
-        'PS2': ['System','Power cables','AV cables'],
-        'PS3': ['HDMI cable','Power cable'],
-      },
-    },
-    wishlist: [
-      {id:'w1',t:'Gun light & laser combo',d:false,p:'high'},
-      {id:'w2',t:'Gun case',d:false,p:'high'},
-      {id:'w3',t:'Litter bot',d:false,p:'med'},
-      {id:'w4',t:'Automatic cat feeder',d:false,p:'med'},
-      {id:'w5',t:'Download Blender',d:false,p:'low'},
-      {id:'w6',t:'New boots',d:true,p:'high'},
-      {id:'w7',t:'G-Shock watch',d:true,p:'high'},
-    ],
+    grocery: [],
+    quotes: [],
+    media: { movies: [], games: [], gear: {} },
+    wishlist: [],
   },
 };
 
@@ -1933,7 +1683,7 @@ function hydrateState() {
     if (!S.boxes.cookbook) S.boxes.cookbook = dc(SEED.boxes.cookbook);
     if (!S.lists) S.lists = dc(SEED.lists);
     if (!S.lists.quotes) S.lists.quotes = dc(SEED.lists.quotes);
-    if (!S.manifesto) S.manifesto = [{"id": "mf-realization", "title": "The Realization", "date": "Feb 25, 2020 · 10:36 PM", "body": "IM 25. A BARTENDER WITH A BFA IN ARTS STUDIO. $52K IN DEBT WITH $7 IN MY BANK ACCOUNT. I LIVE ON MY LITTLE BROTHER BED IN HIS ROOM WITH MY MOM…. SOMETHING ON MY LIFE HAS GOT TO CHANGE!\n\nHERE IS WHERE IMA NEED TO REALLY\n\nTO GET THINGS IN JUST A SPACE WHERE I CAN SEE EVERYTHING I'LL NEED TO COLLECT THEM HERE AND THEN LATER ORGANIZE THEM.\nFOR NOW… WHILE AT WORK ILL HAVE TO WRITE THINGS DOWN AS THEY COME INTO MY HEAD.\n\nLIVING A RESPONSIBLE AND SMART LIFE IS THE KEY THO!\n\nI NEED TO SEARCH DEEP AND FIGURE OUT WHERE I'M GOING IN LIFE. I THINK A GOOD PLACE TO START IS LOOKING AT:\n• MY GOALS\n• WHAT IM NATURALLY GOOD AT\n• WHAT I LOVE DOING\n• WHAT I KNOW I WANT IN MY LIFE\n\nAND FIND WHERE THE COMMON GROUND LIES\n\nNEXT I NEED TO ORGANIZE A SOUND WORK WEEK MODEL. LESS VARIABILITY! DAILY GOALS ARE GOOD, BUT HAVEN'T BEEN WORKING. THE FOR SIGHT IS TOO SHORT AND I EASILY LOOSE SIGHT OF THE DIRECTION IM TRYING TO GO. KEEPING THE BIGGER PICTURE IN SIGHT IS WHAT I NEED TO REMIND MYSELF TO DO. WHAT I NEED TO DO IS LOOK AT GOALS + PROGRESS ON A WEEKLY BASIS.\n\nI NEED TO COME UP WITH MONTHLY MODELS THAT HAVE TO FOLLOW IN ORDER FOR ME TO STAY ON PAR. BE PATIENT, AND DON'T LET UP AT THE SMALLEST SIGN OF SUCCESS.\n\nBOIL MY DAY DOWN TO THINGS I LOVE… WHICH I ALREADY KNOW\nART\nGAMES\nFITNESS\n\nEACH OF THOSE VIRTUES IN MY LIFE ARE PRECIOUS AND ARE WHAT ULTIMATELY MALE ME HAPPY.\n\nI BELIEVE MY MISSION IN LIFE FALLS ALONG THOSE LINES SOMEHOW. I KNOW I WANT MY OWN BUSINESS ONE DAY. LIKE A CAFÉ/BAR/BRAND MAYBE EVEN LIKE AN APP! MY OWN PLANNER APP TAILORED TO MY NEEDS\n\nI THINK ID BE HAPPY IN LIFE TO:\n• HAVE MY OWN STUDIO\n• CONTINUE TO SHOWCASE MY ART\n• SALE MY ART\n• DO COMMISSIONS\n• TEACH ART\n• COACH TRACK OR AT LEAST TRAIN FITNESS\n• EVENTUALLY BECOME A PROFESSOR\n• OWN A CAFÉ/BAR/ARCADE … PERFECT STUDY SPOT\n\nI THINK THE MAIN STRUGGLE I HAVE WITH LIFE RN IS KNOW ONE IS SHOWING ME WHAT TO DO NEXT. I'VE ALWAYS HAD GUIDANCE IN WHAT TO DO AND I'VE EXCELLED AT DOING WHAT IM TOLD… HAVING A COACH IS GONE NOW SO I'VE BEEN LEFT TO FIGURE OUT HOW TO TEACH MYSELF WHAT TO DO NEXT.. MUCH LIKE JOHN BROWNS TEACHINGS I NEED TO LOOK AT LIFE THE SAME WAY. THE SECRETE LIES WITHIN HOW TO SELF GUIDE MYSELF… I'VE LOW KEY HAVE THE TOOLS BUT NOW I NEED TO FIGURE OUT HOW TO USE THEM. THIS WILL BE MY JOURNEY ON HOW TO GO EVEN FARTHER IN LIFE. HIT THE NEXT LEVEL. IM ON MY OWN, AS NO ONE IN MY FAMILY HAS GOTTEN THIS FAR YET. BUT I WILL CONTINUE TO BREAK THE MOLD. I AM ENGAGED AND MOTIVATED NOW. I WILL NOT STOP. THIS WILL BE MY GREATEST ACHIEVEMENT. ZACH LEWIS WILL LIVE A LIFE THAT'S ONE HE WANTS. PROUD OF. FORE FILLING. REWARDING. AND MOST IMPORTANTLY INSPIRING.\n\n— I'm 29 now and my views on life and goals have slightly changed. What's interesting though is that my predictions and 10 year plan has been for the most part coming true."}, {"id": "mf-rules", "title": "The Rules", "date": "Feb 25, 2020 · 11:07 PM", "body": "1. DON'T BE A DICK\n2. HAVE HIGH ENERGY\n3. WHATEVER YOU'RE DOING BE THE BEST AT IT\n4. IF I THINK IT'S A DUMB IDEA AND IT CAN GO WRONG IT IS AND WILL\n5. TAKE THE LONG WAY. NO SHORTCUTS.\n6. HAVE HONOR AND STICK TO UR MORALS\n7. ALWAYS ASK MYSELF IF I CAN DO MORE. IF THE ANSWER IS YES… THEN DO MORE"}, {"id": "mf-plan", "title": "The Plan", "date": "Jul 31, 2020 · 4:46 PM", "body": "THINGS I DESIRE?\n• A HOUSE\n• A project car\n• A daily car\n• Debt free\n• An art studio\n• Dream game setup\n• Be the co-owner of a bar\n• A freelancing business\n• To display art in galleries\n• Sell my own art\n• To be in great shape\n• A very good supplemental job (teaching? Bartending?)\n• 100k a year\n• To be bar set for Dylan and Kennedy and future kids\n• To be loved and well known/respected in my circle\n• Traveling\n• Enjoy life on my own terms\n• To be the realist version of me.\n• Ultimately a professor would be dope. It's prestigious and flexible!\n• Start my own rave in redwoods? Lol\n\nWHAT'S THAT LOOK LIKE?\nProfession:\n• Teacher/Professor\n• Artist\nSide hustles:\n• Tattooing\n• Mask/Prop making\n• Real estate\n• Digital assets\nHobbies:\n• Cars\n• Gaming\n• Fitness\n• Hiking\n\nREALISTIC TIMING\n\n1 YEAR: (to the end of the year)\n• [done] Clean up health and habits\n• [done] Double down on second job to pay off debts\n• [done] Move out of moms\n• Develop a style\n• [done] Be substitute ready\n\n3 YEAR: (28yr)\n• Have a solid portfolio with website\n• [done] Working on teaching creds (master's program)\n• Show art at art walks\n• Have a mural wall work done\n\n5 YEAR: (30yr)\n• Have a solid art business and studio\n• [done] BRZ paid off\n• Complete a marathon\n• Exhibit in a major Art Show\n• Solid rookie in the tattoo world\n\n10 YEAR: (35yr)\n• Really looking into the reality of starting a cafe\n• Master of an art form\n\n15 YEAR: (40yr)\n• Where's the loft downtown?\n• Tattoo veteran\n\n20 YEAR: (45yr)\n• Own some property to flip or rent!\n• Own a bar or coffee shop of my design"}, {"id": "mf-mantra", "title": "The Mantra", "date": "Jan 17, 2021 · 7:45 PM", "body": "I NEED SOMETHING TO CALL MY OWN. A SAYING TO PULL ME OUT OF THE DARKNESS…\nIT'LL COME TO ME\n\n\nMY MANTRA:\nI AM IN CONTROL OF MY MIND AND BODY"}];
+    if (!S.manifesto) S.manifesto = [];
     if (!S.lists.media)  S.lists.media  = dc(SEED.lists.media);
     if (!S.dump) S.dump = '';
     if (!S.feed) S.feed = [];
@@ -8070,7 +7820,7 @@ var GROCERY_SECTIONS = [
   { id:'meat',        name:'Meat',         ico:'🥩' },
   { id:'dairy',       name:'Dairy & Eggs', ico:'🥚' },
   { id:'rice',        name:'Rice & Pasta', ico:'🍚' },
-  { id:'pantry',      name:'Pantry',       ico:'🥫' },
+  { id:'pantry',      name:'Canned & Dry Goods', ico:'🫙' },
   { id:'condiments',  name:'Condiments',   ico:'🧂' },
   { id:'snacks',      name:'Snacks',       ico:'🥜' },
   { id:'junk',        name:'Junk Food',    ico:'🍫' },
@@ -8122,19 +7872,28 @@ var OLD_GROCERY_CATS = { 'fruit':'fruit','produce':'veggies','veggies':'veggies'
   'protein':'meat','meat':'meat','dairy':'dairy','drinks':'drinks','snacks':'snacks','junk food':'junk','frozen':'frozen','supplements':'supplements',
   'pets':'pet','pet':'pet','household':'household','other':'misc','misc':'misc','condiments':'condiments' };
 function migrateGrocery(){
-  if (!S.lists || !Array.isArray(S.lists.grocery) || S.lists._groceryV2) return;
-  S.lists.grocery.forEach(function(it){
-    var guess = guessGrocerySection(it.t);
-    if (guess==='misc') guess = OLD_GROCERY_CATS[String(it.cat||'').trim().toLowerCase()] || 'misc';
-    it.cat = guess;
-  });
-  S.lists._groceryV2 = true;
+  if (!S.lists || !Array.isArray(S.lists.grocery)) return;
+  if (!S.lists._groceryV2) {
+    S.lists.grocery.forEach(function(it){
+      var guess = guessGrocerySection(it.t);
+      if (guess==='misc') guess = OLD_GROCERY_CATS[String(it.cat||'').trim().toLowerCase()] || 'misc';
+      it.cat = guess;
+    });
+    S.lists._groceryV2 = true;
+  }
+  // The Pantry + Shopping List (Oct 30, 2026): a checked item used to leave the cart after 12 h on its own.
+  // Now it stays in the cart until Reset list, so anything checked before then goes back to The Pantry.
+  if (!S.lists._groceryV3) {
+    var cut = Date.now() - 12*60*60*1000;
+    S.lists.grocery.forEach(function(it){ if (it.gotAt && it.gotAt < cut) delete it.gotAt; });
+    S.lists._groceryV3 = true;
+  }
 }
 
 function renderShopping(cv){
   var wrap=el('div',''); wrap.style.maxWidth='660px';
   var h1=el('div','pg-h1'); h1.style.color='var(--lists)'; h1.appendChild(tx('🛒 Shopping List'));
-  var sub=el('div','pg-sub'); sub.appendChild(tx('Groceries to grab and things you want'));
+  var sub=el('div','pg-sub'); sub.appendChild(tx('The Pantry holds your usuals · the Shopping List is this trip'));
   wrap.appendChild(h1); wrap.appendChild(sub);
 
   // section header helper
@@ -8146,63 +7905,90 @@ function renderShopping(cv){
   }
 
   // ══ GROCERIES ══
+  // The Pantry is every item you've ever added. The Shopping List is what you're getting on the next trip.
+  // Per item: on the list when !d or gotAt (gotAt = checked off into the cart); in The Pantry only
+  // when d and no gotAt. Reset list takes everything off the list and leaves The Pantry alone.
   wrap.appendChild(sectionTitle('🥕 Groceries'));
   migrateGrocery();
   var items = S.lists.grocery;
-  var TRIP_MS = 12*60*60*1000;   // what you checked off in the last 12 h counts as this trip's cart
-  var now = Date.now();
-  function onTrip(it){ return it.d && it.gotAt && (now - it.gotAt) < TRIP_MS; }
+  function onList(it){ return !it.d || !!it.gotAt; }
+  function inCart(it){ return !!(it.d && it.gotAt); }
+  function putOnList(it){ it.d = false; delete it.gotAt; }
+  function takeOffList(it){ it.d = true; delete it.gotAt; }
   var view = 'need'; try { view = localStorage.getItem('sub_groc_view') || 'need'; } catch(e){}
+  if (view!=='all') view = 'need';
+  var pantry = view==='all';
   var needN = items.filter(function(i){ return !i.d; }).length;
-  var cartN = items.filter(onTrip).length;
+  var cartN = items.filter(inCart).length;
 
   var top = el('div','gr-top');
   var qr = el('div','gr-quick');
-  var qi = document.createElement('input'); qi.className='add-inp'; qi.id='groc-inp'; qi.placeholder='Add an item…';
+  var qi = document.createElement('input'); qi.className='add-inp'; qi.id='groc-inp'; qi.placeholder='Add to the Shopping List…';
   qi.autocomplete='off';
   var qb = el('button','add-btn'); qb.appendChild(tx('ADD'));
   qr.appendChild(qi); qr.appendChild(qb); top.appendChild(qr);
   var hint = el('div','gr-hint'); hint.id='groc-hint';
   if (window._grocLast) { hint.appendChild(tx(window._grocLast.msg+' ')); var hb=el('b',''); hb.appendChild(tx(window._grocLast.sec)); hint.appendChild(hb); }
-  else hint.appendChild(tx('It goes into the right section on its own. Wrong spot? Tap ✎ to move it.'));
+  else hint.appendChild(tx(pantry ? 'Tap an item to put it on the Shopping List. Tap again to take it off.'
+                                : 'Typed items go on the list and into The Pantry. Pick your usuals from The Pantry.'));
   top.appendChild(hint);
   var modes = el('div','gr-modes');
-  [['need','To get'],['all','Everything']].forEach(function(m){
+  [['need','🛒 Shopping List'],['all','🥫 The Pantry']].forEach(function(m){
     var b = el('button','gr-mode'+(view===m[0]?' on':'')); b.appendChild(tx(m[1]));
     b.onclick = function(){ try{ localStorage.setItem('sub_groc_view', m[0]); }catch(e){} window._grocLast=null; renderCanvas(); };
     modes.appendChild(b);
   });
-  var cnt = el('div','gr-count'); cnt.appendChild(tx(needN+' to get'+(cartN?' · '+cartN+' in cart':''))); modes.appendChild(cnt);
+  var cnt = el('div','gr-count');
+  cnt.appendChild(tx(pantry ? items.length+' in The Pantry · '+(needN+cartN)+' on the list'
+                          : needN+' to get'+(cartN?' · '+cartN+' in cart':'')));
+  modes.appendChild(cnt);
+  if (!pantry && needN+cartN) {
+    var rs = el('button','gr-reset'); rs.type='button'; rs.appendChild(tx('↺ Reset list'));
+    rs.onclick = function(){
+      uiConfirm('Clear the Shopping List? The Pantry stays as it is.', function(){
+        items.forEach(takeOffList); window._grocLast=null; save(); renderCanvas();
+      }, {title:'Reset Shopping List', okLabel:'Reset'});
+    };
+    modes.appendChild(rs);
+  }
   top.appendChild(modes);
   wrap.appendChild(top);
 
-  function addItem(name, secId, msg){
+  // toList: also put it on the Shopping List (the quick add). Otherwise it only goes in The Pantry.
+  function addItem(name, secId, toList){
     name = name.trim(); if (!name) return;
     var low = name.toLowerCase();
     var existing = items.filter(function(i){ return i.t.trim().toLowerCase()===low; })[0];
     if (existing) {
-      // Already on file: just put it back on the list
-      existing.d = false; delete existing.gotAt;
-      window._grocLast = { msg: (msg||name)+' is back on the list in', sec: grocerySection(existing.cat).name, id: existing.id };
+      if (toList) { putOnList(existing); window._grocLast = { msg: existing.t+' is on the list, in', sec: grocerySection(existing.cat).name, id: existing.id }; }
+      else window._grocLast = { msg: existing.t+' is already in The Pantry, in', sec: grocerySection(existing.cat).name, id: existing.id };
     } else {
-      var it = { id:'g'+Date.now()+Math.random().toString(36).slice(2,5), t:name, d:false, cat:secId };
+      var it = { id:'g'+Date.now()+Math.random().toString(36).slice(2,5), t:name, d:!toList, cat:secId };
       items.push(it);
-      window._grocLast = { msg: (msg||name)+' →', sec: grocerySection(secId).name, id: it.id };
+      window._grocLast = { msg: 'Added '+name+(toList?' →':' to The Pantry →'), sec: grocerySection(secId).name, id: it.id };
     }
     save(); renderCanvas();
   }
-  function quickAdd(){ var v=qi.value.trim(); if(!v) return; addItem(v, guessGrocerySection(v), 'Added '+v); setTimeout(function(){ var i=document.getElementById('groc-inp'); if(i) i.focus(); },0); }
+  function quickAdd(){ var v=qi.value.trim(); if(!v) return; addItem(v, guessGrocerySection(v), true); setTimeout(function(){ var i=document.getElementById('groc-inp'); if(i) i.focus(); },0); }
   qb.onclick = quickAdd; qi.onkeydown = function(e){ if(e.key==='Enter'){ e.preventDefault(); quickAdd(); } };
 
   function grRow(it){
-    var row = el('div','gr-row'+(it.d?' got':'')+(onTrip(it)?' trip':'')+(window._grocLast&&window._grocLast.id===it.id?' flash':''));
+    var on = onList(it), cart = inCart(it);
+    var row = el('div','gr-row'+(pantry?' pantry'+(on?' on':''):'')+(!pantry&&cart?' cart':'')+(window._grocLast&&window._grocLast.id===it.id?' flash':''));
     row.setAttribute('data-lid', it.id);
-    var cb = el('button','gr-cb'+(it.d?' on':'')); cb.type='button';
-    cb.setAttribute('aria-label', it.d ? 'Put '+it.t+' back on the list' : 'Got '+it.t);
-    function toggle(){ it.d = !it.d; if (it.d) it.gotAt = Date.now(); else delete it.gotAt; window._grocLast=null; save(); renderCanvas(); }
+    var cb = el('button','gr-cb'+((pantry?on:cart)?' on':'')); cb.type='button';
+    cb.setAttribute('aria-label', pantry ? (on ? 'Take '+it.t+' off the list' : 'Put '+it.t+' on the list')
+                                       : (cart ? 'Put '+it.t+' back on the list' : 'Got '+it.t));
+    function toggle(){
+      if (pantry) { if (on) takeOffList(it); else putOnList(it); }
+      else if (cart) putOnList(it);
+      else { it.d = true; it.gotAt = Date.now(); }
+      window._grocLast=null; save(); renderCanvas();
+    }
     cb.onclick = toggle;
     var nm = el('div','gr-name'); nm.appendChild(tx(it.t)); nm.onclick = toggle;
     row.appendChild(cb); row.appendChild(nm);
+    if (pantry && cart) { var tg = el('div','gr-tag'); tg.appendChild(tx('IN CART')); row.appendChild(tg); }
     var ed = el('button','gr-edit'); ed.type='button'; ed.appendChild(tx('✎')); ed.title='Rename, move or delete';
     ed.onclick = function(e){ e.stopPropagation(); row.replaceWith(grEditRow(it)); };
     row.appendChild(ed);
@@ -8214,7 +8000,7 @@ function renderShopping(cv){
     var sel = document.createElement('select');
     GROCERY_SECTIONS.forEach(function(sc){ var o=document.createElement('option'); o.value=sc.id; o.textContent=sc.ico+' '+sc.name; if(sc.id===it.cat) o.selected=true; sel.appendChild(o); });
     var ok = el('button','add-btn'); ok.appendChild(tx('SAVE'));
-    var del = el('button','gr-del'); del.appendChild(tx('DELETE'));
+    var del = el('button','gr-del'); del.appendChild(tx('DELETE')); del.title='Delete from The Pantry';
     function commit(){ var v=ni.value.trim(); if(v) it.t=v; it.cat=sel.value; window._grocLast=null; save(); renderCanvas(); }
     ok.onclick = commit;
     ni.onkeydown = function(e){ e.stopPropagation(); if(e.key==='Enter'){ e.preventDefault(); commit(); } else if(e.key==='Escape'){ renderCanvas(); } };
@@ -8223,7 +8009,13 @@ function renderShopping(cv){
       del._armed = true; del.classList.add('arm'); del.textContent='SURE?';
       setTimeout(function(){ del._armed=false; del.classList.remove('arm'); del.textContent='DELETE'; }, 2500);
     };
-    r.appendChild(ni); r.appendChild(sel); r.appendChild(ok); r.appendChild(del);
+    r.appendChild(ni); r.appendChild(sel); r.appendChild(ok);
+    if (!pantry) {   // drop it from the list without buying it; it stays in The Pantry
+      var off = el('button','gr-del'); off.appendChild(tx('OFF LIST'));
+      off.onclick = function(){ takeOffList(it); window._grocLast=null; save(); renderCanvas(); };
+      r.appendChild(off);
+    }
+    r.appendChild(del);
     setTimeout(function(){ ni.focus(); }, 0);
     return r;
   }
@@ -8233,7 +8025,7 @@ function renderShopping(cv){
       var inp = document.createElement('input'); inp.className='add-inp gr-add-inp'; inp.placeholder='Add to '+sec.name+'… (Enter to add more)';
       a.replaceWith(inp); inp.focus();
       inp.onkeydown = function(e){
-        if (e.key==='Enter'){ e.preventDefault(); var v=inp.value.trim(); if(!v) return; window._grocKeep = sec.id; addItem(v, sec.id, 'Added '+v+' to'); }
+        if (e.key==='Enter'){ e.preventDefault(); var v=inp.value.trim(); if(!v) return; window._grocKeep = sec.id; addItem(v, sec.id, false); }
         else if (e.key==='Escape'){ window._grocKeep=null; renderCanvas(); }
       };
       // Leaving the box only closes it (no redraw, so a ✎ you just tapped stays open).
@@ -8246,25 +8038,29 @@ function renderShopping(cv){
   var shown = 0;
   var known = GROCERY_SECTIONS.map(function(x){ return x.id; });
   function secOf(i){ return known.indexOf(i.cat)>-1 ? i.cat : 'misc'; }   // anything unrecognized shows in Misc.
+  function byName(a,b){ return a.t.localeCompare(b.t, undefined, {sensitivity:'base'}); }
   GROCERY_SECTIONS.forEach(function(sec){
     var mine = items.filter(function(i){ return secOf(i)===sec.id; });
     var need = mine.filter(function(i){ return !i.d; });
-    var cart = mine.filter(onTrip);
-    var have = mine.filter(function(i){ return i.d && !onTrip(i); });
-    if (view==='need' && !need.length && !cart.length) return;
+    var cart = mine.filter(inCart);
+    if (!pantry && !need.length && !cart.length) return;
     shown++;
     var box = el('div','gr-sec'+(mine.length?'':' empty'));
     var h = el('div','gr-sec-h');
     var ic = el('div','gr-sec-ico'); ic.appendChild(tx(sec.ico));
     var nm = el('div','gr-sec-name'); nm.appendChild(tx(sec.name));
-    var n = el('div','gr-sec-n'+(need.length?'':' zero')); n.appendChild(tx(String(need.length)));
+    var onN = pantry ? need.length+cart.length : need.length;
+    var n = el('div','gr-sec-n'+(onN?'':' zero')); n.appendChild(tx(String(onN)));
+    if (pantry) n.title = onN+' of '+mine.length+' on the list';
     h.appendChild(ic); h.appendChild(nm); h.appendChild(n); box.appendChild(h);
     var list = el('div','gr-items');
-    need.forEach(function(i){ list.appendChild(grRow(i)); });
-    if (cart.length){ var ch=el('div','gr-subhead'); ch.appendChild(tx('In the cart')); list.appendChild(ch); cart.forEach(function(i){ list.appendChild(grRow(i)); }); }
-    if (view==='all' && have.length){ var hh=el('div','gr-subhead'); hh.appendChild(tx('Got it · tap to add again')); list.appendChild(hh); have.forEach(function(i){ list.appendChild(grRow(i)); }); }
+    if (pantry) mine.slice().sort(byName).forEach(function(i){ list.appendChild(grRow(i)); });
+    else {
+      need.forEach(function(i){ list.appendChild(grRow(i)); });
+      if (cart.length){ var ch=el('div','gr-subhead'); ch.appendChild(tx('In the cart')); list.appendChild(ch); cart.forEach(function(i){ list.appendChild(grRow(i)); }); }
+    }
     box.appendChild(list);
-    if (view==='all') box.appendChild(addRow(sec));
+    if (pantry) box.appendChild(addRow(sec));
     wrap.appendChild(box);
     if (window._grocKeep===sec.id) {
       // keep the section's add box open for the next item
@@ -8273,7 +8069,12 @@ function renderShopping(cv){
   });
   if (!shown) {
     var em = el('div','gr-empty');
-    em.appendChild(tx(items.length ? 'Nothing to get. Type above, or tap Everything to put a usual item back on the list.' : 'Nothing here yet. Type an item above and it lands in the right section.'));
+    em.appendChild(tx(items.length ? 'The Shopping List is empty. Open The Pantry and tap what you need, or type an item above.' : 'Nothing here yet. Type an item above and it lands in the right section.'));
+    if (items.length) {
+      var gb = el('button','gr-mode'); gb.style.marginTop='10px'; gb.appendChild(tx('🥫 Open The Pantry'));
+      gb.onclick = function(){ try{ localStorage.setItem('sub_groc_view','all'); }catch(e){} window._grocLast=null; renderCanvas(); };
+      em.appendChild(el('br','')); em.appendChild(gb);
+    }
     wrap.appendChild(em);
   }
   window._grocKeep = null;
@@ -8629,18 +8430,6 @@ function closeSB(){document.getElementById('sb').classList.remove('open');docume
 document.getElementById('import-file').addEventListener('change', function(e){
   handleImportFile(e.target.files && e.target.files[0]);
 });
-
-// ── PRE-LOAD MERGED SAVE ─────────────────────────────────────────
-(function() {
-  try {
-    var INJECTED_TS = 1775456061844;
-    var existing = localStorage.getItem('sub_v5');
-    if (existing) {
-      try { var ex = JSON.parse(existing); if ((ex._ts||0) >= INJECTED_TS) return; } catch(e) {}
-    }
-    localStorage.setItem('sub_v5', "{\"_ts\": 1775456061844, \"boxes\": {\"teaching\": {\"tasks\": [{\"t\": \"Make Unit Guides\", \"d\": true}, {\"t\": \"Update Google classroom\", \"d\": false}, {\"t\": \"Complete tier 1 content\", \"d\": false}, {\"t\": \"START WORKING ON TIER 2 CONTENT\", \"d\": false}, {\"t\": \"CLEAN UP BEHIND THE DESK\", \"d\": false}], \"projects\": \"Ramhaus [active]\nCurriculum Planning [active]\nStill Life Displays [active]\nInterview Prep [active]\n\", \"notes\": \"Still life displays:\n  Left side -- Left and Right lighting\n  Right side -- Front, Middle, and Back lighting\n\n--- GRADING SCALE ---\n0-4 Scale: 0=F / 1=D / 2=C / 3=B / 4=A\nGrade %: A=75-100 / B=62-74.9 / C=50-61.9 / D=33-49.9 / F=0-32.9\n\nTeaching Framework: INSPIRE -> DESIGN -> CREATE -> PRESENT & REFLECT\n\", \"chapters\": [{\"id\": \"ch-t1\", \"label\": \"Ramhaus\", \"pages\": [{\"id\": \"p-t1a\", \"icon\": \"\ud83d\udcdd\", \"label\": \"Concept\", \"content\": \"\"}, {\"id\": \"p-t1b\", \"icon\": \"\ud83d\uddfa\ufe0f\", \"label\": \"Room Layout\", \"content\": \"\"}, {\"id\": \"p-t1c\", \"icon\": \"\ud83d\udccb\", \"label\": \"To Do\", \"content\": \"\"}]}, {\"id\": \"ch-t3\", \"label\": \"Classroom\", \"pages\": [{\"id\": \"p-t3a\", \"icon\": \"\ud83c\udfa8\", \"label\": \"Supply Stations\", \"content\": \"Pencils, erasers, sharpeners\nSketchbooks / paper\nPaint station\nColored pencils & markers\n\"}, {\"id\": \"p-t3b\", \"icon\": \"\ud83d\uddbc\ufe0f\", \"label\": \"Project Zones\", \"content\": \"\"}, {\"id\": \"p-t3c\", \"icon\": \"\u2728\", \"label\": \"Display Areas\", \"content\": \"\"}, {\"id\": \"p-t3d\", \"icon\": \"\ud83d\udccb\", \"label\": \"Reference Zone\", \"content\": \"\"}, {\"id\": \"p-t3e\", \"icon\": \"\ud83d\udce6\", \"label\": \"Storage\", \"content\": \"\"}]}], \"projectList\": []}, \"coaching\": {\"tasks\": [{\"t\": \"CHECK FAT HEAD PHOTOS\", \"d\": false}, {\"t\": \"EMAIL PHOTOS TO OLIVIA\", \"d\": false}, {\"t\": \"ASK TIBBLES ABOUT WIRELESS MIC\", \"d\": false}], \"projects\": \"Finish Season Strong [active]\nNext Season Planning [planning]\nTeam Merch & Logo [planning]\nTrack Room Organization [active]\nCoaching Handbook [active]\n\", \"notes\": \"Recruiting pitch for next year -- document what worked this season.\n\nH-CREW SYSTEM:\n- Need a 10-man crew -- one at each hurdle stack\n- Preassign athletes -- whoever isn't hurdling\n\nTHE HURDLE COMMANDMENTS:\n- Thou shall not go over a backwards hurdle\n- Thou shall not stutter step\n- Thou shall clap if a teammate falls\n\", \"chapters\": [{\"id\": \"ch-c1\", \"label\": \"This Season\", \"pages\": [{\"id\": \"p-c1a\", \"icon\": \"\ud83d\udcdd\", \"label\": \"Notes\", \"content\": \"\"}, {\"id\": \"p-c1b\", \"icon\": \"\u2705\", \"label\": \"Meet Checklist\", \"content\": \"\"}]}, {\"id\": \"ch-c2\", \"label\": \"Next Season\", \"pages\": [{\"id\": \"p-c2a\", \"icon\": \"\ud83d\udcdd\", \"label\": \"Ideas\", \"content\": \"\"}, {\"id\": \"p-c2b\", \"icon\": \"\ud83d\udc65\", \"label\": \"Recruiting\", \"content\": \"\"}]}, {\"id\": \"ch-c3\", \"label\": \"Admin\", \"pages\": [{\"id\": \"p-c3a\", \"icon\": \"\ud83d\udcb0\", \"label\": \"Track Bank\", \"content\": \"\"}, {\"id\": \"p-c3b\", \"icon\": \"\ud83d\uded2\", \"label\": \"Snack Bar\", \"content\": \"\"}, {\"id\": \"p-c3c\", \"icon\": \"\ud83c\udfa8\", \"label\": \"Merch & Logo\", \"content\": \"\"}]}], \"projectList\": []}, \"art\": {\"tasks\": [{\"t\": \"Learn to love blender more please\", \"d\": false}], \"projects\": \"Personal Art Practice [paused]\nProject Genesis -- Indie Game [active]\nRedondo Rags [active]\nAmanda Logo [active]\nMariah Portrait & Watercolor [active]\nMikey Positive Vibes Logo [active]\nDramamine Dragon Logo [active]\nTattooing Practice [active]\nUnreal + Blender Studies [active]\n\", \"notes\": \"Client Projects:\n- Amanda -- logo\n- Mariah -- portrait on Procreate + watercolor stencil\n- Mikey -- Positive Vibes logo\n- Mother -- cover up tattoo\n- Grandma -- American Flag Mural\n\", \"chapters\": [{\"id\": \"ch-ar1\", \"label\": \"Project Genesis\", \"pages\": [{\"id\": \"p-ar1a\", \"icon\": \"\ud83d\udcdd\", \"label\": \"Concept\", \"content\": \"\"}, {\"id\": \"p-ar1b\", \"icon\": \"\ud83c\udfae\", \"label\": \"Mechanics\", \"content\": \"\"}, {\"id\": \"p-ar1c\", \"icon\": \"\ud83c\udfa8\", \"label\": \"Art Direction\", \"content\": \"\"}]}, {\"id\": \"ch-ar2\", \"label\": \"Oasis Concept\", \"pages\": [{\"id\": \"p-ar2a\", \"icon\": \"\ud83d\udcdd\", \"label\": \"Vision\", \"content\": \"Glen Ivy meets high-end athletic club.\nSpa + gym + lounge.\n\"}, {\"id\": \"p-ar2b\", \"icon\": \"\ud83c\udfd7\ufe0f\", \"label\": \"Design Ideas\", \"content\": \"\"}]}, {\"id\": \"ch-ar3\", \"label\": \"3D Print Hustle\", \"pages\": [{\"id\": \"p-ar3a\", \"icon\": \"\ud83d\udcdd\", \"label\": \"Research\", \"content\": \"\"}, {\"id\": \"p-ar3b\", \"icon\": \"\ud83d\udce6\", \"label\": \"Products\", \"content\": \"\"}]}], \"projectList\": []}, \"house\": {\"tasks\": [{\"t\": \"Get a Pinterest Board going for Tiki Bar Bathroom\", \"d\": false}], \"projects\": \"Garage Design & Build-Out [active]\nCatio Build-Out [active]\nRoom Setup [active]\nNew House Vision Plan [planning]\nTiki Bar Bathroom [someday]\nBuy a House [someday]\n\", \"notes\": \"Room wishlist: Desk / Under table PC mount / Bed frame / Overhead bed lights\nCatio wishlist: More plants / Rug / Fake or real grass / Chairs / Lights\nGarage wishlist: Racks / 3D print station / Running medals display\n\", \"chapters\": [{\"id\": \"ch-h1\", \"label\": \"Garage\", \"pages\": [{\"id\": \"p-h1a\", \"icon\": \"\ud83d\udcdd\", \"label\": \"Plan\", \"content\": \"\"}, {\"id\": \"p-h1b\", \"icon\": \"\ud83d\udce6\", \"label\": \"Storage Ideas\", \"content\": \"\"}]}, {\"id\": \"ch-h2\", \"label\": \"Tiki Bar Bath\", \"pages\": [{\"id\": \"p-h2a\", \"icon\": \"\ud83d\udcdd\", \"label\": \"Inspo\", \"content\": \"\"}, {\"id\": \"p-h2b\", \"icon\": \"\ud83d\udd28\", \"label\": \"Build Plan\", \"content\": \"\"}]}], \"projectList\": []}, \"personal\": {\"tasks\": [{\"t\": \"Ask Casey Adkins if he reached out to SFC King\", \"d\": true}, {\"t\": \"EMAIL EMMA AND DJ DAVID PERE $$$ PDF\", \"d\": false}, {\"t\": \"Loose weight\", \"d\": false}], \"projects\": \"OCS Board Prep [active]\nArmy PT & Fitness [active]\nLand Nav Training [planning]\nFinancial Plan for Deployment [planning]\nEMT School Research [someday]\nGI Bill / VA Strategy [someday]\nGun Upgrades [planning]\nCar Restoration [active]\nWorkout & Fitness [active]\nDental Work [active]\nFinancial Reset [active]\nVegas Trip [planning]\n\", \"notes\": \"--- FROM ARMY ---\nFULL PATH: Army -> EMT School -> Firefighter -> GI Bill/VA -> reset finances -> buy house -> flip houses -> build wealth\n\nASVAB Score: 110+ CHECK\n\nDaily Routine:\n- No social media\n- Get up at 6am\n- Make breakfast / Shower / Get dressed / Brush teeth + fix hair / Drink water / Feed cats\n- Pack for school: lunch / toned paper / coffee / bag\nAM: Get gas / Go for run\nAt school: Prepare for day\nNoon: Grade work / Eat lunch / Update credit sheets\nPM: Plan tomorrow / Unpack and repack / Shower\n\nCar Parts Needed:\n- Front bumper: tie downs / front splitter / bondo to seal cracks\n- Spoiler: sand polish clear coat / 3M double tape back on\n- Fuse box / Lights / Dents / Gross interior wires\n- Alternator / Battery / Sun visor fixture replacement / Fix coolant\n\nDental Plan: Check RUSD insurance -> schedule appointment -> wisdom teeth -> teeth whitening\n\nWorkout Plan: Figure out lifts per day / Numbers for all 9 weeks / Print plans\n\", \"chapters\": [{\"id\": \"ch-a1\", \"label\": \"OCS Prep\", \"pages\": [{\"id\": \"p-a1a\", \"icon\": \"\ud83d\udcdd\", \"label\": \"Overview\", \"content\": \"\"}, {\"id\": \"p-a1b\", \"icon\": \"\ud83d\udccb\", \"label\": \"Study Plan\", \"content\": \"\"}, {\"id\": \"p-a1c\", \"icon\": \"\ud83d\udcaa\", \"label\": \"PT Goals\", \"content\": \"255 LBS CHECK\n38 in waist\n18 min 2 mile\n2 min plank\n50 push ups\n\"}]}, {\"id\": \"ch-a2\", \"label\": \"After Army\", \"pages\": [{\"id\": \"p-a2a\", \"icon\": \"\ud83d\udcdd\", \"label\": \"EMT Research\", \"content\": \"\"}, {\"id\": \"p-a2b\", \"icon\": \"\ud83d\udcb0\", \"label\": \"GI Bill Plan\", \"content\": \"\"}]}, {\"id\": \"ch-p1\", \"label\": \"Car Project\", \"pages\": [{\"id\": \"p-p1a\", \"icon\": \"\ud83d\udcdd\", \"label\": \"Diagnosis\", \"content\": \"Get OBD2 scan first.\n\"}, {\"id\": \"p-p1b\", \"icon\": \"\ud83d\udd27\", \"label\": \"Parts & Costs\", \"content\": \"\"}]}], \"projectList\": [{\"id\": \"prj1\", \"name\": \"Gun Upgrades\", \"status\": \"planning\", \"desc\": \"\"}, {\"id\": \"prj2\", \"name\": \"Car Restoration\", \"status\": \"active\", \"desc\": \"\"}, {\"id\": \"prj3\", \"name\": \"Workout & Fitness\", \"status\": \"active\", \"desc\": \"\"}, {\"id\": \"prj4\", \"name\": \"Dental Work\", \"status\": \"active\", \"desc\": \"\"}, {\"id\": \"prj5\", \"name\": \"Financial Reset\", \"status\": \"active\", \"desc\": \"\"}, {\"id\": \"prj6\", \"name\": \"Vegas Trip\", \"status\": \"planning\", \"desc\": \"\"}]}, \"finance\": {\"tasks\": [], \"projects\": \"Budget Reset [active]\n\", \"notes\": \"Pay Mariah $2700\nUpdate monthly expenses\n\", \"chapters\": [{\"id\": \"ch-f1\", \"label\": \"Budget\", \"pages\": [{\"id\": \"p-f1a\", \"icon\": \"\ud83d\udcca\", \"label\": \"Monthly Budget\", \"content\": \"\"}, {\"id\": \"p-f1b\", \"icon\": \"\ud83d\udccb\", \"label\": \"Bills & Subs\", \"content\": \"\"}]}, {\"id\": \"ch-f2\", \"label\": \"Goals\", \"pages\": [{\"id\": \"p-f2a\", \"icon\": \"\ud83c\udfaf\", \"label\": \"Short Term\", \"content\": \"\"}, {\"id\": \"p-f2b\", \"icon\": \"\ud83c\udfe6\", \"label\": \"Long Term\", \"content\": \"\"}]}], \"projectList\": []}, \"fitness\": {\"tasks\": [], \"projects\": \"Army PT & Fitness [active]\nWorkout & Fitness [active]\n\", \"notes\": \"Workout Plan: Figure out lifts per day / Numbers for all 9 weeks / Print plans\n\", \"chapters\": [{\"id\": \"ch-fit1\", \"label\": \"Program\", \"pages\": [{\"id\": \"p-fit1a\", \"icon\": \"\ud83d\udcaa\", \"label\": \"Program\", \"content\": \"\"}]}, {\"id\": \"ch-fit2\", \"label\": \"Tracking\", \"pages\": [{\"id\": \"p-fit2a\", \"icon\": \"\ud83d\udcca\", \"label\": \"Metrics\", \"content\": \"\"}, {\"id\": \"p-fit2b\", \"icon\": \"\ud83d\udcdd\", \"label\": \"Notes\", \"content\": \"\"}]}], \"projectList\": []}, \"cookbook\": {\"tasks\": [], \"projects\": \"Meal Prep System [active]\n\", \"notes\": \"Protein sources: steak, chicken, smoked salmon, beef pucks\nSnacks: protein bars, granola bars\n\", \"chapters\": [{\"id\": \"ch-ck1\", \"label\": \"Recipes\", \"pages\": [{\"id\": \"p-ck1a\", \"icon\": \"\ud83c\udf73\", \"label\": \"Favorites\", \"content\": \"\"}, {\"id\": \"p-ck1b\", \"icon\": \"\ud83e\udd69\", \"label\": \"Protein Meals\", \"content\": \"\"}]}, {\"id\": \"ch-ck2\", \"label\": \"Meal Plan\", \"pages\": [{\"id\": \"p-ck2a\", \"icon\": \"\ud83d\udcc5\", \"label\": \"Weekly Menu\", \"content\": \"\"}, {\"id\": \"p-ck2b\", \"icon\": \"\ud83d\uded2\", \"label\": \"Staples List\", \"content\": \"\"}]}], \"projectList\": []}}, \"fitness\": {\"currentBlock\": 0, \"currentDay\": \"monday\", \"currentPage\": \"fit-mealprep\", \"pages\": [{\"id\": \"fit-program\", \"icon\": \"\ud83d\udcaa\", \"label\": \"Program\", \"type\": \"program\"}, {\"id\": \"fit-mealprep\", \"icon\": \"\ud83e\udd57\", \"label\": \"Meal Prep\", \"type\": \"rich\", \"content\": \"\"}, {\"id\": \"fit-metrics\", \"icon\": \"\ud83d\udcca\", \"label\": \"Metrics\", \"type\": \"rich\", \"content\": \"\"}, {\"id\": \"fit-notes\", \"icon\": \"\ud83d\udcdd\", \"label\": \"Notes\", \"type\": \"rich\", \"content\": \"\"}], \"checked\": {}, \"dayNotes\": {}}, \"lists\": {\"lastReset\": \"2026-04-06\", \"chores\": [{\"id\": \"c1\", \"t\": \"Clear & refill litter\", \"d\": false}, {\"id\": \"c2\", \"t\": \"Take out trash\", \"d\": false}, {\"id\": \"c3\", \"t\": \"Do dishes\", \"d\": false}, {\"id\": \"c4\", \"t\": \"Clean up room\", \"d\": false}, {\"id\": \"c5\", \"t\": \"Do laundry\", \"d\": false}, {\"id\": \"c6\", \"t\": \"Fold clothes\", \"d\": false}, {\"id\": \"c7\", \"t\": \"Wash car\", \"d\": false}, {\"id\": \"c8\", \"t\": \"Check mail\", \"d\": false}, {\"id\": \"c9\", \"t\": \"Sweep the floors\", \"d\": false}, {\"id\": \"c10\", \"t\": \"Get gas\", \"d\": false}, {\"id\": \"c11\", \"t\": \"Meal prep\", \"d\": false}, {\"id\": \"c12\", \"t\": \"Grocery shop\", \"d\": false}], \"grocery\": [{\"id\": \"g3\", \"t\": \"Steak\", \"d\": false, \"cat\": \"Protein\"}, {\"id\": \"g4\", \"t\": \"Chicken\", \"d\": false, \"cat\": \"Protein\"}, {\"id\": \"g5\", \"t\": \"Smoked salmon\", \"d\": false, \"cat\": \"Protein\"}, {\"id\": \"g7\", \"t\": \"Protein shakes\", \"d\": false, \"cat\": \"Supplements\"}, {\"id\": \"g9\", \"t\": \"Uncrustables\", \"d\": false, \"cat\": \"Snacks\"}, {\"id\": \"g11\", \"t\": \"Granola bars\", \"d\": false, \"cat\": \"Snacks\"}, {\"id\": \"g12\", \"t\": \"Beef pucks\", \"d\": false, \"cat\": \"Protein\"}, {\"id\": \"g16\", \"t\": \"Veggies\", \"d\": false, \"cat\": \"Produce\"}, {\"id\": \"g17\", \"t\": \"Cold brew\", \"d\": false, \"cat\": \"Drinks\"}], \"quotes\": [{\"id\": \"q1\", \"t\": \"So who are you to tell me I ain't living right\"}, {\"id\": \"q2\", \"t\": \"I love you more than I hate me\"}, {\"id\": \"q7\", \"t\": \"I CANT DROWN MY DEMONS THEY KNOW HOW TO SWIM\"}, {\"id\": \"q19\", \"t\": \"comparison is the thief of joy\"}, {\"id\": \"q20\", \"t\": \"happiness is reality minus expectations\"}, {\"id\": \"q33\", \"t\": \"Being an artist is the best excuse for being crazy\"}, {\"id\": \"q40\", \"t\": \"Trespass in the domain of the gods\"}, {\"id\": \"q43\", \"t\": \"Do not pray for easy lives! Pray to be stronger men\"}, {\"id\": \"q45\", \"t\": \"The Less You care The More You Live\"}], \"media\": {\"movies\": [\"A Bronx Tale\", \"Downsizing\", \"Batman Ninja\", \"Enemy at the Gates\", \"In Time (2011)\", \"Home Front\", \"Yesterday\", \"48 HRS\", \"Paul\", \"CB4\", \"Stripes\", \"I Care a Lot\", \"The Bike Riders\", \"They Live\", \"War Machine\", \"Naruto Movies\"], \"games\": [\"Skate 3 -- PS3\", \"SSX Tricky -- GameCube\", \"Army of Two -- PS3\", \"Need for Speed: Underground 2 -- PS2\"], \"gear\": {\"Game Cube\": [\"AV cables\", \"Controller\"], \"PS1\": [\"Power cables\", \"AV cables\"], \"PS2\": [\"System\", \"Power cables\", \"AV cables\"], \"PS3\": [\"HDMI cable\", \"Power cable\"]}, \"gearChecked\": {\"Game Cube\": {}, \"PS1\": {}, \"PS2\": {}, \"PS3\": {}}}, \"wishlist\": [{\"id\": \"w1\", \"t\": \"Gun light & laser combo\", \"d\": false, \"p\": \"high\"}, {\"id\": \"w2\", \"t\": \"Gun case\", \"d\": false, \"p\": \"high\"}, {\"id\": \"w3\", \"t\": \"Litter bot\", \"d\": false, \"p\": \"med\"}, {\"id\": \"w4\", \"t\": \"Automatic cat feeder\", \"d\": false, \"p\": \"med\"}, {\"id\": \"w5\", \"t\": \"Better phone case\", \"d\": false, \"p\": \"low\"}, {\"id\": \"w6\", \"t\": \"More workout shorts\", \"d\": false, \"p\": \"low\"}]}, \"homeTabOrder\": [\"monthly\", \"weekly\", \"daily\", \"overview\", \"dump\"], \"dboxOpen\": {\"teaching\": true, \"coaching\": true, \"art\": true, \"__unsorted__\": true, \"house\": true, \"personal\": true}, \"unsortedTasks\": [{\"t\": \"Turn in old iPhone\", \"d\": false}, {\"t\": \"Check birth certificate for time of birth\", \"d\": false}, {\"t\": \"Add nutritional component to the Fitness box\", \"d\": false}], \"calEvents\": [{\"id\": \"ev1\", \"title\": \"OCS BOARDS\", \"date\": \"2026-04-29\", \"endDate\": \"2026-04-29\", \"colorIdx\": 1}, {\"id\": \"ev2\", \"title\": \"RVL FINALS\", \"date\": \"2026-04-29\", \"endDate\": \"2026-04-29\", \"colorIdx\": 5}, {\"id\": \"ev3\", \"title\": \"TIER 1\", \"date\": \"2026-04-08\", \"endDate\": \"2026-04-08\", \"colorIdx\": 3}, {\"id\": \"ev4\", \"title\": \"TIER 2\", \"date\": \"2026-04-17\", \"endDate\": \"2026-04-17\", \"colorIdx\": 3}, {\"id\": \"ev5\", \"title\": \"TIER 3\", \"date\": \"2026-04-30\", \"endDate\": \"2026-04-30\", \"colorIdx\": 3}, {\"id\": \"ev6\", \"title\": \"JURUPA VALLEY\", \"date\": \"2026-04-09\", \"endDate\": \"2026-04-09\", \"colorIdx\": 5}, {\"id\": \"ev7\", \"title\": \"ARCADIA\", \"date\": \"2026-04-11\", \"endDate\": \"2026-04-11\", \"colorIdx\": 5}, {\"id\": \"ev8\", \"title\": \"BIG MEET\", \"date\": \"2026-04-11\", \"endDate\": \"2026-04-11\", \"colorIdx\": 5}, {\"id\": \"ev9\", \"title\": \"MT SAC RELAYS\", \"date\": \"2026-04-18\", \"endDate\": \"2026-04-18\", \"colorIdx\": 5}, {\"id\": \"ev10\", \"title\": \"PATRIOT\", \"date\": \"2026-04-22\", \"endDate\": \"2026-04-22\", \"colorIdx\": 5}, {\"id\": \"ev11\", \"title\": \"RUBIDOUX\", \"date\": \"2026-04-16\", \"endDate\": \"2026-04-16\", \"colorIdx\": 5}, {\"id\": \"ev12\", \"title\": \"STAFF MEETING\", \"date\": \"2026-04-15\", \"endDate\": \"2026-04-15\", \"colorIdx\": 2}, {\"id\": \"ev13\", \"title\": \"TAX DAY\", \"date\": \"2026-04-15\", \"endDate\": \"2026-04-15\", \"colorIdx\": 7}, {\"id\": \"ev14\", \"title\": \"JAKES FIGHT\", \"date\": \"2026-04-18\", \"endDate\": \"2026-04-18\", \"colorIdx\": 4}], \"timeBlocks\": [], \"dailyData\": {}, \"weeklyData\": {}, \"ui\": {\"sbWidth\": 196, \"rsbWidth\": 180, \"sbCollapsed\": false, \"rsbCollapsed\": false}}");
-  } catch(e) {}
-})();
 
 // ── GLOBAL TAB KEY FIX ──────────────────────────────────────────
 // Prevent Tab from shifting focus out of textareas (inputs use their own handlers).
