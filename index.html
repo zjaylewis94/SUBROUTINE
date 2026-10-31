@@ -1377,6 +1377,9 @@ html.sb-lock{overflow:hidden}
 /* ── SHOPPING LIST: fixed sections, items you keep ──
    Items live in set sections (no category picking). Checking one off means "got it": it stays in
    its section, and one tap puts it back on the list next time. */
+/* Task indent buttons (touch only): shown while a task is being edited */
+.task-indent{display:none;background:var(--s2);border:1px solid var(--br2);border-radius:7px;color:var(--mid);font-size:1.05rem;padding:4px 10px;flex-shrink:0;cursor:pointer}
+.task-row.editing .task-indent{display:inline-block}
 .gr-top{display:flex;flex-direction:column;gap:10px;margin:4px 0 6px}
 .gr-quick{display:flex;gap:7px}
 .gr-quick .add-inp{font-size:.95rem;padding:11px 12px}
@@ -6699,6 +6702,44 @@ function buildTaskList(box, color) {
     },400);
   }
 
+  // Rows are a flat list with depths. A row's block is the row plus every row nested under it,
+  // so subtasks move with their parent when it's dragged, indented or unindented.
+  function rowsNow(){ return Array.prototype.slice.call(listEl.querySelectorAll('.task-row')); }
+  function dep(r){ return parseInt(r.dataset.depth)||0; }
+  function blockOf(r){
+    var rs=rowsNow(), d=dep(r), out=[r];
+    for(var j=rs.indexOf(r)+1;j<rs.length && dep(rs[j])>d;j++) out.push(rs[j]);
+    return out;
+  }
+  function setDepth(r,d){ r.dataset.depth=String(d); r.style.marginLeft=(d*20)+'px'; }
+  function shiftBlock(r,delta){ blockOf(r).forEach(function(x){ setDepth(x, dep(x)+delta); }); }
+  // The parent's index and the last index of its group (the whole list for top-level rows)
+  function groupOf(r){
+    var rs=rowsNow(), i=rs.indexOf(r), d=dep(r), p=-1;
+    if(d>0) for(var j=i-1;j>=0;j--){ if(dep(rs[j])<d){ p=j; break; } }
+    var end=rs.length-1;
+    if(p>=0){ end=p; for(var k=p+1;k<rs.length && dep(rs[k])>dep(rs[p]);k++) end=k; }
+    return { rs:rs, parent:p, end:end };
+  }
+  // Indent: becomes the last subtask of the task above it at the same level (needs one).
+  function indentRow(r){
+    var rs=rowsNow(), d=dep(r);
+    for(var j=rs.indexOf(r)-1;j>=0;j--){
+      if(dep(rs[j])<d) return false;
+      if(dep(rs[j])===d){ shiftBlock(r,1); return true; }
+    }
+    return false;
+  }
+  // Unindent: leaves its parent and goes right after the parent's group, so the subtasks
+  // below it stay with their parent instead of moving under this one.
+  function outdentRow(r){
+    if(!dep(r)) return false;
+    var g=groupOf(r), ref=g.rs[g.end+1]||null;
+    blockOf(r).forEach(function(x){ listEl.insertBefore(x, ref); });
+    shiftBlock(r,-1);
+    return true;
+  }
+
   function makeRow(item) {
     var row=el('div','task-row');
     row.dataset.depth=String(item.depth||0);
@@ -6724,16 +6765,7 @@ function buildTaskList(box, color) {
       t.style.textDecoration=on?'line-through':'none';
       t.style.opacity=on?'0.4':'1';
     }
-    // The rows nested under this one: every following row deeper than it, up to the next sibling.
-    function childRows(){
-      var rows=Array.prototype.slice.call(listEl.querySelectorAll('.task-row'));
-      var my=parseInt(row.dataset.depth)||0, out=[];
-      for(var i=rows.indexOf(row)+1;i<rows.length;i++){
-        if((parseInt(rows[i].dataset.depth)||0)<=my) break;
-        out.push(rows[i]);
-      }
-      return out;
-    }
+    function childRows(){ return blockOf(row).slice(1); }
     cb.onchange=function(){
       paintRow(row, cb.checked);
       // Checking a parent checks all its subtasks. Unchecking it undoes only the ones that check
@@ -6769,7 +6801,7 @@ function buildTaskList(box, color) {
       var idx=rows.indexOf(row);
       if(e.key==='Enter'){
         e.preventDefault();
-        var newRow=makeRow({t:'',d:false,depth:item.depth||0});
+        var newRow=makeRow({t:'',d:false,depth:dep(row)});
         if(rows[idx+1]) listEl.insertBefore(newRow,rows[idx+1]);
         else listEl.appendChild(newRow);
         newRow.querySelector('.task-text').focus();
@@ -6777,11 +6809,8 @@ function buildTaskList(box, color) {
       }
       else if(e.key==='Tab'){
         e.preventDefault();
-        var d=parseInt(row.dataset.depth)||0;
-        if(e.shiftKey){ if(d>0) d--; }
-        else { if(idx>0) d++; }
-        row.dataset.depth=String(d); row.style.marginLeft=(d*20)+'px'; item.depth=d;
-        scheduleSave(); sp.focus();
+        if(e.shiftKey ? outdentRow(row) : indentRow(row)) scheduleSave();
+        sp.focus();
       }
       else if(e.key==='Backspace'&&sp.textContent===''){
         e.preventDefault();
@@ -6813,22 +6842,28 @@ function buildTaskList(box, color) {
     handle.onpointerdown=function(e){
       if(e.button!==undefined && e.button!==0) return;
       e.preventDefault(); e.stopPropagation();
-      row.style.opacity='0.5'; row.style.boxShadow='0 4px 14px rgba(0,0,0,.5)';
+      // The task moves with its subtasks, and only among its siblings: a subtask stays in its parent.
+      var block=blockOf(row), d=dep(row);
+      block.forEach(function(x){ x.style.opacity='0.5'; });
+      row.style.boxShadow='0 4px 14px rgba(0,0,0,.5)';
       document.body.style.userSelect='none';
       function mv(ev){
-        var rows=Array.prototype.slice.call(listEl.querySelectorAll('.task-row'));
-        var y=ev.clientY, after=null;
-        for(var i=0;i<rows.length;i++){ if(rows[i]===row) continue;
-          var r=rows[i].getBoundingClientRect();
-          if(y < r.top + r.height/2){ after=rows[i]; break; } }
-        if(after){ if(after!==row.nextSibling) listEl.insertBefore(row, after); }
-        else { var rs=Array.prototype.slice.call(listEl.querySelectorAll('.task-row')); var last=rs[rs.length-1]; if(last && last!==row) listEl.insertBefore(row, last.nextSibling); }
+        var g=groupOf(row), y=ev.clientY, ref=undefined;
+        for(var i=g.parent+1;i<=g.end;i++){
+          var r=g.rs[i];
+          if(dep(r)!==d || block.indexOf(r)>-1) continue;
+          var b=r.getBoundingClientRect();
+          if(y < b.top + b.height/2){ ref=r; break; }
+        }
+        if(ref===undefined) ref=g.rs[g.end+1]||null;   // past the last sibling: end of the group
+        if(block[block.length-1].nextSibling===ref) return;
+        block.forEach(function(x){ listEl.insertBefore(x, ref); });
       }
       function upp(){
         window.removeEventListener('pointermove',mv);
         window.removeEventListener('pointerup',upp);
         document.body.style.userSelect='';
-        row.style.opacity='1'; row.style.boxShadow='';
+        block.forEach(function(x){ x.style.opacity='1'; }); row.style.boxShadow='';
         scheduleSave();
       }
       window.addEventListener('pointermove',mv);
@@ -6837,6 +6872,17 @@ function buildTaskList(box, color) {
 
     row.appendChild(handle); row.appendChild(cb); row.appendChild(sp);
     if (!item.d) taskBadges(item.t).forEach(function(bd){ var b=el('span','task-badge '+bd.cls); b.textContent=bd.txt; row.appendChild(b); });
+    // Phones have no Tab key: ⇤ ⇥ show while you're editing a task.
+    if (isTouch) {
+      [['⇤','Unindent',outdentRow],['⇥','Indent',indentRow]].forEach(function(o){
+        var ib=el('button','task-indent'); ib.type='button'; ib.textContent=o[0]; ib.title=o[1]; ib.setAttribute('aria-label',o[1]);
+        ib.onpointerdown=function(e){ e.preventDefault(); };   // keep the keyboard open
+        ib.onclick=function(e){ e.stopPropagation(); if(o[2](row)) scheduleSave(); sp.focus(); };
+        row.appendChild(ib);
+      });
+      sp.addEventListener('focus', function(){ row.classList.add('editing'); });
+      sp.addEventListener('blur', function(){ setTimeout(function(){ if(document.activeElement!==sp) row.classList.remove('editing'); }, 150); });
+    }
     row.appendChild(del);
     return row;
   }
