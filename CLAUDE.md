@@ -51,6 +51,11 @@ else here.** New content belongs in Zach's saved data, which syncs to the privat
   - Tags in the text: `!high`/`!!!`, `!med`/`!!`, `!low`/`!` and due dates `@10/31` or `@oct 31` (`taskTags()`).
   - Auto-sort (on unless `S.ui.taskAutoSort === false`) orders by done, then priority, then due date.
   - Checking a parent checks its subtasks.
+  - The list is flat rows with depths (`buildTaskList()`). A row's block is the row plus every row under it:
+    - Dragging moves the whole block, and only among its siblings, so a subtask stays in its parent.
+    - Tab indents the block under the task above it at the same level.
+    - Shift+Tab moves the block out to just below its parent's group.
+    - Phones get ⇤ ⇥ buttons while a task is being edited.
   - "File Unsorted" moves `S.unsortedTasks` into boxes by keyword (`TASK_BOX_RULES`), and it can be undone.
 
 ## Saved data and seeding
