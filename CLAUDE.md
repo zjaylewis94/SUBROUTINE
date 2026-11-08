@@ -37,7 +37,12 @@ else here.** New content belongs in Zach's saved data, which syncs to the privat
   - Teaching has Curriculum (`S.curriculum`, seeded from `CURRICULUM`).
   - Fitness has Program (`S.fitness`).
   - There's also an optional `tracker` (nested checklist).
-- **Lists** (`curTab==='lists'`): chores (reset on Sunday by `doChoreReset()`), shopping, manifesto, quotes, media.
+- **Lists** (`curTab==='lists'`): chores, shopping, manifesto, quotes, media.
+- **Chores** (`renderChores()`), two tabs (view saved in `sub_chore_view`):
+  - **Weekly**: `S.lists.chores` as tap-to-check tiles (`doneAt` shows the day). Reset on Sunday by `doChoreReset()`.
+    "Edit list" brings back the rows for reorder, rename and delete.
+  - **Monthly upkeep**: `S.lists.upkeep` = `{id, t, area, every (days), log:[timestamps]}`, shown as "last serviced" cards
+    colored by status (overdue, due within 7 days, OK, never logged). Seeded once from `UPKEEP_SEED` (`S.lists._upkeepSeed1`).
 - **Shopping list** (`renderShopping()`, `S.lists.grocery`, fixed `GROCERY_SECTIONS`). Zach's names for the two views:
   - **The Pantry**: the master list, every item ever added, A–Z. Tap an item to put it on or take it off the Shopping List.
   - **Shopping List**: what to get on the next trip. Checked items go to "In the cart".
@@ -45,7 +50,10 @@ else here.** New content belongs in Zach's saved data, which syncs to the privat
   - The view is saved in `sub_groc_view` (`need` = Shopping List, `all` = The Pantry).
   - An item is on the list when `!d`, in the cart when `d` and `gotAt`, and Pantry-only when `d` with no `gotAt`.
     It reuses the old fields, so older cached copies still read it sensibly.
-- **Schedule:** `S.weekSchedule` (bell schedule by weekday, from `S.scheduleStart`), `S.timeBlocks` (one-off blocks; `startMin` counts from `DSTART`), `S.scheduleSkips`.
+- **Schedule:** `S.weekSchedule` (bell schedule by weekday, from `S.scheduleStart`), `S.timeBlocks` (one-off blocks), `S.scheduleSkips`.
+  - Saved `startMin` counts from `DSTART` (5 AM). Never change `DSTART`: every saved block would move.
+  - The widget shows `DVIEW0`–`DVIEW1` (12 AM to 12 AM), so a block before 5 AM has a negative `startMin` (down to `DMIN_LO`).
+  - On phones the widget is a 55vh window that scrolls on its own and opens at the current time.
 - **Tasks by Box** (Daily):
   - Tasks are `{t, d, children}`.
   - Tags in the text: `!high`/`!!!`, `!med`/`!!`, `!low`/`!` and due dates `@10/31` or `@oct 31` (`taskTags()`).
