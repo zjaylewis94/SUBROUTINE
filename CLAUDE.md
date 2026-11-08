@@ -66,6 +66,15 @@ else here.** New content belongs in Zach's saved data, which syncs to the privat
     - Phones get ⇤ ⇥ buttons while a task is being edited.
   - "File Unsorted" moves `S.unsortedTasks` into boxes by keyword (`TASK_BOX_RULES`), and it can be undone.
 
+## Look (glass theme, Nov 2026)
+- An obsidian background, a fixed `body:before` layer (dark gradients, faint sheen, light grain). iPhone ignores
+  `background-attachment:fixed`, so don't move it onto `body`.
+- Frosted glass panels: the `GLASS THEME` block at the end of the `<style>` turns `--s1/--s2/--s3/--br/--br2` translucent
+  and blurs the main surfaces (top bar, sidebars, tab bar, dialogs, Daily columns).
+  - Phones skip the blur on cards to keep scrolling smooth.
+  - Deleting that one block brings back the old flat look.
+- Use the CSS variables for new UI so it picks up the glass. A hard-coded dark hex stays opaque.
+
 ## Saved data and seeding
 - localStorage keys (shared origin with every book, ~5 MB total, so keep keys `sub_`-prefixed):
   - `sub_v5`: the state.
