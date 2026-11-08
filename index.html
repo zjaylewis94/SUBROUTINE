@@ -1006,7 +1006,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);dis
   #daily-left{border-bottom:1px solid var(--br);padding:14px 12px}
   #daily-middle{border-bottom:1px solid var(--br);display:flex}
   #daily-right{padding-bottom:22px}
-  #daily-time-wrap{overflow:visible;max-height:none}
+  #daily-time-wrap{flex:none;overflow-y:auto;max-height:55vh;overscroll-behavior:contain}
   #daily-tasks-panel{padding:14px 12px 40px}
   .dov-strip{position:static}
 }
@@ -1020,7 +1020,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);dis
   #daily-left,#daily-middle,#daily-right{width:100%!important;max-height:none!important;overflow:visible}
   #daily-left,#daily-middle{border-bottom:1px solid var(--br)}
   #daily-right{min-height:0}
-  #daily-time-wrap{overflow-x:auto;overflow-y:visible;-webkit-overflow-scrolling:touch}
+  #daily-time-wrap{overflow-x:hidden;overflow-y:auto;-webkit-overflow-scrolling:touch}
 }
 @media(max-width:430px){
   #logo{font-size:.92rem;letter-spacing:1.5px}
@@ -1380,6 +1380,47 @@ html.sb-lock{overflow:hidden}
 /* Task indent buttons (touch only): shown while a task is being edited */
 .task-indent{display:none;background:var(--s2);border:1px solid var(--br2);border-radius:7px;color:var(--mid);font-size:1.05rem;padding:4px 10px;flex-shrink:0;cursor:pointer}
 .task-row.editing .task-indent{display:inline-block}
+/* Chores: weekly tiles + monthly upkeep "last serviced" cards */
+.ch-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px;margin-bottom:14px}
+.ch-tile{display:flex;align-items:center;gap:10px;min-height:56px;padding:10px 12px;background:var(--s1);border:1px solid var(--br2);border-radius:12px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:.9rem;text-align:left;cursor:pointer;transition:background .15s,border-color .15s}
+.ch-tile:hover{border-color:var(--lists)}
+.ch-ck{width:24px;height:24px;border-radius:50%;border:2px solid #756c62;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-weight:700;color:#14110e;font-size:.8rem}
+.ch-name{flex:1;line-height:1.25}
+.ch-when{font-family:'DM Mono',monospace;font-size:.62rem;color:#8f867c;text-transform:uppercase}
+.ch-tile.done{background:transparent;border-style:dashed}
+.ch-tile.done .ch-ck{background:var(--lists);border-color:var(--lists)}
+.ch-tile.done .ch-name{color:#8f867c;text-decoration:line-through}
+.ch-actions{display:flex;gap:8px;margin-top:6px}
+.ch-actions .ghost-btn{flex:1}
+.up-sum{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 10px}
+.up-pill{font-family:'DM Mono',monospace;font-size:.68rem;padding:3px 10px;border-radius:999px;border:1px solid var(--br2);color:#a39a90}
+.up-pill.over{color:#ff8a80;border-color:rgba(255,120,110,.45)}
+.up-pill.soon{color:var(--lists);border-color:rgba(240,192,64,.45)}
+.up-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px;margin:6px 0 16px}
+.up-card{position:relative;display:flex;flex-direction:column;gap:3px;padding:12px 12px 12px 16px;background:var(--s1);border:1px solid var(--br2);border-radius:12px;overflow:hidden}
+.up-card:before{content:'';position:absolute;left:0;top:0;bottom:0;width:5px;background:var(--br2)}
+.up-card.ok:before{background:var(--ok)}
+.up-card.soon:before{background:var(--lists)}
+.up-card.over:before{background:#ff6b5e}
+.up-card.over{border-color:rgba(255,107,94,.4)}
+.up-top{display:flex;align-items:flex-start;gap:6px}
+.up-name{flex:1;font-size:.9rem;font-weight:600;color:var(--text);line-height:1.25}
+.up-lbl{font-family:'DM Mono',monospace;font-size:.6rem;letter-spacing:1.5px;color:#8f867c;margin-top:4px}
+.up-date{font-family:'Rajdhani',sans-serif;font-size:1.5rem;font-weight:700;letter-spacing:1px;color:var(--text);line-height:1}
+.up-card.never .up-date{color:#5a524b}
+.up-meta{font-size:.74rem;color:#a39a90}
+.up-meta b{font-weight:600;color:var(--mid)}
+.up-card.over .up-meta b{color:#ff8a80}
+.up-card.soon .up-meta b{color:var(--lists)}
+.up-hist{font-family:'DM Mono',monospace;font-size:.6rem;color:#7a7068}
+.up-btn{margin-top:8px;align-self:flex-start;background:var(--gg);color:var(--gold);border:1px solid var(--gd);border-radius:8px;font-family:'Rajdhani',sans-serif;font-weight:700;letter-spacing:1px;font-size:.78rem;padding:7px 12px;cursor:pointer}
+.up-btn:disabled{opacity:.5;cursor:default}
+.up-add{align-items:center;justify-content:center;min-height:120px;border-style:dashed;background:transparent;color:#a39a90;font-size:.84rem;cursor:pointer}
+.up-add:before{display:none}
+.up-add:hover{color:var(--lists);border-color:var(--lists)}
+.up-edit-row{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-top:6px}
+.up-edit-row select,.up-every{background:var(--s2);border:1px solid var(--br2);border-radius:8px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:.82rem;padding:7px 8px}
+.up-every{width:64px}
 .gr-top{display:flex;flex-direction:column;gap:10px;margin:4px 0 6px}
 .gr-quick{display:flex;gap:7px}
 .gr-quick .add-inp{font-size:.95rem;padding:11px 12px}
@@ -1747,6 +1788,7 @@ function hydrateState() {
         if (!S.boxes[cb.id]) S.boxes[cb.id] = {tasks:[],projects:'',notes:'',chapters:[]};
       });
     }
+    seedUpkeep();
     doChoreReset();
   } catch(e) {}
 }
@@ -1948,7 +1990,7 @@ function doChoreReset() {
   sun.setDate(d.getDate() - d.getDay());
   var key = sun.toISOString().slice(0,10);
   if (d.getDay()===0 && S.lists.lastReset!==key) {
-    S.lists.chores.forEach(function(c){c.d=false;});
+    S.lists.chores.forEach(function(c){c.d=false; delete c.doneAt;});
     S.lists.lastReset = key; save();
   }
 }
@@ -3315,11 +3357,17 @@ function addWeekTarget(ds, inp) {
 
 // ─── DAILY ────────────────────────────────────────────────────────
 // ─── DAILY PAGE ────────────────────────────────────────────────────
-var DSTART = 5;   // 5 AM
-var DEND   = 22;  // 10 PM
+// Saved block times (startMin) count minutes from 5 AM, so DSTART can't change without moving
+// every saved block. The widget shows the whole day, 12 AM to 12 AM, so a block before 5 AM has a
+// negative startMin.
+var DSTART = 5;   // 5 AM: where saved startMin counts from
+var DVIEW0 = 0;   // the widget's first hour (12 AM)
+var DVIEW1 = 24;  // and last (12 AM the next day)
+var DMIN_LO = (DVIEW0 - DSTART) * 60;   // earliest startMin the widget shows
+var DMIN_HI = (DVIEW1 - DSTART) * 60;   // latest end it shows
 var DSLOT  = 16;  // px per 15 min → 64px/hr
 var DPM    = DSLOT / 15; // px per minute
-var DCANVAS_H = (DEND - DSTART) * 4 * DSLOT;
+var DCANVAS_H = (DVIEW1 - DVIEW0) * 4 * DSLOT;
 var dActiveInteraction = null;
 
 function getDayData(ds) {
@@ -3358,12 +3406,12 @@ function getDayBlocks(ds) {
 
 function fmtDMin(min) {
   var total = min + DSTART*60;
-  var h = Math.floor(total/60), m = total%60;
+  var h = Math.floor(total/60)%24, m = total%60;
   var suf = h<12?'AM':'PM'; var h12 = h===0||h===24?12:h>12?h-12:h;
   return m===0 ? h12+' '+suf : h12+':'+pad(m)+' '+suf;
 }
 function snapDMin(m){ return Math.round(m/15)*15; }
-function clampDMin(m,dur){ return Math.max(0,Math.min(m,(DEND-DSTART)*60-dur)); }
+function clampDMin(m,dur){ return Math.max(DMIN_LO,Math.min(m,DMIN_HI-dur)); }
 
 function renderDaily(cv) {
   cv.style.cssText='padding:0;overflow:hidden;display:flex;flex-direction:column;flex:1';
@@ -3637,8 +3685,8 @@ function renderDaily(cv) {
   timeCanvas.style.height = DCANVAS_H+'px';
   timeWrap.appendChild(timeCanvas);
 
-  for (var h=DSTART; h<=DEND; h++) {
-    var y2 = (h - DSTART) * 4 * DSLOT;
+  for (var h=DVIEW0; h<=DVIEW1; h++) {
+    var y2 = (h - DVIEW0) * 4 * DSLOT;
     var hrow = el('div','dhr-row'); hrow.style.top = y2+'px';
     var hlbl = el('div','dhr-lbl');
     var parts = fmtHourLbl(h).split('|');
@@ -3648,7 +3696,7 @@ function renderDaily(cv) {
     var hline = el('div','dhr-line');
     hrow.appendChild(hlbl); hrow.appendChild(hline);
     timeCanvas.appendChild(hrow);
-    if (h < DEND) {
+    if (h < DVIEW1) {
       [1,2,3].forEach(function(q){
         var ql = el('div','dqtr-line'); ql.style.top = (y2 + q*DSLOT)+'px';
         timeCanvas.appendChild(ql);
@@ -3660,9 +3708,7 @@ function renderDaily(cv) {
   Sched.redraw();
 
   var nowH2 = new Date().getHours() + new Date().getMinutes()/60;
-  if (nowH2 >= DSTART && nowH2 <= DEND) {
-    setTimeout(function(){ timeWrap.scrollTop = Math.max(0,(nowH2-DSTART)*60*DPM - 120); }, 80);
-  }
+  setTimeout(function(){ timeWrap.scrollTop = Math.max(0,(nowH2-DVIEW0)*60*DPM - 120); }, 80);
 
   // ── UNSORTED / CATCH-ALL SECTION ──
   (function() {
@@ -4502,12 +4548,13 @@ var Sched = (function(){
 
   var PX_PER_MIN = DSLOT / 15;
 
-  function minToY(min) { return min * PX_PER_MIN; }
-  function yToMin(y)   { return snapDMin(Math.max(0, Math.min(y / PX_PER_MIN, (DEND-DSTART)*60 - 15))); }
+  function minToY(min) { return (min - DMIN_LO) * PX_PER_MIN; }   // a saved startMin → px from the top
+  function durToPx(d)  { return d * PX_PER_MIN; }
+  function yToMin(y)   { return snapDMin(Math.max(DMIN_LO, Math.min(y / PX_PER_MIN + DMIN_LO, DMIN_HI - 15))); }
 
   function fmtMin(min) {
     var total = min + DSTART*60;
-    var h = Math.floor(total/60), m = total%60;
+    var h = Math.floor(total/60)%24, m = total%60;
     var suf = h<12?'AM':'PM', h12 = h===0?12:h>12?h-12:h;
     return m===0 ? h12+' '+suf : h12+':'+pad(m)+' '+suf;
   }
@@ -4535,12 +4582,12 @@ var Sched = (function(){
     if (!_canvas || !_canvas.isConnected) return;
     var nl = _canvas.querySelector('#sched-now-line'), nd = _canvas.querySelector('#sched-now-dot');
     var now = new Date(), nowH = now.getHours() + now.getMinutes()/60 + now.getSeconds()/3600;
-    if (nowH < DSTART || nowH > DEND) {
+    if (nowH < DVIEW0 || nowH > DVIEW1) {
       if (nl) _canvas.removeChild(nl);
       if (nd) _canvas.removeChild(nd);
       return;
     }
-    var py = (nowH - DSTART) * 60 * PX_PER_MIN;
+    var py = (nowH - DVIEW0) * 60 * PX_PER_MIN;
     if (!nl) {
       nl = el('div',''); nl.id='sched-now-line';
       nl.style.cssText='position:absolute;left:-46px;right:0;height:2px;background:var(--danger);z-index:8;pointer-events:none';
@@ -4573,7 +4620,7 @@ var Sched = (function(){
       'z-index:2',
       'min-height:24px',
       'top:'+minToY(blk.startMin)+'px',
-      'height:'+Math.max(24, minToY(blk.durationMin))+'px',
+      'height:'+Math.max(24, durToPx(blk.durationMin))+'px',
     ].join(';');
 
     var titleEl = el('div','gcal-block-title'); titleEl.textContent = blk.title;
@@ -4662,14 +4709,14 @@ var Sched = (function(){
     if (!blkRef) return;
 
     if (_active.type === 'drag') {
-      var newMin = snapDMin(Math.max(0, Math.min(_active.startMin + dMin, (DEND-DSTART)*60 - blkRef.durationMin)));
+      var newMin = snapDMin(Math.max(DMIN_LO, Math.min(_active.startMin + dMin, DMIN_HI - blkRef.durationMin)));
       _active.el.style.top = minToY(newMin)+'px';
       _active.timeEl.textContent = fmtMin(newMin)+' – '+fmtMin(newMin+blkRef.durationMin);
     } else {
       var newDur = snapDMin(Math.max(15, _active.startDur + dMin));
-      var maxDur = (DEND-DSTART)*60 - blkRef.startMin;
+      var maxDur = DMIN_HI - blkRef.startMin;
       var dur = Math.min(newDur, maxDur);
-      _active.el.style.height = Math.max(24, minToY(dur))+'px';
+      _active.el.style.height = Math.max(24, durToPx(dur))+'px';
       _active.timeEl.textContent = fmtMin(blkRef.startMin)+' – '+fmtMin(blkRef.startMin+dur);
     }
   }
@@ -4681,10 +4728,10 @@ var Sched = (function(){
     var blkRef = (S.timeBlocks||[]).find(function(b){ return b.id===_active.blkId; });
     if (blkRef) {
       if (_active.type === 'drag') {
-        blkRef.startMin = snapDMin(Math.max(0, Math.min(_active.startMin+dMin, (DEND-DSTART)*60-blkRef.durationMin)));
+        blkRef.startMin = snapDMin(Math.max(DMIN_LO, Math.min(_active.startMin+dMin, DMIN_HI-blkRef.durationMin)));
       } else {
         var nd = snapDMin(Math.max(15, _active.startDur+dMin));
-        blkRef.durationMin = Math.min(nd, (DEND-DSTART)*60-blkRef.startMin);
+        blkRef.durationMin = Math.min(nd, DMIN_HI-blkRef.startMin);
       }
       save();
     }
@@ -4757,7 +4804,7 @@ var Sched = (function(){
     var title = _titleInp.value.trim();
     if (!title) return;
     var startMin = (_pendingMin !== null) ? _pendingMin : (new Date().getHours() - DSTART) * 60;
-    startMin = Math.max(0, Math.min(startMin, (DEND-DSTART)*60-15));
+    startMin = Math.max(DMIN_LO, Math.min(startMin, DMIN_HI-15));
     _titleInp.value = '';
     _titleInp.placeholder = "What's happening?";
     _pendingMin = null;
@@ -7830,11 +7877,72 @@ function renderList(cv) {
   if (curSec==='media')    renderMedia(cv);
 }
 
+// ── Chores: Weekly (resets Sunday) + Monthly upkeep (a "last serviced" log) ──
+// Upkeep items: {id, t, area, every (days), log:[timestamps, newest last]}. Seeded once.
+var UPKEEP_AREAS = [
+  {id:'kitchen', name:'Kitchen',        ico:'🍳'},
+  {id:'bath',    name:'Bathroom',       ico:'🛁'},
+  {id:'house',   name:'Whole House',    ico:'🏠'},
+  {id:'safety',  name:'Safety',         ico:'🧯'},
+  {id:'garage',  name:'Garage & Tools', ico:'🧰'},
+  {id:'pets',    name:'Pets',           ico:'🐾'},
+  {id:'car',     name:'Car',            ico:'🚗'},
+  {id:'tech',    name:'Tech',           ico:'💻'}
+];
+var UPKEEP_SEED = [
+  ['kitchen','Clean out the fridge, toss old food',30],['kitchen','Deep clean oven & stovetop',30],
+  ['kitchen','Clean inside the microwave',30],['kitchen','Clean dishwasher filter',30],
+  ['kitchen','Sharpen the knives',60],['kitchen','Degrease range hood filter',60],
+  ['kitchen','Wipe cabinet fronts & handles',30],['kitchen','Check pantry for expired food',90],
+  ['bath','Deep scrub shower, tub & grout',30],['bath','Clean behind & under the toilet',30],
+  ['bath','Wash bath mats & shower curtain',30],['bath','Descale showerhead & faucets',90],
+  ['bath','Check sinks & toilet for leaks',30],
+  ['house','Scrub walls, doors & light switches',60],['house','Dust baseboards, vents & door frames',30],
+  ['house','Dust ceiling fans & light fixtures',30],['house','Vacuum under furniture & cushions',30],
+  ['house','Wash windows & tracks',90],['house','Wash pillows & comforter',90],
+  ['house','Rotate the mattress',90],['house','Replace the air filter',60],
+  ['house','Clean the dryer vent',90],
+  ['safety','Test smoke & CO detectors',30],['safety','Check the fire extinguisher',180],
+  ['garage','Clean up the garage',30],['garage','Recharge batteries & power tools',30],
+  ['garage','Clean the 3D printer, check nozzle & belts',30],
+  ['pets','Deep clean the litter box',30],['pets','Wash pet bowls & beds',30],
+  ['car','Check tire pressure & fluids',30],['car','Clean the car interior',30],
+  ['tech','Back up phone & computer',30],['tech','Clean keyboard & screens',30]
+];
+function seedUpkeep(){
+  if (!S.lists || S.lists._upkeepSeed1) return;
+  if (!Array.isArray(S.lists.upkeep)) S.lists.upkeep = UPKEEP_SEED.map(function(r,i){ return {id:'up'+(i+1), area:r[0], t:r[1], every:r[2], log:[]}; });
+  S.lists._upkeepSeed1 = true;
+}
+var DAY_MS = 86400000;
+function upkeepStatus(it){
+  var last = (it.log||[]).length ? it.log[it.log.length-1] : null;
+  if (!last) return {cls:'never', since:null, left:null, last:null};
+  var since = Math.floor((Date.now()-last)/DAY_MS), left = (it.every||30) - since;
+  return {cls: left<0 ? 'over' : left<=7 ? 'soon' : 'ok', since:since, left:left, last:last};
+}
+function fmtShortDate(ts){ return new Date(ts).toLocaleDateString('en-US',{month:'short',day:'numeric'}); }
+
 function renderChores(cv) {
-  var wrap=el('div',''); wrap.style.maxWidth='660px';
+  var wrap=el('div',''); wrap.style.maxWidth='980px';
   var h1=el('div','pg-h1'); h1.style.color='var(--lists)'; h1.appendChild(tx('🧹 Chores'));
-  var sub=el('div','pg-sub'); sub.appendChild(tx('Weekly — resets every Sunday'));
+  var sub=el('div','pg-sub'); sub.appendChild(tx('Weekly resets every Sunday · Upkeep tracks when you last did it'));
   wrap.appendChild(h1); wrap.appendChild(sub);
+  seedUpkeep();
+  var view='week'; try{ view=localStorage.getItem('sub_chore_view')||'week'; }catch(e){}
+  var modes=el('div','gr-modes'); modes.style.marginBottom='16px';
+  var ups=S.lists.upkeep||[], needN=ups.filter(function(u){ var c=upkeepStatus(u).cls; return c==='over'||c==='soon'; }).length;
+  [['week','📅 Weekly'],['month','🔧 Monthly upkeep'+(needN?' · '+needN+' due':'')]].forEach(function(m){
+    var b=el('button','gr-mode'+(view===m[0]?' on':'')); b.appendChild(tx(m[1]));
+    b.onclick=function(){ try{localStorage.setItem('sub_chore_view',m[0]);}catch(e){} window._choreEdit=false; renderCanvas(); };
+    modes.appendChild(b);
+  });
+  wrap.appendChild(modes);
+  if (view==='month') renderUpkeep(wrap); else renderWeeklyChores(wrap);
+  cv.appendChild(wrap);
+}
+
+function renderWeeklyChores(wrap){
   var ch=S.lists.chores;
   var done=ch.filter(function(c){return c.d;}).length;
   var pct=ch.length?Math.round(done/ch.length*100):0;
@@ -7844,17 +7952,132 @@ function renderChores(cv) {
   prog.appendChild(pb); prog.appendChild(pl); wrap.appendChild(prog);
   var d=new Date(); var ds=7-d.getDay();
   var rn=el('div','reset-note'); rn.appendChild(tx('🔄 Resets '+(ds===7?'today':ds===1?'tomorrow':'in '+ds+' days')+' (Sunday)')); wrap.appendChild(rn);
-  var pending=ch.filter(function(c){return !c.d;}); var doneList=ch.filter(function(c){return c.d;});
-  if(pending.length){var sh1=el('div','sh');sh1.appendChild(tx('To Do'));wrap.appendChild(sh1);var g1=el('div','cl-wrap');pending.forEach(function(c){g1.appendChild(mkListRow(c,'chore'));});wrap.appendChild(g1);}
-  if(doneList.length){var sh2=el('div','sh');sh2.appendChild(tx('Done ✓'));wrap.appendChild(sh2);var g2=el('div','cl-wrap');doneList.forEach(function(c){g2.appendChild(mkListRow(c,'chore'));});wrap.appendChild(g2);}
-  var ar=el('div','add-row'); ar.style.marginTop='16px';
-  var inp=document.createElement('input'); inp.className='add-inp'; inp.id='chore-inp'; inp.placeholder='Add a chore…';
-  var btn=el('button','add-btn'); btn.appendChild(tx('ADD'));
-  btn.onclick=function(){addChore(inp);}; inp.onkeydown=function(e){if(e.key==='Enter')addChore(inp);};
-  ar.appendChild(inp); ar.appendChild(btn); wrap.appendChild(ar);
-  var rb=el('button','ghost-btn'); rb.style.marginTop='8px'; rb.style.width='100%'; rb.appendChild(tx('🔄 Reset all chores'));
-  rb.onclick=function(){S.lists.chores.forEach(function(c){c.d=false;});save();renderCanvas();};
-  wrap.appendChild(rb); cv.appendChild(wrap);
+  if (window._choreEdit) {
+    // Edit mode: the classic rows (drag to reorder, rename, delete)
+    var g=el('div','cl-wrap'); ch.forEach(function(c){ g.appendChild(mkListRow(c,'chore')); }); wrap.appendChild(g);
+    var ar=el('div','add-row'); ar.style.marginTop='12px';
+    var inp=document.createElement('input'); inp.className='add-inp'; inp.id='chore-inp'; inp.placeholder='Add a chore…';
+    var btn=el('button','add-btn'); btn.appendChild(tx('ADD'));
+    btn.onclick=function(){addChore(inp);}; inp.onkeydown=function(e){if(e.key==='Enter')addChore(inp);};
+    ar.appendChild(inp); ar.appendChild(btn); wrap.appendChild(ar);
+  } else {
+    // Tiles: tap one to check it off. Done tiles show the day you did them.
+    var grid=el('div','ch-grid');
+    ch.slice().sort(function(a,b){ return (a.d?1:0)-(b.d?1:0); }).forEach(function(c){
+      var t=el('button','ch-tile'+(c.d?' done':'')); t.type='button';
+      var ck=el('span','ch-ck'); ck.appendChild(tx(c.d?'✓':'')); t.appendChild(ck);
+      var nm=el('span','ch-name'); nm.appendChild(tx(c.t)); t.appendChild(nm);
+      if (c.d && c.doneAt) { var when=el('span','ch-when'); when.appendChild(tx(new Date(c.doneAt).toLocaleDateString('en-US',{weekday:'short'}))); t.appendChild(when); }
+      t.onclick=function(){ c.d=!c.d; if(c.d) c.doneAt=Date.now(); else delete c.doneAt; save(); renderCanvas(); };
+      grid.appendChild(t);
+    });
+    wrap.appendChild(grid);
+  }
+  var row=el('div','ch-actions');
+  var eb=el('button','ghost-btn'); eb.appendChild(tx(window._choreEdit?'✓ Done editing':'✎ Edit list'));
+  eb.onclick=function(){ window._choreEdit=!window._choreEdit; renderCanvas(); };
+  var rb=el('button','ghost-btn'); rb.appendChild(tx('🔄 Reset all'));
+  rb.onclick=function(){ S.lists.chores.forEach(function(c){c.d=false; delete c.doneAt;}); save(); renderCanvas(); };
+  row.appendChild(eb); row.appendChild(rb); wrap.appendChild(row);
+}
+
+function renderUpkeep(wrap){
+  var items=S.lists.upkeep;
+  var counts={over:0,soon:0,never:0};
+  items.forEach(function(it){ var c=upkeepStatus(it).cls; if(counts[c]!==undefined) counts[c]++; });
+  var sum=el('div','up-sum');
+  [['over','Overdue'],['soon','Due this week'],['never','Not logged yet']].forEach(function(s){
+    var p=el('span','up-pill '+s[0]); p.appendChild(tx(counts[s[0]]+' '+s[1])); sum.appendChild(p);
+  });
+  wrap.appendChild(sum);
+  var filt='all'; try{ filt=localStorage.getItem('sub_upkeep_filter')||'all'; }catch(e){}
+  var fm=el('div','gr-modes'); fm.style.margin='0 0 6px';
+  [['all','Everything'],['due','Needs doing']].forEach(function(m){
+    var b=el('button','gr-mode'+(filt===m[0]?' on':'')); b.appendChild(tx(m[1]));
+    b.onclick=function(){ try{localStorage.setItem('sub_upkeep_filter',m[0]);}catch(e){} renderCanvas(); };
+    fm.appendChild(b);
+  });
+  wrap.appendChild(fm);
+  var order={over:0,never:1,soon:2,ok:3};
+  var shown=0;
+  UPKEEP_AREAS.concat([{id:'other',name:'Other',ico:'📌'}]).forEach(function(a){
+    var known=UPKEEP_AREAS.some(function(x){return x.id===a.id;});
+    var mine=items.filter(function(it){ return a.id==='other' ? !UPKEEP_AREAS.some(function(x){return x.id===it.area;}) : it.area===a.id; });
+    if (filt==='due') mine=mine.filter(function(it){ var c=upkeepStatus(it).cls; return c!=='ok'; });
+    if (!mine.length && (filt==='due' || !known)) return;
+    shown++;
+    var hd=el('div','sh'); hd.appendChild(tx(a.ico+' '+a.name)); wrap.appendChild(hd);
+    var grid=el('div','up-grid');
+    mine.slice().sort(function(x,y){ return order[upkeepStatus(x).cls]-order[upkeepStatus(y).cls]; }).forEach(function(it){ grid.appendChild(upkeepCard(it)); });
+    if (filt!=='due') grid.appendChild(upkeepAddCard(a.id==='other'?'house':a.id));
+    wrap.appendChild(grid);
+  });
+  if (!shown) { var em=el('div','gr-empty'); em.appendChild(tx('Nothing needs doing. Nice.')); wrap.appendChild(em); }
+}
+function upkeepCard(it){
+  var st=upkeepStatus(it);
+  var card=el('div','up-card '+st.cls);
+  if (window._upEdit===it.id) return upkeepEditCard(it, card);
+  var top=el('div','up-top');
+  var nm=el('div','up-name'); nm.appendChild(tx(it.t)); top.appendChild(nm);
+  var ed=el('button','gr-edit'); ed.type='button'; ed.appendChild(tx('✎')); ed.title='Edit';
+  ed.onclick=function(){ window._upEdit=it.id; renderCanvas(); };
+  top.appendChild(ed); card.appendChild(top);
+  var lbl=el('div','up-lbl'); lbl.appendChild(tx('LAST SERVICED')); card.appendChild(lbl);
+  var dt=el('div','up-date'); dt.appendChild(tx(st.last ? fmtShortDate(st.last) : '— —')); card.appendChild(dt);
+  var meta=el('div','up-meta');
+  var stat = st.cls==='never' ? 'Not logged yet' : st.since===0 ? 'Today' : st.since+' day'+(st.since===1?'':'s')+' ago';
+  var due = st.cls==='never' ? 'every '+it.every+' days'
+          : st.left<0 ? 'OVERDUE '+(-st.left)+'d' : st.left===0 ? 'due today' : 'due in '+st.left+'d';
+  meta.appendChild(tx(stat+' · ')); var db=el('b',''); db.appendChild(tx(due)); meta.appendChild(db);
+  card.appendChild(meta);
+  var hist=(it.log||[]).slice(-4,-1).reverse();
+  if (hist.length){ var hs=el('div','up-hist'); hs.appendChild(tx('Before: '+hist.map(fmtShortDate).join(' · '))); card.appendChild(hs); }
+  var btn=el('button','up-btn'); btn.type='button'; btn.appendChild(tx(st.since===0?'✓ Done today':'✓ Mark done'));
+  btn.disabled = st.since===0;
+  btn.onclick=function(){ if(!it.log) it.log=[]; it.log.push(Date.now()); if(it.log.length>12) it.log=it.log.slice(-12); save(); renderCanvas(); };
+  card.appendChild(btn);
+  return card;
+}
+function upkeepEditCard(it, card){
+  card.classList.add('editing');
+  var ni=document.createElement('input'); ni.className='add-inp'; ni.value=it.t;
+  var row=el('div','up-edit-row');
+  var sel=document.createElement('select');
+  UPKEEP_AREAS.forEach(function(a){ var o=document.createElement('option'); o.value=a.id; o.textContent=a.ico+' '+a.name; if(a.id===it.area) o.selected=true; sel.appendChild(o); });
+  var ev=document.createElement('input'); ev.type='number'; ev.min='1'; ev.value=it.every||30; ev.className='up-every';
+  var evl=el('span','up-lbl'); evl.appendChild(tx('every'));
+  var evd=el('span','up-lbl'); evd.appendChild(tx('days'));
+  row.appendChild(sel); row.appendChild(evl); row.appendChild(ev); row.appendChild(evd);
+  var btns=el('div','up-edit-row');
+  var ok=el('button','add-btn'); ok.appendChild(tx('SAVE'));
+  ok.onclick=function(){ var v=ni.value.trim(); if(v) it.t=v; it.area=sel.value; it.every=Math.max(1,parseInt(ev.value,10)||30); window._upEdit=null; save(); renderCanvas(); };
+  var undo=el('button','gr-del'); undo.appendChild(tx('UNDO LAST')); undo.title='Remove the last "done" date';
+  undo.disabled=!(it.log||[]).length;
+  undo.onclick=function(){ (it.log||[]).pop(); save(); renderCanvas(); };
+  var del=el('button','gr-del'); del.appendChild(tx('DELETE'));
+  del.onclick=function(){
+    if (del._armed){ S.lists.upkeep=S.lists.upkeep.filter(function(x){return x.id!==it.id;}); window._upEdit=null; save(); renderCanvas(); return; }
+    del._armed=true; del.classList.add('arm'); del.textContent='SURE?';
+    setTimeout(function(){ del._armed=false; del.classList.remove('arm'); del.textContent='DELETE'; },2500);
+  };
+  var cancel=el('button','gr-del'); cancel.appendChild(tx('CANCEL'));
+  cancel.onclick=function(){ window._upEdit=null; renderCanvas(); };
+  btns.appendChild(ok); btns.appendChild(undo); btns.appendChild(del); btns.appendChild(cancel);
+  ni.onkeydown=function(e){ e.stopPropagation(); if(e.key==='Enter') ok.onclick(); else if(e.key==='Escape') cancel.onclick(); };
+  card.appendChild(ni); card.appendChild(row); card.appendChild(btns);
+  setTimeout(function(){ ni.focus(); },0);
+  return card;
+}
+function upkeepAddCard(area){
+  var c=el('button','up-card up-add'); c.type='button'; c.appendChild(tx('+ Add a task'));
+  c.onclick=function(){
+    uiPrompt('What needs doing every so often?','',function(name){
+      S.lists.upkeep.push({id:'up'+Date.now(), area:area, t:name, every:30, log:[]});
+      save(); renderCanvas();
+    },{title:'New upkeep task',placeholder:'e.g. Clean the grill',okLabel:'Add'});
+  };
+  return c;
 }
 
 // ── Shopping list sections ──
