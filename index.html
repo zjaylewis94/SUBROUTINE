@@ -622,7 +622,36 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);dis
 
 /* Weekly section label */
 .wk-section-label{font-family:'Rajdhani',sans-serif;font-size:.68rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--dim);padding-bottom:5px;border-bottom:1px solid var(--br)}
+/* Sunday plan: banner, last-week review, lesson/dinner fields, notes */
+.wk-banner{align-self:flex-start;background:rgba(232,160,48,.1);border:1px solid var(--gold-d);color:var(--gold);border-radius:8px;padding:8px 14px;font-family:'Rajdhani',sans-serif;font-size:.9rem;font-weight:700;letter-spacing:1px;cursor:pointer}
+.wk-banner:hover{background:rgba(232,160,48,.18)}
+.wk-review{display:flex;flex-direction:column;gap:4px;background:var(--s1);border:1px solid var(--br);border-radius:10px;padding:10px 12px}
+.wk-rv-empty{font-size:.78rem;color:var(--dim);font-style:italic;padding:2px 0 6px}
+.wk-rv-item{display:flex;align-items:center;gap:8px;font-size:.8rem;color:var(--text);padding:4px 2px;border-bottom:1px solid var(--br);flex-wrap:wrap}
+.wk-rv-item.done .wk-rv-t{color:var(--dim)}
+.wk-rv-item.handled .wk-rv-t{color:var(--dim);text-decoration:line-through}
+.wk-rv-kind{font-family:'Rajdhani',sans-serif;font-size:.62rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--gold);min-width:34px}
+.wk-rv-t{flex:1;min-width:120px;line-height:1.4}
+.wk-rv-state{font-size:.66rem;color:var(--dim);text-transform:uppercase;letter-spacing:1px}
+.wk-rv-btn{background:none;border:1px solid var(--br);border-radius:5px;color:var(--mid);font-size:.7rem;padding:3px 8px;cursor:pointer;white-space:nowrap}
+.wk-rv-btn:hover{border-color:var(--gold-d);color:var(--gold)}
+.wk-notes{background:var(--s1);border:1px solid var(--br);border-radius:10px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:.85rem;line-height:1.6;padding:10px 12px;min-height:110px;resize:vertical;outline:none;width:100%;box-sizing:border-box}
+.wk-notes:focus{border-color:var(--gold)}
+.wk-notes::placeholder{color:var(--dim)}
+.wk-why{min-height:54px;margin-top:6px;background:var(--s2)}
+.wk-notes-head{display:flex;align-items:center;gap:8px}
+.wk-notes-head span{flex:1}
+.wk-fields{display:flex;flex-direction:column;gap:4px;padding:0 8px}
+.wk-field{display:flex;flex-direction:column;gap:1px}
+.wk-field-lbl{font-family:'Rajdhani',sans-serif;font-size:.6rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--dim)}
+.wk-field input{background:var(--s2);border:1px solid var(--br);border-radius:5px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:.76rem;padding:4px 7px;outline:none;width:100%;box-sizing:border-box}
+.wk-field input:focus{border-color:var(--gold)}
+.wk-field input::placeholder{color:var(--dim)}
+.wk-empty{font-size:.7rem;color:var(--dim);padding:4px;font-style:italic}
+.dj-plan{display:flex;flex-direction:column;gap:3px;font-size:.82rem;color:var(--text);line-height:1.45}
+.dj-plan b{font-family:'Rajdhani',sans-serif;font-size:.66rem;letter-spacing:1.5px;text-transform:uppercase;color:var(--gold);margin-right:6px}
 @media(max-width:700px){.wk-grid{grid-template-columns:repeat(2,1fr)}.wk-goals{grid-template-columns:1fr}}
+@media(max-width:600px){.wk-nav{flex-wrap:wrap}.wk-nav-title{order:-1;flex-basis:100%;font-size:.9rem}.wk-nav .cal-nav-btn{flex:1}}
 
 /* ── CURRICULUM ── */
 #curr-wrap{display:flex;height:100%;overflow:hidden;position:relative}
@@ -3134,28 +3163,38 @@ function openCalEditModal(evId) {
   setTimeout(function(){ inp2.focus(); inp2.select(); }, 50);
 }
 
-// ─── WEEKLY ───────────────────────────────────────────────────────
+// ─── WEEKLY (the Sunday plan) ─────────────────────────────────────
+// The page follows the Sunday routine, top to bottom: look back at last week,
+// the Top 3 goals, then each day (dates, lesson, dinner, targets), then notes.
+// Per-day fields live on S.dailyData[date] (lesson, meal, targets), so Daily
+// shows them on the day. Per-week fields live on S.weeklyData[weekKey]:
+// goals, review (what slipped and why), notes, handled (last week's slipped
+// items, each 'carry' or 'drop').
+function wkDs(d2){ return d2.getFullYear()+'-'+pad(d2.getMonth()+1)+'-'+pad(d2.getDate()); }
+function wkMonday(offset){
+  var base=new Date(); base.setHours(12,0,0,0);
+  base.setDate(base.getDate()+offset*7);
+  var dow=base.getDay();
+  base.setDate(base.getDate()-(dow===0?6:dow-1));
+  return base;
+}
+function wkKeyFor(mon){ return mon.getFullYear()+'-W'+pad(mon.getMonth()+1)+'-'+pad(mon.getDate()); }
+function wkDays(mon){ var out=[]; for(var i=0;i<7;i++){ var d2=new Date(mon); d2.setDate(mon.getDate()+i); out.push(d2); } return out; }
+function getWeekData(key){
+  if (!S.weeklyData) S.weeklyData = {};
+  if (!S.weeklyData[key]) S.weeklyData[key] = { goals:[{t:'',d:false},{t:'',d:false},{t:'',d:false}] };
+  var wd = S.weeklyData[key];
+  if (!wd.goals||wd.goals.length<3) wd.goals=[{t:'',d:false},{t:'',d:false},{t:'',d:false}];
+  return wd;
+}
+
 function renderWeekly(cv) {
   cv.style.cssText='padding:0;overflow:hidden;display:flex;flex-direction:column;flex:1';
 
-  // Get Mon–Sun of current week
-  var base = new Date();
-  base.setDate(base.getDate() + weekOffset*7);
-  var dow = base.getDay();
-  var mon = new Date(base);
-  mon.setDate(base.getDate() - (dow===0?6:dow-1)); // Monday
-
-  var days = [];
-  for (var i=0;i<7;i++) {
-    var dd2=new Date(mon); dd2.setDate(mon.getDate()+i); days.push(dd2);
-  }
-
-  // Week key for storing goals
-  var wkKey = days[0].getFullYear()+'-W'+pad(days[0].getMonth()+1)+'-'+pad(days[0].getDate());
-  if (!S.weeklyData) S.weeklyData = {};
-  if (!S.weeklyData[wkKey]) S.weeklyData[wkKey] = { goals:[{t:'',d:false},{t:'',d:false},{t:'',d:false}] };
-  var wd = S.weeklyData[wkKey];
-  if (!wd.goals||wd.goals.length<3) wd.goals=[{t:'',d:false},{t:'',d:false},{t:'',d:false}];
+  var mon = wkMonday(weekOffset);
+  var days = wkDays(mon);
+  var wkKey = wkKeyFor(mon);
+  var wd = getWeekData(wkKey);
 
   var today = todayStr();
   var fmt2 = function(d2){return d2.toLocaleDateString('en-US',{month:'short',day:'numeric'});};
@@ -3173,7 +3212,82 @@ function renderWeekly(cv) {
   nav.appendChild(prev); nav.appendChild(titleEl2); nav.appendChild(tw2); nav.appendChild(next2);
   page.appendChild(nav);
 
-  // ── Top 3 Weekly Goals ──
+  // On Sunday the current week is the one ending today, so offer the next one.
+  if (new Date().getDay()===0 && weekOffset===0) {
+    var banner=el('button','wk-banner');
+    banner.textContent="It's Sunday. Plan next week →";
+    banner.onclick=function(){weekOffset=1;renderCanvas();};
+    page.appendChild(banner);
+  }
+
+  // ── 1. Look back at last week ──
+  var prevMon = wkMonday(weekOffset-1);
+  var prevKey = wkKeyFor(prevMon);
+  var prevWd = (S.weeklyData||{})[prevKey];
+  if (!wd.handled) wd.handled = {};
+  var slipped = [];
+  if (prevWd && prevWd.goals) prevWd.goals.forEach(function(g,i){
+    if (g.t && g.t.trim() && !g.d) slipped.push({key:'g'+i, t:g.t.trim(), kind:'Goal'});
+  });
+  wkDays(prevMon).forEach(function(d2){
+    var ds=wkDs(d2), dd=(S.dailyData||{})[ds];
+    if (!dd || !dd.targets) return;
+    dd.targets.forEach(function(tg,i){
+      if (!(tg.t && tg.t.trim()) || tg.d) return;
+      var day=d2.toLocaleDateString('en-US',{weekday:'short'});
+      var same=slipped.filter(function(x){return x.kind!=='Goal' && x.t.toLowerCase()===tg.t.trim().toLowerCase();})[0];
+      if (same) { same.kind+=' '+day; return; }   // the same target on several days is one item
+      slipped.push({key:'t'+ds+'-'+i, t:tg.t.trim(), kind:day});
+    });
+  });
+  var doneGoals = prevWd && prevWd.goals ? prevWd.goals.filter(function(g){return g.t&&g.t.trim()&&g.d;}) : [];
+
+  var rvLabel = el('div','wk-section-label'); rvLabel.textContent='Last Week: what got done, what slipped';
+  page.appendChild(rvLabel);
+  var rv = el('div','wk-review');
+  if (!slipped.length && !doneGoals.length) {
+    var none=el('div','wk-rv-empty'); none.textContent='Nothing was planned last week. Start fresh below.';
+    rv.appendChild(none);
+  }
+  doneGoals.forEach(function(g){
+    var row=el('div','wk-rv-item done');
+    var t=el('div','wk-rv-t'); t.textContent='✓ '+g.t.trim();
+    row.appendChild(t); rv.appendChild(row);
+  });
+  slipped.forEach(function(it){
+    var row=el('div','wk-rv-item');
+    var kind=el('span','wk-rv-kind'); kind.textContent=it.kind;
+    var t=el('div','wk-rv-t'); t.textContent=it.t;
+    row.appendChild(kind); row.appendChild(t);
+    var st=wd.handled[it.key];
+    if (st) {
+      row.className+=' handled';
+      var tag=el('span','wk-rv-state'); tag.textContent=st==='carry'?'Carried':'Dropped';
+      var undo=el('button','wk-rv-btn'); undo.textContent='Undo';
+      undo.onclick=function(){
+        if (st==='carry') wkUncarry(wd, days, it);
+        delete wd.handled[it.key]; save(); renderCanvas();
+      };
+      row.appendChild(tag); row.appendChild(undo);
+    } else {
+      var carry=el('button','wk-rv-btn'); carry.textContent='Carry →';
+      carry.title=it.kind==='Goal'?'Make it one of this week\'s goals':'Add it to Monday\'s targets';
+      carry.onclick=function(){
+        wkCarry(wd, days, it); wd.handled[it.key]='carry'; save(); renderCanvas();
+      };
+      var drop=el('button','wk-rv-btn'); drop.textContent='Drop';
+      drop.onclick=function(){ wd.handled[it.key]='drop'; save(); renderCanvas(); };
+      row.appendChild(carry); row.appendChild(drop);
+    }
+    rv.appendChild(row);
+  });
+  var why=document.createElement('textarea'); why.className='wk-notes wk-why';
+  why.placeholder='What slipped, and why?'; why.value=wd.review||'';
+  why.oninput=function(){wd.review=why.value;save();};
+  rv.appendChild(why);
+  page.appendChild(rv);
+
+  // ── 2. Top 3 Weekly Goals ──
   var goalLabel = el('div','wk-section-label'); goalLabel.textContent='Top 3 Goals for the Week';
   page.appendChild(goalLabel);
 
@@ -3197,8 +3311,8 @@ function renderWeekly(cv) {
   });
   page.appendChild(goalsGrid);
 
-  // ── 6-column day grid (Mon–Fri + Sat&Sun merged) ──
-  var dayLabel2 = el('div','wk-section-label'); dayLabel2.textContent='Weekly Outlook';
+  // ── 3. The days: dates, lesson, dinner, targets ──
+  var dayLabel2 = el('div','wk-section-label'); dayLabel2.textContent='The Week: dates, lessons, dinners, targets (targets show up in Daily)';
   page.appendChild(dayLabel2);
 
   var grid = el('div','wk-grid');
@@ -3210,81 +3324,81 @@ function renderWeekly(cv) {
     {label:'WED', days:[days[2]]},
     {label:'THU', days:[days[3]]},
     {label:'FRI', days:[days[4]]},
-    {label:'SAT & SUN', days:[days[5],days[6]]},
+    {label:'SAT & SUN', days:[days[5],days[6]], weekend:true},
   ];
 
-  COLS.forEach(function(col) {
-    var isToday = col.days.some(function(d2){
-      return d2.getFullYear()+'-'+pad(d2.getMonth()+1)+'-'+pad(d2.getDate())===today;
-    });
+  function field(labelTxt, val, ph, onIn){
+    var wrap=el('label','wk-field');
+    var l=el('span','wk-field-lbl'); l.textContent=labelTxt;
+    var inp=document.createElement('input'); inp.type='text'; inp.value=val||''; inp.placeholder=ph;
+    inp.oninput=function(){onIn(inp.value);save();};
+    wrap.appendChild(l); wrap.appendChild(inp);
+    return wrap;
+  }
 
+  COLS.forEach(function(col) {
+    var isToday = col.days.some(function(d2){ return wkDs(d2)===today; });
     var dayCard = el('div','wk-day'+(isToday?' today-col':''));
 
     // Header
     var hdr2 = el('div','wk-day-hdr');
     var nameEl = el('div','wk-day-name'); nameEl.textContent=col.label;
     var numEl2 = el('div','wk-day-num');
-    if(col.days.length===1) {
-      numEl2.textContent=col.days[0].getDate();
-    } else {
-      numEl2.textContent=col.days[0].getDate()+'/'+col.days[1].getDate();
-    }
+    numEl2.textContent = col.days.length===1 ? col.days[0].getDate() : col.days[0].getDate()+'/'+col.days[1].getDate();
     hdr2.appendChild(nameEl); hdr2.appendChild(numEl2);
     dayCard.appendChild(hdr2);
 
-    // Calendar events for these days
-    var hasCalEvs=false;
+    // Calendar events (dates, holidays) for every day in the column
+    var evs=[];
     col.days.forEach(function(d2){
-      var ds3=d2.getFullYear()+'-'+pad(d2.getMonth()+1)+'-'+pad(d2.getDate());
-      var evs=(S.calEvents||[]).filter(function(ev){return ev.date===ds3||(ev.endDate&&ev.date<=ds3&&ev.endDate>=ds3);});
-      if(evs.length&&!hasCalEvs){
-        hasCalEvs=true;
-        var evStrip=el('div','wk-cal-events');
-        evs.forEach(function(ev){
-          var evEl2=el('div','wk-cal-ev');
-          var colors=CAL_COLORS;
-          evEl2.style.background=colors[ev.colorIdx||0];
-          evEl2.textContent=ev.title;
-          evStrip.appendChild(evEl2);
-        });
-        dayCard.appendChild(evStrip);
-      }
+      var ds3=wkDs(d2);
+      (S.calEvents||[]).forEach(function(ev){
+        if ((ev.date===ds3||(ev.endDate&&ev.date<=ds3&&ev.endDate>=ds3)) && evs.indexOf(ev)<0) evs.push(ev);
+      });
     });
+    if (evs.length) {
+      var evStrip=el('div','wk-cal-events');
+      evs.forEach(function(ev){
+        var evEl2=el('div','wk-cal-ev');
+        evEl2.style.background=CAL_COLORS[ev.colorIdx||0];
+        evEl2.textContent=ev.title; evEl2.title=ev.title;
+        evStrip.appendChild(evEl2);
+      });
+      dayCard.appendChild(evStrip);
+    }
 
-    // Tasks body — gather tasks from all boxes for these day dates
-    // For weekly, we show all pending tasks (not date-filtered — this is a planning view)
-    var body2 = el('div','wk-day-body');
-
-    // Get any tasks that were explicitly assigned to this day via dailyData
-    // Plus show boxes' tasks in the first column (Mon) as a reference
-    // For simplicity: show all box tasks split across days based on their order
-    // Actually — just make each day an open write-in area using dailyData
+    // Lesson + dinner (stored on the day, so Daily shows them)
+    var fields=el('div','wk-fields');
     col.days.forEach(function(d2){
-      var ds3=d2.getFullYear()+'-'+pad(d2.getMonth()+1)+'-'+pad(d2.getDate());
-      var dayD=getDayData(ds3);
-      // Show targets if set
+      var dd=getDayData(wkDs(d2));
+      var pre=col.weekend?d2.toLocaleDateString('en-US',{weekday:'short'})+' ':'';
+      if (!col.weekend) fields.appendChild(field('Lesson', dd.lesson, 'Unit / what classes do', function(v){dd.lesson=v;}));
+      fields.appendChild(field(pre+'Dinner', dd.meal, 'What\'s for dinner', function(v){dd.meal=v;}));
+    });
+    dayCard.appendChild(fields);
+
+    // Targets: the same ones as Daily's "Today's Targets"
+    var body2 = el('div','wk-day-body');
+    col.days.forEach(function(d2){
+      var dayD=getDayData(wkDs(d2));
       dayD.targets.forEach(function(tgt){
         if(!tgt.t) return;
         var row2=el('div','wk-task');
         var cb3=document.createElement('input'); cb3.type='checkbox'; cb3.checked=!!tgt.d;
         cb3.style.accentColor='var(--gold)';
-        var lbl4=el('label',tgt.d?'done':''); lbl4.textContent=tgt.t;
+        var lbl4=el('label',tgt.d?'done':''); lbl4.textContent=(col.weekend?d2.toLocaleDateString('en-US',{weekday:'short'})+': ':'')+tgt.t;
         cb3.onchange=(function(t2,l){return function(){t2.d=cb3.checked;l.className=t2.d?'done':'';save();};})(tgt,lbl4);
         row2.appendChild(cb3); row2.appendChild(lbl4); body2.appendChild(row2);
       });
     });
-
-    // Show pending box tasks (all, as overview) only on first render if no day targets
     if(!body2.children.length) {
-      var emptyHint=el('div',''); emptyHint.style.cssText='font-size:.7rem;color:var(--dim);padding:4px;font-style:italic;';
-      emptyHint.textContent='No targets set — open Daily to plan';
+      var emptyHint=el('div','wk-empty'); emptyHint.textContent='No targets yet';
       body2.appendChild(emptyHint);
     }
-
     dayCard.appendChild(body2);
 
-    // Quick add (stored as daily target for first day of col)
-    var addDs=col.days[0].getFullYear()+'-'+pad(col.days[0].getMonth()+1)+'-'+pad(col.days[0].getDate());
+    // Quick add (a target on the first day of the column)
+    var addDs=wkDs(col.days[0]);
     var addRow2=el('div','wk-day-add');
     var addInp2=document.createElement('input'); addInp2.placeholder='+ add target…';
     var addBtn3=el('button',''); addBtn3.textContent='+';
@@ -3297,8 +3411,42 @@ function renderWeekly(cv) {
 
     grid.appendChild(dayCard);
   });
-
   page.appendChild(grid);
+
+  // ── 4. Notes: general plans, holidays, reminders ──
+  var notesHead = el('div','wk-section-label wk-notes-head');
+  var nt=el('span',''); nt.textContent='Notes for the Week';
+  var shop=el('button','wk-rv-btn'); shop.textContent='Shopping List →';
+  shop.onclick=function(){ curTab='lists'; curSec='shopping'; curChapter=null; curPage=null; buildSB(); buildTabBar(); buildRSB(); renderCanvas(); };
+  notesHead.appendChild(nt); notesHead.appendChild(shop);
+  page.appendChild(notesHead);
+  var notes=document.createElement('textarea'); notes.className='wk-notes';
+  notes.placeholder='Plans, holidays, people to call, things to remember…'; notes.value=wd.notes||'';
+  notes.oninput=function(){wd.notes=notes.value;save();};
+  page.appendChild(notes);
+}
+
+// Carry a slipped item into this week: a goal goes into the first empty goal
+// slot (or Notes if all three are full); a target goes onto Monday.
+function wkCarry(wd, days, it){
+  if (it.kind==='Goal') {
+    for (var i=0;i<wd.goals.length;i++) if(!wd.goals[i].t || !wd.goals[i].t.trim()){ wd.goals[i].t=it.t; wd.goals[i].d=false; return; }
+    wd.notes=(wd.notes?wd.notes.replace(/\s+$/,'')+'\n':'')+'Carried: '+it.t;
+    return;
+  }
+  var dd=getDayData(wkDs(days[0]));
+  for (var j=0;j<dd.targets.length;j++) if(!dd.targets[j].t){ dd.targets[j].t=it.t; dd.targets[j].d=false; return; }
+  dd.targets.push({t:it.t,d:false});
+}
+function wkUncarry(wd, days, it){
+  var t=it.t;
+  if (it.kind==='Goal') for (var i=0;i<wd.goals.length;i++) if(wd.goals[i].t===t && !wd.goals[i].d){ wd.goals[i].t=''; return; }
+  if (it.kind==='Goal') { if (wd.notes) wd.notes=wd.notes.replace('\nCarried: '+t,'').replace('Carried: '+t,''); return; }
+  var dd=getDayData(wkDs(days[0]));
+  for (var j=dd.targets.length-1;j>=0;j--) if(dd.targets[j].t===t && !dd.targets[j].d){
+    if (j>=3) dd.targets.splice(j,1); else dd.targets[j].t='';
+    return;
+  }
 }
 
 function addWeekTarget(ds, inp) {
@@ -3399,6 +3547,19 @@ function renderDaily(cv) {
   gta.placeholder='One thing you appreciate today…'; gta.value=dd.grateful||'';
   gta.oninput=function(){dd.grateful=gta.value;save();};
   gratSec.appendChild(gl); gratSec.appendChild(gta); left.appendChild(gratSec);
+
+  // Lesson + dinner from the Sunday plan (set on the Weekly page)
+  if ((dd.lesson&&dd.lesson.trim()) || (dd.meal&&dd.meal.trim())) {
+    var planSec = el('div','dj-section');
+    var pl = el('div','dj-label'); pl.textContent='From Your Week Plan';
+    var pb = el('div','dj-plan');
+    [['Lesson',dd.lesson],['Dinner',dd.meal]].forEach(function(p){
+      if(!p[1]||!p[1].trim()) return;
+      var r=el('div',''); var b=document.createElement('b'); b.textContent=p[0];
+      r.appendChild(b); r.appendChild(document.createTextNode(p[1].trim())); pb.appendChild(r);
+    });
+    planSec.appendChild(pl); planSec.appendChild(pb); left.appendChild(planSec);
+  }
 
   // Today's Goal
   var goalSec = el('div','dj-section');
