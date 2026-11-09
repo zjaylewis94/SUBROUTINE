@@ -29,7 +29,11 @@ else here.** New content belongs in Zach's saved data, which syncs to the privat
   - **Brain Dump** (`dump`): `S.dump` and the `S.feed` notes. AI sort calls the Anthropic API from the browser with the key
     stored in `subroutine_ai_key`. The model id is hard-coded in the `fetch` in that section.
   - **Monthly** (`S.calEvents`).
-  - **Weekly** (`S.weeklyData`).
+  - **Weekly** (`S.weeklyData`), the Sunday plan (Nov 8, 2026). Top to bottom it follows Zach's Sunday routine:
+    last week's slipped goals and targets (each one Carry → or Drop, kept in `handled`, plus a "what slipped, and why" `review`),
+    Top 3 goals, then each day's calendar events, **Lesson** and **Dinner** (stored on `S.dailyData[date].lesson` / `.meal`,
+    so Daily shows them under "From Your Week Plan") and targets (the same as Daily's Today's Targets), then week `notes`.
+    On Sundays a banner jumps to next week. A scheduled task opens a planning session with Claude every Sunday afternoon.
   - **Daily** (`S.dailyData`). It holds Today's Targets, the Game Plan (`S.gamePlan`), the schedule (with a live red now-line), and **Tasks by Box**.
 - **Boxes** (`BOXES` / `BOX_META`): teaching, coaching, art, house, personal, finance, fitness, cookbook, plus `S.customBoxes`.
   An `army` box exists in `SEED` and in `TASK_BOX_RULES`. Each box has Tasks, Projects (text, one per line with `[status]`) and Notes,
@@ -54,6 +58,7 @@ else here.** New content belongs in Zach's saved data, which syncs to the privat
   - Saved `startMin` counts from `DSTART` (5 AM). Never change `DSTART`: every saved block would move.
   - The widget shows `DVIEW0`–`DVIEW1` (12 AM to 12 AM), so a block before 5 AM has a negative `startMin` (down to `DMIN_LO`).
   - On phones the widget is a 55vh window that scrolls on its own and opens at the current time.
+  - Block titles wrap onto as many lines as the block's height fits (`_fitBlockText`); short blocks drop the time row, and the tooltip has both.
 - **Tasks by Box** (Daily):
   - Tasks are `{t, d, children}`.
   - Tags in the text: `!high`/`!!!`, `!med`/`!!`, `!low`/`!` and due dates `@10/31` or `@oct 31` (`taskTags()`).
