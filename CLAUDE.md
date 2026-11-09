@@ -58,6 +58,7 @@ else here.** New content belongs in Zach's saved data, which syncs to the privat
   - Saved `startMin` counts from `DSTART` (5 AM). Never change `DSTART`: every saved block would move.
   - The widget shows `DVIEW0`–`DVIEW1` (12 AM to 12 AM), so a block before 5 AM has a negative `startMin` (down to `DMIN_LO`).
   - On phones the widget is a 55vh window that scrolls on its own and opens at the current time.
+  - Block titles wrap onto as many lines as the block's height fits (`_fitBlockText`); short blocks drop the time row, and the tooltip has both.
 - **Tasks by Box** (Daily):
   - Tasks are `{t, d, children}`.
   - Tags in the text: `!high`/`!!!`, `!med`/`!!`, `!low`/`!` and due dates `@10/31` or `@oct 31` (`taskTags()`).
