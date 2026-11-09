@@ -41,7 +41,12 @@ else here.** New content belongs in Zach's saved data, which syncs to the privat
   - Teaching has Curriculum (`S.curriculum`, seeded from `CURRICULUM`).
   - Fitness has Program (`S.fitness`).
   - There's also an optional `tracker` (nested checklist).
-- **Lists** (`curTab==='lists'`): chores (reset on Sunday by `doChoreReset()`), shopping, manifesto, quotes, media.
+- **Lists** (`curTab==='lists'`): chores, shopping, manifesto, quotes, media.
+- **Chores** (`renderChores()`), two tabs (view saved in `sub_chore_view`):
+  - **Weekly**: `S.lists.chores` as tap-to-check tiles (`doneAt` shows the day). Reset on Sunday by `doChoreReset()`.
+    "Edit list" brings back the rows for reorder, rename and delete.
+  - **Monthly upkeep**: `S.lists.upkeep` = `{id, t, area, every (days), log:[timestamps]}`, shown as "last serviced" cards
+    colored by status (overdue, due within 7 days, OK, never logged). Seeded once from `UPKEEP_SEED` (`S.lists._upkeepSeed1`).
 - **Shopping list** (`renderShopping()`, `S.lists.grocery`, fixed `GROCERY_SECTIONS`). Zach's names for the two views:
   - **The Pantry**: the master list, every item ever added, A–Z. Tap an item to put it on or take it off the Shopping List.
   - **Shopping List**: what to get on the next trip. Checked items go to "In the cart".
@@ -49,7 +54,10 @@ else here.** New content belongs in Zach's saved data, which syncs to the privat
   - The view is saved in `sub_groc_view` (`need` = Shopping List, `all` = The Pantry).
   - An item is on the list when `!d`, in the cart when `d` and `gotAt`, and Pantry-only when `d` with no `gotAt`.
     It reuses the old fields, so older cached copies still read it sensibly.
-- **Schedule:** `S.weekSchedule` (bell schedule by weekday, from `S.scheduleStart`), `S.timeBlocks` (one-off blocks; `startMin` counts from `DSTART`), `S.scheduleSkips`.
+- **Schedule:** `S.weekSchedule` (bell schedule by weekday, from `S.scheduleStart`), `S.timeBlocks` (one-off blocks), `S.scheduleSkips`.
+  - Saved `startMin` counts from `DSTART` (5 AM). Never change `DSTART`: every saved block would move.
+  - The widget shows `DVIEW0`–`DVIEW1` (12 AM to 12 AM), so a block before 5 AM has a negative `startMin` (down to `DMIN_LO`).
+  - On phones the widget is a 55vh window that scrolls on its own and opens at the current time.
 - **Tasks by Box** (Daily):
   - Tasks are `{t, d, children}`.
   - Tags in the text: `!high`/`!!!`, `!med`/`!!`, `!low`/`!` and due dates `@10/31` or `@oct 31` (`taskTags()`).
@@ -62,6 +70,25 @@ else here.** New content belongs in Zach's saved data, which syncs to the privat
     - Phones get ⇤ ⇥ buttons while a task is being edited.
   - "File Unsorted" moves `S.unsortedTasks` into boxes by keyword (`TASK_BOX_RULES`), and it can be undone.
 
+## Look (glass theme, Nov 2026)
+- An obsidian background, a fixed `body:before` layer (dark gradients, faint sheen, light grain). iPhone ignores
+  `background-attachment:fixed`, so don't move it onto `body`.
+- Frosted glass panels: the `GLASS THEME` block at the end of the `<style>` turns `--s1/--s2/--s3/--br/--br2` translucent
+  and blurs the main surfaces (top bar, sidebars, tab bar, dialogs, Daily columns).
+  - Phones skip the blur on cards to keep scrolling smooth.
+  - Deleting that one block brings back the old flat look.
+- Use the CSS variables for new UI so it picks up the glass. A hard-coded dark hex stays opaque.
+- **Sky** (`Sky` module, near the end of the app script): the background follows the time of day and the weather.
+  - Five palettes in `PAL` (night, morning, noon, afternoon, dusk) blend along keyframes set from this device's
+    sunrise, solar noon and sunset (NOAA math, no library).
+  - Weather comes from Open-Meteo (free, no key, every 30 min) and sets the mood: rain and fog mute the colors and the
+    `#sky-fx` layer draws rain; a clear sky is glossier.
+  - Everything feeds CSS variables (`--sky0`–`--sky4`, `--sky-sat/bright/gloss/haze`). Their defaults are the plain obsidian look.
+  - Every color is clamped dark (`MAX_BASE_L`, `MAX_BLOB_L`): the background stays under about 7% luminance, so white text keeps about 9:1 contrast.
+  - The 🌙 chip in the top bar opens the settings: on/off, weather on/off, use my location, and a preview-the-day slider.
+  - Per device in localStorage: `sub_sky`, `sub_sky_loc`, `sub_sky_wx`. The location is never synced or committed.
+    Without one, the city comes from the time zone (`TZ` map).
+
 ## Saved data and seeding
 - localStorage keys (shared origin with every book, ~5 MB total, so keep keys `sub_`-prefixed):
   - `sub_v5`: the state.
@@ -70,6 +97,7 @@ else here.** New content belongs in Zach's saved data, which syncs to the privat
   - `subroutine_gh_cfg`: sync settings and token.
   - `subroutine_ai_key`.
   - `sub_groc_view`.
+  - `sub_chore_view`, `sub_upkeep_filter`, `sub_sky`, `sub_sky_loc`, `sub_sky_wx` (per-device view settings).
   - sessionStorage `sub_adopt_at` / `sub_sync_note`.
 - **A saved planner never re-reads `SEED`.** `hydrateState()` only fills in missing fields. To ship new seeded content to Zach's
   devices, add a one-time step guarded by a flag on `S`, like the existing `S._pdSeed_0806`, `S._schoolSeed_2627b` and
