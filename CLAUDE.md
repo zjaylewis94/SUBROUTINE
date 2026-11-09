@@ -74,6 +74,16 @@ else here.** New content belongs in Zach's saved data, which syncs to the privat
   - Phones skip the blur on cards to keep scrolling smooth.
   - Deleting that one block brings back the old flat look.
 - Use the CSS variables for new UI so it picks up the glass. A hard-coded dark hex stays opaque.
+- **Sky** (`Sky` module, near the end of the app script): the background follows the time of day and the weather.
+  - Five palettes in `PAL` (night, morning, noon, afternoon, dusk) blend along keyframes set from this device's
+    sunrise, solar noon and sunset (NOAA math, no library).
+  - Weather comes from Open-Meteo (free, no key, every 30 min) and sets the mood: rain and fog mute the colors and the
+    `#sky-fx` layer draws rain; a clear sky is glossier.
+  - Everything feeds CSS variables (`--sky0`–`--sky4`, `--sky-sat/bright/gloss/haze`). Their defaults are the plain obsidian look.
+  - Every color is clamped dark (`MAX_BASE_L`, `MAX_BLOB_L`): the background stays under about 7% luminance, so white text keeps about 9:1 contrast.
+  - The 🌙 chip in the top bar opens the settings: on/off, weather on/off, use my location, and a preview-the-day slider.
+  - Per device in localStorage: `sub_sky`, `sub_sky_loc`, `sub_sky_wx`. The location is never synced or committed.
+    Without one, the city comes from the time zone (`TZ` map).
 
 ## Saved data and seeding
 - localStorage keys (shared origin with every book, ~5 MB total, so keep keys `sub_`-prefixed):
@@ -83,6 +93,7 @@ else here.** New content belongs in Zach's saved data, which syncs to the privat
   - `subroutine_gh_cfg`: sync settings and token.
   - `subroutine_ai_key`.
   - `sub_groc_view`.
+  - `sub_chore_view`, `sub_upkeep_filter`, `sub_sky`, `sub_sky_loc`, `sub_sky_wx` (per-device view settings).
   - sessionStorage `sub_adopt_at` / `sub_sync_note`.
 - **A saved planner never re-reads `SEED`.** `hydrateState()` only fills in missing fields. To ship new seeded content to Zach's
   devices, add a one-time step guarded by a flag on `S`, like the existing `S._pdSeed_0806`, `S._schoolSeed_2627b` and
