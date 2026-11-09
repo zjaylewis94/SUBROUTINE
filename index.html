@@ -2526,15 +2526,27 @@ function canvasScrollRestore(cv, snap){
     if (e) e.scrollTop = s.top;
   });
 }
+var _canvasRedraw = false;   // true while redrawing the same page (keep where you were)
 function renderCanvas() {
   var cv = document.getElementById('canvas');
   var key = [curTab, curSec, curChapter, curPage, curFitnessPage].join('|');
-  var snap = (key === _canvasKey) ? canvasScrollSnap(cv) : [];
+  var same = (key === _canvasKey);
+  var snap = same ? canvasScrollSnap(cv) : [];
+  // On phones the page itself scrolls, not #canvas, so remember that too
+  var se = document.scrollingElement || document.documentElement;
+  var pageY = same ? se.scrollTop : 0;
   _canvasKey = key;
+  _canvasRedraw = same;
+  if (pageY) document.body.style.minHeight = se.scrollHeight + 'px';   // don't let the page collapse mid-redraw
   renderCanvasInner(cv);
-  if (snap.length) {
-    canvasScrollRestore(cv, snap);
-    requestAnimationFrame(function(){ canvasScrollRestore(cv, snap); });   // again once images/fonts settle
+  _canvasRedraw = false;
+  if (snap.length) canvasScrollRestore(cv, snap);
+  if (pageY) { se.scrollTop = pageY; document.body.style.minHeight = ''; se.scrollTop = pageY; }
+  if (snap.length || pageY) {
+    requestAnimationFrame(function(){   // again once images/fonts settle
+      if (snap.length) canvasScrollRestore(cv, snap);
+      if (pageY) se.scrollTop = pageY;
+    });
   }
 }
 function renderCanvasInner(cv) {
@@ -3803,7 +3815,18 @@ function renderDaily(cv) {
     window.removeEventListener('pointerup', gpOnUp);
     save(); renderGpList();
   }
+  // Rebuilding the list empties it for a moment, which shortens the page and snaps whatever is
+  // scrolling (the left column on a computer, the page on a phone) back up. Hold the list's height
+  // while it rebuilds, then put both scroll positions back.
   function renderGpList(){
+    var keep=[document.scrollingElement, document.getElementById('daily-left')].filter(Boolean).map(function(e){ return [e, e.scrollTop]; });
+    gpList.style.minHeight = gpList.offsetHeight+'px';
+    renderGpListInner();
+    gpList.style.minHeight = '';
+    keep.forEach(function(k){ k[0].scrollTop = k[1]; });
+    requestAnimationFrame(function(){ keep.forEach(function(k){ k[0].scrollTop = k[1]; }); });
+  }
+  function renderGpListInner(){
     gpList.innerHTML='';
     if(!S.gamePlan.length){
       var emp=el('div','gp-empty'); emp.textContent='No steps yet — map your route below.';
@@ -3937,7 +3960,7 @@ function renderDaily(cv) {
   Sched.redraw();
 
   var nowH2 = new Date().getHours() + new Date().getMinutes()/60;
-  setTimeout(function(){ timeWrap.scrollTop = Math.max(0,(nowH2-DVIEW0)*60*DPM - 120); }, 80);
+  if (!_canvasRedraw) setTimeout(function(){ timeWrap.scrollTop = Math.max(0,(nowH2-DVIEW0)*60*DPM - 120); }, 80);
 
   // ── UNSORTED / CATCH-ALL SECTION ──
   (function() {
