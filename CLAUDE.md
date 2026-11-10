@@ -34,6 +34,14 @@ else here.** New content belongs in Zach's saved data, which syncs to the privat
     Top 3 goals, then each day's calendar events, **Lesson** and **Dinner** (stored on `S.dailyData[date].lesson` / `.meal`,
     so Daily shows them under "From Your Week Plan") and targets (the same as Daily's Today's Targets), then week `notes`.
     On Sundays a banner jumps to next week. A scheduled task opens a planning session with Claude every Sunday afternoon.
+    Extras on the page (Nov 9, 2026):
+    - US holidays on each day (`usHolidays()`, computed for any year). A holiday hides itself when you logged your own event
+      for it that day (`HOL_MATCH`, e.g. "THANX GIVING").
+    - **✨ Ideas from your Production Board** under the goals while a slot is empty (`boardSuggestions()`). It ranks
+      overdue / due-this-week / `!high` / next-up tasks, at most 2 per project, and skips SHELVED/HELD books; tags are
+      stripped by `stripTaskTags()`. Tap one to fill the next empty slot.
+    - A blank Dinner offers the Cook Book's "Last Meal" for that day (`cookbookDinnerOn()`). That reads the Cook Book's
+      `cb2_plan` in this device's localStorage, whose keys are weeks from the current Sunday (`wk0_` = this week) + day (0 = Sun) + meal.
   - **Daily** (`S.dailyData`). It holds Today's Targets, the Game Plan (`S.gamePlan`), the schedule (with a live red now-line), and **Tasks by Box**.
 - **Boxes** (`BOXES` / `BOX_META`): teaching, coaching, art, house, personal, finance, fitness, cookbook, plus `S.customBoxes`.
   An `army` box exists in `SEED` and in `TASK_BOX_RULES`. Each box has Tasks, Projects (text, one per line with `[status]`) and Notes,
