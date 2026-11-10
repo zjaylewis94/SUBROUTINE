@@ -1450,6 +1450,17 @@ html.sb-lock{overflow:hidden}
 .up-edit-row{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-top:6px}
 .up-edit-row select,.up-every{background:var(--s2);border:1px solid var(--br2);border-radius:8px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:.82rem;padding:7px 8px}
 .up-every{width:64px}
+/* Weekly extras: holidays, goal ideas, Cook Book dinner */
+.wk-hol{font-size:.66rem;padding:2px 6px;border-radius:4px;color:var(--text);background:rgba(240,192,64,.14);border:1px solid rgba(240,192,64,.35);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.wk-ideas{display:flex;flex-direction:column;gap:6px;margin-top:-4px}
+.wk-ideas-lbl{font-family:'Rajdhani',sans-serif;font-size:.68rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#a39a90}
+.wk-ideas-row{display:flex;flex-wrap:wrap;gap:6px}
+.wk-idea{display:flex;flex-direction:column;align-items:flex-start;gap:1px;max-width:100%;text-align:left;padding:6px 10px;background:var(--s1);border:1px solid var(--br);border-left:3px solid var(--sc);border-radius:9px;color:var(--text);cursor:pointer}
+.wk-idea:hover{border-color:var(--sc)}
+.wk-idea-w{font-family:'DM Mono',monospace;font-size:.56rem;letter-spacing:.5px;text-transform:uppercase;color:#8f867c}
+.wk-idea-t{font-size:.8rem;line-height:1.3}
+.wk-cb-sug{align-self:flex-start;margin:-2px 0 2px;background:none;border:1px dashed var(--br2);border-radius:6px;color:#a39a90;font-size:.66rem;padding:3px 8px;cursor:pointer;text-align:left}
+.wk-cb-sug:hover{color:var(--gold);border-color:var(--gd)}
 .gr-top{display:flex;flex-direction:column;gap:10px;margin:4px 0 6px}
 .gr-quick{display:flex;gap:7px}
 .gr-quick .add-inp{font-size:.95rem;padding:11px 12px}
@@ -3285,6 +3296,79 @@ function openCalEditModal(evId) {
   setTimeout(function(){ inp2.focus(); inp2.select(); }, 50);
 }
 
+// ─── WEEKLY EXTRAS: holidays, Cook Book dinners, goal ideas from the board ──
+// US holidays and common observances, worked out for any year
+var _holCache={};
+function usHolidays(y){
+  if(_holCache[y]) return _holCache[y];
+  function nth(m,wd,n){ var d=new Date(y,m,1); while(d.getDay()!==wd) d.setDate(d.getDate()+1); d.setDate(d.getDate()+7*(n-1)); return d; }
+  function last(m,wd){ var d=new Date(y,m+1,0); while(d.getDay()!==wd) d.setDate(d.getDate()-1); return d; }
+  function easter(){ var a=y%19,b=Math.floor(y/100),c=y%100,d=Math.floor(b/4),e=b%4,f=Math.floor((b+8)/25),g=Math.floor((b-f+1)/3),
+    h=(19*a+b-d-g+15)%30,i=Math.floor(c/4),k=c%4,l=(32+2*e+2*i-h-k)%7,m=Math.floor((a+11*h+22*l)/451),mo=Math.floor((h+l-7*m+114)/31),da=((h+l-7*m+114)%31)+1;
+    return new Date(y,mo-1,da); }
+  var L=[[new Date(y,0,1),'New Year’s Day','🎆'],[nth(0,1,3),'MLK Day','✊'],[new Date(y,1,14),'Valentine’s Day','💘'],
+    [nth(1,1,3),'Presidents’ Day','🇺🇸'],[new Date(y,2,17),'St. Patrick’s Day','☘️'],[easter(),'Easter','🐣'],[nth(4,0,2),'Mother’s Day','💐'],
+    [last(4,1),'Memorial Day','🇺🇸'],[nth(5,0,3),'Father’s Day','👔'],[new Date(y,5,19),'Juneteenth','✊'],[new Date(y,6,4),'Independence Day','🎆'],
+    [nth(8,1,1),'Labor Day','🛠️'],[nth(9,1,2),'Indigenous Peoples’ Day','🪶'],[new Date(y,9,31),'Halloween','🎃'],[new Date(y,10,11),'Veterans Day','🎖️'],
+    [nth(10,4,4),'Thanksgiving','🦃'],[new Date(y,11,24),'Christmas Eve','🎄'],[new Date(y,11,25),'Christmas','🎄'],[new Date(y,11,31),'New Year’s Eve','🥂']];
+  var out={}; L.forEach(function(h){ var k=wkDs(h[0]); (out[k]=out[k]||[]).push({t:h[1],ico:h[2]}); });
+  return (_holCache[y]=out);
+}
+// A holiday steps aside when you already have your own event for it that day ("THANX GIVING")
+var HOL_MATCH={ 'Thanksgiving':/thank|thanx/i, 'Christmas':/christmas|xmas/i, 'Christmas Eve':/christmas eve|xmas eve/i, 'Veterans Day':/veteran/i,
+  'Halloween':/hallow/i, 'Easter':/easter/i, 'New Year’s Day':/new year/i, 'New Year’s Eve':/new year|nye/i, 'Independence Day':/4th|fourth|independence/i,
+  'Mother’s Day':/mother|mom/i, 'Father’s Day':/father|dad/i, 'Valentine’s Day':/valentine/i, 'Labor Day':/labor/i, 'Memorial Day':/memorial/i,
+  'MLK Day':/mlk|king/i, 'Presidents’ Day':/president/i };
+function holidaysOn(d){
+  var ds=wkDs(d), hs=usHolidays(d.getFullYear())[ds]||[]; if(!hs.length) return hs;
+  var evs=(S.calEvents||[]).filter(function(ev){ return ev.date===ds; });
+  return hs.filter(function(h){ var re=HOL_MATCH[h.t]; return !(re && evs.some(function(ev){ return re.test(ev.title||''); })); });
+}
+
+// The Cook Book (same site, same storage) keeps its plan under cb2_plan, keyed by weeks from
+// this Sunday ("wk0_" = this week) + day (0 = Sun) + meal. Its "Last Meal" is dinner.
+function cookbookDinnerOn(d){
+  var plan; try{ plan=JSON.parse(localStorage.getItem('cb2_plan')||'null'); }catch(e){ plan=null; }
+  if(!plan) return null;
+  var sun=new Date(); sun.setHours(0,0,0,0); sun.setDate(sun.getDate()-sun.getDay());
+  var dd=new Date(d); dd.setHours(0,0,0,0);
+  var off=Math.floor(Math.round((dd-sun)/86400000)/7);
+  var e=plan['wk'+off+'_'+dd.getDay()+'_Last Meal'];
+  return e ? { name:e.name, emoji:e.emoji||'🍽️' } : null;
+}
+
+// Task text without its !priority / @date tags (they mean nothing inside a goal)
+function stripTaskTags(t){ return String(t||'').replace(/(^|\s)(!high|!!!|!med|!!|!low|!)(?=\s|$)/gi,' ').replace(/(^|\s)@(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)[a-z]*\.?\s*\d{1,2}\b/gi,' ').replace(/(^|\s)@[^\s,.;)]+/g,' ').replace(/\s+/g,' ').replace(/\s+([,.;])/g,'$1').trim(); }
+// Goal ideas from open Production Board tasks: overdue/due-soon and !high first, at most two per project,
+// skipping SHELVED/HELD books.
+function boardSuggestions(exclude, limit){
+  var today=new Date(); today.setHours(0,0,0,0);
+  var ex={}; (exclude||[]).forEach(function(t){ if(t) ex[stripTaskTags(t).toLowerCase()]=1; });
+  var all=[];
+  (S.projects||[]).forEach(function(p){
+    (p.books||[]).forEach(function(b){
+      if(/shelved|held/i.test(b.name||'')) return;
+      var lists=[b.tasks||[]].concat((b.chapters||[]).map(function(c){ return c.tasks||[]; }));
+      lists.forEach(function(ts){
+        var firstOpen=true;
+        ts.forEach(function(t){
+          if(t.d || !(t.t||'').trim() || ex[stripTaskTags(t.t).toLowerCase()]) return;
+          var tg=taskTags(t.t), sc=1, why='';
+          if(tg.due){ var dd=Math.round((tg.due-today)/86400000);
+            if(dd<0){ sc+=5; why='overdue'; } else if(dd<=7){ sc+=4; why='due this week'; } else if(dd<=14){ sc+=2; why='due soon'; } }
+          if(tg.pr===0){ sc+=3; why=why||'high priority'; } else if(tg.pr===1) sc+=1; else if(tg.pr===3) sc-=1;
+          if(firstOpen){ sc+=1; why=why||'next up'; firstOpen=false; }
+          all.push({ t:stripTaskTags(t.t), prj:p.name, bk:b.name, color:p.color||'var(--gold)', score:sc, why:why });
+        });
+      });
+    });
+  });
+  all.sort(function(a,b){ return b.score-a.score; });
+  var per={}, out=[];
+  all.forEach(function(s){ if(out.length>=(limit||6)) return; per[s.prj]=(per[s.prj]||0)+1; if(per[s.prj]<=2) out.push(s); });
+  return out;
+}
+
 // ─── WEEKLY (the Sunday plan) ─────────────────────────────────────
 // The page follows the Sunday routine, top to bottom: look back at last week,
 // the Top 3 goals, then each day (dates, lesson, dinner, targets), then notes.
@@ -3433,6 +3517,31 @@ function renderWeekly(cv) {
   });
   page.appendChild(goalsGrid);
 
+  // Goal ideas from the Production Board, while a slot is still empty. Tap one to fill the next slot.
+  if (wd.goals.some(function(g){ return !(g.t||'').trim(); })) {
+    var ideas=boardSuggestions(wd.goals.map(function(g){ return g.t; }), 6);
+    if (ideas.length) {
+      var sugWrap=el('div','wk-ideas');
+      var sugLbl=el('div','wk-ideas-lbl'); sugLbl.textContent='✨ Ideas from your Production Board: tap to add';
+      sugWrap.appendChild(sugLbl);
+      var sugRow=el('div','wk-ideas-row');
+      ideas.forEach(function(s2){
+        var b=el('button','wk-idea'); b.type='button'; b.style.setProperty('--sc', s2.color);
+        b.title=s2.prj+' · '+s2.bk+(s2.why?' · '+s2.why:'');
+        var w=el('span','wk-idea-w'); w.textContent=s2.prj+(s2.why?' · '+s2.why:''); b.appendChild(w);
+        var t=el('span','wk-idea-t'); t.textContent=s2.t; b.appendChild(t);
+        b.onclick=function(){
+          var slot=wd.goals.filter(function(g){ return !(g.t||'').trim(); })[0];
+          if(!slot) return;
+          slot.t=s2.t; slot.d=false; save(); renderCanvas();
+        };
+        sugRow.appendChild(b);
+      });
+      sugWrap.appendChild(sugRow);
+      page.appendChild(sugWrap);
+    }
+  }
+
   // ── 3. The days: dates, lesson, dinner, targets ──
   var dayLabel2 = el('div','wk-section-label'); dayLabel2.textContent='The Week: dates, lessons, dinners, targets (targets show up in Daily)';
   page.appendChild(dayLabel2);
@@ -3470,6 +3579,15 @@ function renderWeekly(cv) {
     hdr2.appendChild(nameEl); hdr2.appendChild(numEl2);
     dayCard.appendChild(hdr2);
 
+    // Holidays (computed) for every day in the column
+    var hols=[];
+    col.days.forEach(function(d2){ holidaysOn(d2).forEach(function(h){ hols.push((col.weekend?d2.toLocaleDateString('en-US',{weekday:'short'})+': ':'')+h.ico+' '+h.t); }); });
+    if (hols.length) {
+      var hStrip=el('div','wk-cal-events');
+      hols.forEach(function(h){ var hEl=el('div','wk-hol'); hEl.textContent=h; hEl.title=h; hStrip.appendChild(hEl); });
+      dayCard.appendChild(hStrip);
+    }
+
     // Calendar events (dates, holidays) for every day in the column
     var evs=[];
     col.days.forEach(function(d2){
@@ -3496,6 +3614,15 @@ function renderWeekly(cv) {
       var pre=col.weekend?d2.toLocaleDateString('en-US',{weekday:'short'})+' ':'';
       if (!col.weekend) fields.appendChild(field('Lesson', dd.lesson, 'Unit / what classes do', function(v){dd.lesson=v;}));
       fields.appendChild(field(pre+'Dinner', dd.meal, 'What\'s for dinner', function(v){dd.meal=v;}));
+      // Dinner is blank but the Cook Book has one planned for this day: offer it
+      var cbd=!(dd.meal||'').trim() && cookbookDinnerOn(d2);
+      if (cbd) {
+        var use=el('button','wk-cb-sug'); use.type='button';
+        use.textContent='Cook Book: '+cbd.emoji+' '+cbd.name+'  · use';
+        use.title='Fill Dinner with the Cook Book’s plan';
+        use.onclick=function(){ dd.meal=cbd.name; save(); renderCanvas(); };
+        fields.appendChild(use);
+      }
     });
     dayCard.appendChild(fields);
 
