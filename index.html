@@ -650,6 +650,11 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);dis
 .wk-empty{font-size:.7rem;color:var(--dim);padding:4px;font-style:italic}
 .dj-plan{display:flex;flex-direction:column;gap:3px;font-size:.82rem;color:var(--text);line-height:1.45}
 .dj-plan b{font-family:'Rajdhani',sans-serif;font-size:.66rem;letter-spacing:1.5px;text-transform:uppercase;color:var(--gold);margin-right:6px}
+.dj-preps{list-style:none;margin:4px 0 2px;padding:0;display:flex;flex-direction:column;gap:4px}
+.dj-preps li{position:relative;padding-left:14px;line-height:1.4}
+.dj-preps li:before{content:'';position:absolute;left:2px;top:.55em;width:5px;height:5px;border-radius:50%;background:var(--gold)}
+.dj-prep{font-weight:700;color:var(--text);margin-right:6px}
+.dj-prep:after{content:':'}
 @media(max-width:700px){.wk-grid{grid-template-columns:repeat(2,1fr)}.wk-goals{grid-template-columns:1fr}}
 @media(max-width:600px){.wk-nav{flex-wrap:wrap}.wk-nav-title{order:-1;flex-basis:100%;font-size:.9rem}.wk-nav .cal-nav-btn{flex:1}}
 
@@ -3829,7 +3834,20 @@ function renderDaily(cv) {
     [['Lesson',dd.lesson],['Dinner',dd.meal]].forEach(function(p){
       if(!p[1]||!p[1].trim()) return;
       var r=el('div',''); var b=document.createElement('b'); b.textContent=p[0];
-      r.appendChild(b); r.appendChild(document.createTextNode(p[1].trim())); pb.appendChild(r);
+      r.appendChild(b);
+      // A lesson line lists each prep ("DP 1-2: … · Adv: … · AVID: …"): one line per prep, class in bold
+      var parts = p[0]==='Lesson' ? p[1].split(/\s*[·•|\n]\s*/).filter(function(x){ return x.trim(); }) : [];
+      if (parts.length > 1) {
+        var ul=el('ul','dj-preps');
+        parts.forEach(function(part){
+          var li=el('li',''), m=/^([^:]{1,24}):\s*(.+)$/.exec(part.trim());
+          if (m) { var c=el('span','dj-prep'); c.textContent=m[1]; li.appendChild(c); li.appendChild(document.createTextNode(m[2])); }
+          else li.textContent=part.trim();
+          ul.appendChild(li);
+        });
+        r.appendChild(ul);
+      } else r.appendChild(document.createTextNode(p[1].trim()));
+      pb.appendChild(r);
     });
     planSec.appendChild(pl); planSec.appendChild(pb); left.appendChild(planSec);
   }
