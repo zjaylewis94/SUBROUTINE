@@ -28,7 +28,12 @@ else here.** New content belongs in Zach's saved data, which syncs to the privat
   - **Production Board** (`overview`): `S.projects` → books → chapters → tasks, as a map or a list (`S.dtaskView`).
   - **Brain Dump** (`dump`): `S.dump` and the `S.feed` notes. AI sort calls the Anthropic API from the browser with the key
     stored in `subroutine_ai_key`. The model id is hard-coded in the `fetch` in that section.
-  - **Monthly** (`S.calEvents`).
+  - **Monthly** (`S.calEvents`). Event names show without clock times (`calTitleNoTime()`); the saved title keeps them.
+- **Color rules** (Zach's, Nov 10, 2026): `COLOR_RULES` / `colorCategory()` pick the color of a new calendar event
+  (`guessCalColor()`) or schedule block (`guessDomainColor()`) from its title, first match wins: Shamrock's = green (`work`),
+  Army = yellow, holidays = gray, fitness = dark blue, school and coaching = light blue (`teaching`), art = pink, everything
+  else = personal red. A color picked by hand sticks. `applyColorRules()` ran once per data set (`S._colorRules_1110`) to recolor
+  events and blocks from that day on and the bell schedule (Lunch red, every other period light blue).
   - **Weekly** (`S.weeklyData`), the Sunday plan (Nov 8, 2026). Top to bottom it follows Zach's Sunday routine:
     last week's slipped goals and targets (each one Carry → or Drop, kept in `handled`, plus a "what slipped, and why" `review`),
     Top 3 goals, then each day's calendar events, **Lesson** and **Dinner** (stored on `S.dailyData[date].lesson` / `.meal`,

@@ -1871,6 +1871,7 @@ function hydrateState() {
       S._schoolSeed_2627b = true;
     }
     if (S.projects) mergeLibraryGoals();
+    if (!S._colorRules_1110) applyColorRules();
     if (!S.dailyData) S.dailyData = {};
     if (!S.gamePlan) S.gamePlan = [];
     if (!S.dboxOpen) S.dboxOpen = {};
@@ -3085,7 +3086,7 @@ function renderMonthly(cv) {
         if (col===startCol && isStart) {
           evEl.style.borderRadius = '4px 0 0 4px';
           evEl.style.marginLeft = '2px';
-          var span2 = el('span',''); span2.textContent=ev.title; span2.style.cssText='font-size:.66rem;font-weight:700;letter-spacing:.2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block';
+          var span2 = el('span',''); span2.textContent=calTitleNoTime(ev.title); evEl.title=ev.title; span2.style.cssText='font-size:.66rem;font-weight:700;letter-spacing:.2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block';
           evEl.appendChild(span2);
         } else if (col===startCol) {
           evEl.style.borderRadius = '0';
@@ -3151,7 +3152,7 @@ function renderMonthly(cv) {
     var item = el('button','cal-agenda-item'+(end < today2 ? ' past' : '')); item.type='button';
     var sw = el('span','cal-agenda-sw'); sw.style.background = colors[(ev.colorIdx||0)%colors.length];
     var dt = el('span','cal-agenda-date'); dt.textContent = fmtAgendaDate(ev.date, end);
-    var tt = el('span','cal-agenda-t'); tt.textContent = ev.title;
+    var tt = el('span','cal-agenda-t'); tt.textContent = calTitleNoTime(ev.title);
     var txt = el('span','cal-agenda-txt'); txt.appendChild(dt); txt.appendChild(tt);
     item.appendChild(sw); item.appendChild(txt);
     item.onclick = function(){ openCalEditModal(ev.id); };
@@ -3159,6 +3160,23 @@ function renderMonthly(cv) {
   });
   wrap.appendChild(ag);
   cv.appendChild(wrap);
+}
+// The Monthly view leaves clock times out of event names ("SHAMROCK'S 6 PM–2:30 AM" shows as "SHAMROCK'S").
+// The saved title keeps them, so Weekly and the edit dialog still show the time.
+function calTitleNoTime(t) {
+  var src = String(t || '');
+  var T = '\\d{1,2}(?::\\d{2})?\\s*(?:am|pm)?';
+  var range = new RegExp('\\(?\\s*(?:til|till|until|from|at|@)?\\s*' + T + '\\s*(?:-|–|—|to)\\s*' + T + '\\s*\\)?', 'gi');
+  var single = /\(?\s*(?:til|till|until|at|@)?\s*\d{1,2}(?::\d{2})?\s*(?:am|pm)\b\s*\)?/gi;
+  var out = src
+    .replace(range, function (m) { return /am|pm|:/i.test(m) ? ' ' : m; })
+    .replace(single, ' ')
+    .replace(/(?:@|\bat)?\s*\b(?:0\d|1[0-8]|2[1-3])[0-5]\d\b(?:\s*hrs?\b)?/gi, ' ')   // military time like 1630 (not years like 2026)
+    .replace(/\(\s*\)/g, '')
+    .replace(/\s{2,}/g, ' ')
+    .replace(/\s*[-–—·,:]\s*$/, '')
+    .trim();
+  return out || src;
 }
 function fmtAgendaDate(a, b){
   var d1 = parseDate(a), s = d1.toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'});
@@ -3194,7 +3212,7 @@ function openCalModal(dateStr2) {
   function doAdd() {
     var title = inp2.value.trim(); if (!title){ inp2.style.borderColor='var(--danger)'; return; }
     var endDate = (endInp.value && endInp.value >= dateStr2) ? endInp.value : dateStr2;
-    var colorIdx = Math.floor(Math.random()*8);
+    var colorIdx = guessCalColor(title);
     S.calEvents.push({ id:'ev'+Date.now(), title:title, date:dateStr2, endDate:endDate, colorIdx:colorIdx });
     save(); overlay.remove(); renderCanvas();
   }
@@ -4886,24 +4904,53 @@ function fmtHourLbl(h){
   return label12 + '|' + label24; // sentinel — split in render
 }
 
-function guessDomainColor(title) {
-  var t=title.toLowerCase();
-  if(/army|ocs|meps|asvab|basic|acft|military/.test(t)) return 'coaching'; // green
-  if(/teach|class|student|lesson|rubric|grade|ramhaus/.test(t)) return 'teaching';
-  if(/coach|track|meet|athlete|practice|relay/.test(t)) return 'coaching';
-  if(/art|paint|draw|sculpt|blender|genesis|game/.test(t)) return 'art';
-  if(/house|garage|tiki|home depot/.test(t)) return 'personal';
-  return 'general';
+// Zach's color rules (Nov 10, 2026). New calendar events and schedule blocks get their color
+// from the title, first match wins. A color picked by hand afterwards always sticks.
+//   Shamrock's = green · Army = yellow · fitness = dark blue · school (teaching + coaching) = light blue
+//   art = pink · holidays = gray · everything else is personal = red
+var COLOR_RULES = [
+  { cat:'work',     re:/shamrock|\bshams?\b/i },
+  { cat:'army',     re:/\barmy\b|future soldier|\bfst\b|\bocs\b|\bmeps\b|asvab|\bbct\b|\bacft\b|\baft\b|recruit|military|drill|\bdd ?214\b|enlist/i },
+  { cat:'holiday',  re:/veterans day|thanksgiving|thanx|christmas|new year|memorial day|labor day|independence|holiday|\bbreak\b/i },
+  { cat:'fitness',  re:/\bgym\b|workout|work out|\blift|\brun\b|running|cardio|\bswim|ruck|inbody|hybrid warrior|\bhiit\b|leg day|push day|pull day|stretch|mobility/i },
+  { cat:'teaching', re:/\bclass|\bp[1-6]\b|period|student|lesson|grade|grading|\bsub\b|sub notes|avid|teach|school|parent.?teacher|conference|insight|staff|\bpd\b|rally|assembly|ramhaus|rubric|worksheet|classroom|coach|track|\bmeet\b|athlete|practice|relay|off szn|tnf/i },
+  { cat:'art',      re:/\bart\b|paint|\bdraw|sculpt|blender|genesis|sketch/i }
+];
+function colorCategory(title) {
+  var t = String(title||'');
+  for (var i=0; i<COLOR_RULES.length; i++) if (COLOR_RULES[i].re.test(t)) return COLOR_RULES[i].cat;
+  return 'personal';
 }
+// One time per data set (_colorRules_1110): bring today's and later events and blocks, and the bell
+// schedule, onto the color rules. Past days keep their colors.
+function applyColorRules() {
+  var today = todayStr();
+  (S.calEvents||[]).forEach(function(ev){ if ((ev.endDate||ev.date) >= today) ev.colorIdx = guessCalColor(ev.title); });
+  (S.timeBlocks||[]).forEach(function(b){ if (b.date >= today) b.color = guessDomainColor(b.title); });
+  Object.keys(S.weekSchedule||{}).forEach(function(d){
+    (S.weekSchedule[d]||[]).forEach(function(b){ b.color = /^lunch/i.test(b.title||'') ? 'personal' : 'teaching'; });
+  });
+  S._colorRules_1110 = true;
+}
+// Schedule block color key for a title.
+function guessDomainColor(title) {
+  var c = colorCategory(title);
+  return c === 'holiday' ? 'slate' : c;
+}
+// Calendar color index (into CAL_COLORS) for a title.
+var CAL_RULE_IDX = { work:0, army:8, fitness:16, teaching:5, art:14, holiday:12, personal:6 };
+function guessCalColor(title) { return CAL_RULE_IDX[colorCategory(title)]; }
 
 // Domain color map matching Clarity exactly
-var CAL_COLORS = ['#5cb87a','#e8a030','#38bcd4','#c87de0','#e07840','#4da6ff','#e05a5a','#a09ab8','#f0c040','#2fc4b4','#6d6de0','#e85a8a','#8a93a8','#9c6dd8','#d43f8d','#7ec850'];
+var CAL_COLORS = ['#5cb87a','#e8a030','#38bcd4','#c87de0','#e07840','#4da6ff','#e05a5a','#a09ab8','#f0c040','#2fc4b4','#6d6de0','#e85a8a','#8a93a8','#9c6dd8','#d43f8d','#7ec850','#2f5fd0'];
 var BLOCK_COLORS = {
-  teaching: { bg:'#261a08', border:'#e8a030' },
-  coaching: { bg:'#0f2016', border:'#4caf50' },
-  personal: { bg:'#1e1230', border:'#9c6dd8' },
+  teaching: { bg:'#08202e', border:'#5ab4f0' },   // school: light blue
+  coaching: { bg:'#08202e', border:'#5ab4f0' },   // coaching is school too
+  work:     { bg:'#0f2016', border:'#4caf50' },   // Shamrock's: green
+  fitness:  { bg:'#0a1430', border:'#2f5fd0' },   // dark blue
+  personal: { bg:'#2a0f0f', border:'#e05555' },   // red
   art:      { bg:'#280d1e', border:'#d43f8d' },
-  army:     { bg:'#081828', border:'#3a9bdc' },
+  army:     { bg:'#262208', border:'#e8d030' },   // yellow
   general:  { bg:'#1e1a0e', border:'#e8a030' },
   red:      { bg:'#2a0f0f', border:'#e05555' },
   orange:   { bg:'#2a1608', border:'#e8821f' },
