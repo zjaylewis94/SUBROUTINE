@@ -10,7 +10,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Subroutine">
-<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=DM+Sans:wght@300;400;500&family=Cormorant+Garamond:wght@600&display=swap" rel="stylesheet">
 
 <style>
 :root {
@@ -1466,6 +1466,65 @@ html.sb-lock{overflow:hidden}
 .wk-idea-t{font-size:.8rem;line-height:1.3}
 .wk-cb-sug{align-self:flex-start;margin:-2px 0 2px;background:none;border:1px dashed var(--br2);border-radius:6px;color:#a39a90;font-size:.66rem;padding:3px 8px;cursor:pointer;text-align:left}
 .wk-cb-sug:hover{color:var(--gold);border-color:var(--gd)}
+/* Production Board: Shelf view (the Archive's library look) */
+.shv{display:flex;flex-direction:column;gap:40px;max-width:1100px}
+.shv-shelf{--wood:#2a1d12;--wood2:#3d2a1a;--brass:#c9a25e;--brass-dim:#8a7040}
+.shv-label{display:flex;align-items:center;gap:12px;margin:0 0 14px 4px;font-family:'Rajdhani',sans-serif;font-weight:700;letter-spacing:4px;text-transform:uppercase;font-size:.82rem;color:var(--brass)}
+.shv-label:after{content:'';flex:1;height:1px;background:linear-gradient(90deg,var(--brass-dim),transparent);order:1}
+.shv-name{color:var(--c);text-shadow:0 0 18px color-mix(in srgb,var(--c) 45%,transparent)}
+.shv-meta{order:2;font-family:'DM Mono',monospace;font-size:.62rem;letter-spacing:1px;color:#a39a90}
+.shv-books{display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap;padding:24px 22px 0;min-height:120px}
+.shv-plank{height:22px;border-radius:3px;margin:0 6px;background:linear-gradient(180deg,var(--wood2),var(--wood));
+  box-shadow:0 10px 30px rgba(0,0,0,.5),inset 0 2px 0 rgba(201,162,94,.18),inset 0 -3px 8px rgba(0,0,0,.5);border-top:1px solid rgba(201,162,94,.25);position:relative;z-index:3}
+.shv-book{position:relative;height:var(--h,190px);width:54px;flex-shrink:0;border:0;padding:0;cursor:pointer;border-radius:3px 5px 5px 3px;overflow:hidden;isolation:isolate;
+  background:linear-gradient(90deg,rgba(0,0,0,.45) 0%,transparent 8%,transparent 90%,rgba(0,0,0,.35) 100%),
+    linear-gradient(180deg,color-mix(in srgb,var(--c) calc(32% + var(--tone)),#1a1410) 0%,color-mix(in srgb,var(--c) calc(20% + var(--tone)),#120e0b) 100%);
+  box-shadow:0 14px 24px rgba(0,0,0,.5),inset 0 0 0 1px rgba(255,255,255,.05);transform-origin:bottom center;
+  transition:transform .3s cubic-bezier(.2,.9,.25,1.2),box-shadow .3s;display:flex;align-items:center;justify-content:center;-webkit-tap-highlight-color:transparent}
+.shv-book:before,.shv-book:after{content:'';position:absolute;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,#c9a25e,transparent);opacity:.6;z-index:2}
+.shv-book:before{top:16px}.shv-book:after{bottom:30px}
+.shv-book:hover{transform:translateY(-16px) rotate(-2deg);box-shadow:0 28px 40px rgba(0,0,0,.6),0 0 30px -6px var(--c)}
+.shv-book:focus-visible{outline:2px solid var(--c);outline-offset:3px}
+.shv-fill{position:absolute;left:0;right:0;bottom:0;height:var(--fill,0%);z-index:0;
+  background:linear-gradient(180deg,color-mix(in srgb,var(--c) 34%,transparent),color-mix(in srgb,var(--c) 18%,transparent));border-top:1px solid color-mix(in srgb,var(--c) 60%,transparent)}
+.shv-title{position:relative;z-index:1;writing-mode:vertical-rl;transform:rotate(180deg);font-family:'Cormorant Garamond',serif;font-weight:600;font-size:1rem;letter-spacing:1.2px;
+  color:#e9e0c9;text-shadow:0 1px 2px rgba(0,0,0,.7);padding:24px 0 38px;white-space:nowrap;max-height:100%;overflow:hidden;text-overflow:ellipsis;pointer-events:none}
+.shv-count{position:absolute;bottom:8px;left:50%;transform:translateX(-50%);z-index:2;font-family:'DM Mono',monospace;font-size:.66rem;color:#e9e0c9;background:rgba(0,0,0,.35);border-radius:999px;padding:1px 7px;pointer-events:none}
+.shv-hot{position:absolute;top:5px;left:50%;transform:translateX(-50%);z-index:2;width:7px;height:7px;border-radius:50%;background:#ff6b5e;box-shadow:0 0 8px #ff6b5e}
+.shv-book.done .shv-count{color:var(--ok)}
+.shv-book.long .shv-title{font-size:.8rem;letter-spacing:.6px}
+.shv-book.empty{filter:saturate(.35) brightness(.72)}
+.shv-empty,.shv-hint{font-size:.78rem;color:#8f867c}
+.shv-ov{position:fixed;inset:0;z-index:100000;background:rgba(0,0,0,.55);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);display:flex;align-items:center;justify-content:center;padding:18px}
+.shv-sheet{width:100%;max-width:560px;max-height:86vh;overflow-y:auto;background:rgba(18,16,14,.9);border:1px solid rgba(201,162,94,.35);border-top:4px solid var(--c);border-radius:14px;padding:16px 18px 18px;
+  box-shadow:var(--glass-edge,none),0 24px 70px rgba(0,0,0,.6);display:flex;flex-direction:column;gap:8px}
+.shv-top{display:flex;align-items:center}
+.shv-proj{flex:1;font-family:'Rajdhani',sans-serif;font-weight:700;letter-spacing:3px;text-transform:uppercase;font-size:.72rem;color:var(--c)}
+.shv-x{background:none;border:none;color:#a39a90;font-size:1.1rem;cursor:pointer;padding:4px 8px}
+.shv-btitle{font-family:'Cormorant Garamond',serif;font-weight:600;font-size:1.7rem;line-height:1.1;color:#e9e0c9}
+.shv-bar{height:5px;border-radius:4px;background:var(--s2);overflow:hidden;margin-top:4px}
+.shv-barfill{height:100%;background:var(--c)}
+.shv-bmeta{font-family:'DM Mono',monospace;font-size:.66rem;color:#a39a90}
+.shv-sec{display:flex;flex-direction:column;gap:2px;margin-top:8px}
+.shv-sec-h{font-family:'Rajdhani',sans-serif;font-weight:700;letter-spacing:2px;text-transform:uppercase;font-size:.72rem;color:#c9a25e;padding:4px 0;border-bottom:1px solid rgba(201,162,94,.25)}
+.shv-task{display:flex;align-items:flex-start;gap:10px;padding:7px 2px;border-bottom:1px solid var(--br)}
+.shv-cb{width:20px;height:20px;border-radius:50%;border:2px solid #756c62;background:none;flex-shrink:0;cursor:pointer;position:relative;margin-top:1px;padding:0}
+.shv-cb.on{background:var(--c);border-color:var(--c)}
+.shv-cb.on:after{content:'✓';position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#14110e;font-size:.7rem;font-weight:700}
+.shv-ttext{flex:1;font-size:.9rem;color:var(--text);line-height:1.35}
+.shv-task.done .shv-ttext{color:#8f867c;text-decoration:line-through}
+.shv-add{margin-top:6px;background:var(--s1);border:1px dashed var(--br2);border-radius:8px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:.84rem;padding:8px 10px;outline:none}
+.shv-add:focus{border-style:solid;border-color:var(--c)}
+.shv-note{font-size:.72rem;color:#8f867c;margin-top:8px}
+@media(max-width:680px){
+  .shv{gap:30px}
+  .shv-books{padding:20px 10px 0;gap:8px}
+  .shv-book{width:44px}
+  .shv-title{font-size:.88rem;letter-spacing:.8px}
+  .shv-book:hover{transform:none}
+  .shv-ov{padding:0;align-items:stretch}
+  .shv-sheet{max-width:none;max-height:none;height:100%;border-radius:0;padding:16px 14px calc(18px + env(safe-area-inset-bottom))}
+}
 .gr-top{display:flex;flex-direction:column;gap:10px;margin:4px 0 6px}
 .gr-quick{display:flex;gap:7px}
 .gr-quick .add-inp{font-size:.95rem;padding:11px 12px}
@@ -1594,6 +1653,7 @@ body:before{content:'';position:fixed;inset:-2px;z-index:-1;pointer-events:none;
     <div id="map-toggle">
       <button class="mt-btn on" id="btn-cards" onclick="setMode('map')">◎ Map</button>
       <button class="mt-btn" id="btn-map" onclick="setMode('list')">☰ List</button>
+      <button class="mt-btn" id="btn-shelf" onclick="setMode('shelf')">📚 Shelf</button>
     </div>
     <button id="export-btn" title="Download a portable JSON save file" onclick="exportData()">⇩ Export</button>
     <button id="import-btn" title="Import a portable JSON save file" onclick="triggerImport()">⇧ Import</button>
@@ -2623,6 +2683,8 @@ function syncModeButtons(){
   var bm = document.getElementById('btn-map');
   if(bc) bc.className = 'mt-btn' + (m==='map' ? ' on' : '');
   if(bm) bm.className = 'mt-btn' + (m==='list' ? ' on' : '');
+  var bs = document.getElementById('btn-shelf');
+  if(bs) bs.className = 'mt-btn' + (m==='shelf' ? ' on' : '');
 }
 
 function renderOverview(cv) {
@@ -2634,6 +2696,7 @@ function renderOverview(cv) {
   if(!S.dtaskView) S.dtaskView = (window.innerWidth<=680) ? 'list' : 'map';
   syncModeButtons();
   if(S.dtaskView==='map') renderDailyMap(panel);
+  else if(S.dtaskView==='shelf') renderShelf(panel);
   else renderProjectList(panel);
 }
 
@@ -4351,6 +4414,101 @@ function ensureProjects() {
 }
 
 // ── Rollup math ──────────────────────────────────────────────
+// ── Shelf view: the Production Board as a library ─────────────────
+// Each project is a shelf and each book a spine, in the Archive's style. A spine shows how far along
+// the book is (the fill rising from the bottom), how many tasks are open, and a red dot when one is
+// overdue or !high. Tap a spine to open the book: its tasks and chapters, checkable and addable.
+// Renaming, reordering and deleting stay in List view.
+function shelfBookState(bk){
+  var p=bookProgress(bk), hot=false, today=new Date(); today.setHours(0,0,0,0);
+  var lists=[bk.tasks||[]].concat((bk.chapters||[]).map(function(c){ return c.tasks||[]; }));
+  lists.forEach(function(ts){ ts.forEach(function(t){
+    if(t.d) return; var tg=taskTags(t.t);
+    if(tg.pr===0 || (tg.due && tg.due<=today)) hot=true;
+  }); });
+  return { t:p.t, d:p.d, open:p.t-p.d, frac:pct(p), hot:hot };
+}
+function renderShelf(panel){
+  ensureProjects();
+  panel.style.cssText='padding:22px 20px 60px;overflow-y:auto';
+  var wrap=el('div','shv');
+  (S.projects||[]).forEach(function(prj){
+    var pp=projectProgress(prj);
+    var shelf=el('div','shv-shelf'); shelf.style.setProperty('--c', prj.color||'#e8a030');
+    var lbl=el('div','shv-label');
+    var nm=el('span','shv-name'); nm.textContent=prj.name; lbl.appendChild(nm);
+    var meta=el('span','shv-meta'); meta.textContent=(pp.t-pp.d)+' open · '+Math.round(pct(pp)*100)+'%'; lbl.appendChild(meta);
+    shelf.appendChild(lbl);
+    var row=el('div','shv-books');
+    (prj.books||[]).forEach(function(bk, bi){
+      var st=shelfBookState(bk);
+      var b=el('button','shv-book'+(st.t===0?' empty':'')+(st.t>0&&st.open===0?' done':'')); b.type='button';
+      // tall enough for the title (uppercase serif ≈ 11 px a letter, smaller type for long names), a bit taller with more tasks
+      var nlen=(bk.name||'').length, small=nlen>20, per=small?8.6:11;
+      b.style.setProperty('--h', Math.min(300, Math.max(150 + Math.min(st.t,12)*5, 70 + nlen*per))+'px');
+      if(small) b.classList.add('long');
+      b.style.setProperty('--fill', Math.round(st.frac*100)+'%');
+      // neighbouring books on a shelf get slightly different shades of the project color
+      b.style.setProperty('--tone', (bi%3===0?'0%':bi%3===1?'14%':'-10%'));
+      b.title=bk.name+' · '+st.open+' open of '+st.t;
+      var fill=el('span','shv-fill'); b.appendChild(fill);
+      if(st.hot){ var dot=el('span','shv-hot'); dot.title='Something here is overdue or !high'; b.appendChild(dot); }
+      var t=el('span','shv-title'); t.textContent=bk.name; b.appendChild(t);
+      var c=el('span','shv-count'); c.textContent= st.t===0 ? '—' : st.open===0 ? '✓' : st.open; b.appendChild(c);
+      b.onclick=function(){ openShelfBook(prj, bk); };
+      row.appendChild(b);
+    });
+    if(!(prj.books||[]).length){ var e=el('div','shv-empty'); e.textContent='No books yet. Add one in List view.'; row.appendChild(e); }
+    shelf.appendChild(row);
+    shelf.appendChild(el('div','shv-plank'));
+    wrap.appendChild(shelf);
+  });
+  var hint=el('div','shv-hint'); hint.textContent='Tap a book to open it. Rename, reorder or delete books in ☰ List view.';
+  wrap.appendChild(hint);
+  panel.appendChild(wrap);
+}
+function openShelfBook(prj, bk){
+  var ov=el('div','shv-ov'), sheet=el('div','shv-sheet'); ov.appendChild(sheet); document.body.appendChild(ov);
+  sheet.style.setProperty('--c', prj.color||'#e8a030');
+  function close(){ ov.remove(); document.removeEventListener('keydown',esc); renderCanvas(); }
+  function esc(e){ if(e.key==='Escape') close(); }
+  document.addEventListener('keydown',esc);
+  ov.addEventListener('mousedown',function(e){ if(e.target===ov) close(); });
+  function section(title, arr){
+    var sec=el('div','shv-sec');
+    if(title){ var h=el('div','shv-sec-h'); h.textContent=title; sec.appendChild(h); }
+    arr.forEach(function(t,i){
+      var r=el('div','shv-task'+(t.d?' done':''));
+      var cb=el('button','shv-cb'+(t.d?' on':'')); cb.type='button'; cb.setAttribute('aria-label', t.d?'Uncheck':'Check off');
+      cb.onclick=function(){ t.d=!t.d; save(); draw(); };
+      var tx=el('span','shv-ttext'); tx.textContent=stripTaskTags(t.t)||t.t; r.appendChild(cb); r.appendChild(tx);
+      if(!t.d) taskBadges(t.t).forEach(function(bd){ var bb=el('span','task-badge '+bd.cls); bb.textContent=bd.txt; r.appendChild(bb); });
+      sec.appendChild(r);
+    });
+    var add=document.createElement('input'); add.className='shv-add'; add.placeholder='+ Add a task'+(title?' to '+title:'');
+    add.onkeydown=function(e){ if(e.key==='Enter'){ var v=add.value.trim(); if(!v) return; var k=Array.prototype.indexOf.call(sheet.querySelectorAll('.shv-add'), add); arr.push({t:v,d:false}); save(); draw(); var a2=sheet.querySelectorAll('.shv-add')[k]; if(a2) a2.focus(); } };
+    sec.appendChild(add);
+    return sec;
+  }
+  function draw(){
+    var keepScroll=sheet.scrollTop; sheet.innerHTML='';
+    var st=shelfBookState(bk);
+    var top=el('div','shv-top');
+    var pj=el('div','shv-proj'); pj.textContent=prj.name; top.appendChild(pj);
+    var x=el('button','shv-x'); x.type='button'; x.textContent='✕'; x.onclick=close; top.appendChild(x);
+    sheet.appendChild(top);
+    var h=el('div','shv-btitle'); h.textContent=bk.name; sheet.appendChild(h);
+    var bar=el('div','shv-bar'); var bf=el('div','shv-barfill'); bf.style.width=Math.round(st.frac*100)+'%'; bar.appendChild(bf); sheet.appendChild(bar);
+    var m=el('div','shv-bmeta'); m.textContent= st.t ? (st.d+' of '+st.t+' done · '+st.open+' open') : 'Nothing in this book yet'; sheet.appendChild(m);
+    if(!bk.tasks) bk.tasks=[];
+    if(bk.tasks.length || !(bk.chapters||[]).length) sheet.appendChild(section('', bk.tasks));
+    (bk.chapters||[]).forEach(function(ch){ if(!ch.tasks) ch.tasks=[]; sheet.appendChild(section(ch.name, ch.tasks)); });
+    var n=el('div','shv-note'); n.textContent='Rename, move or delete in ☰ List view.'; sheet.appendChild(n);
+    sheet.scrollTop=keepScroll;
+  }
+  draw();
+}
+
 function countTasks(tasks){ var t=0,d=0; (tasks||[]).forEach(function(x){t++;if(x.d)d++;}); return {t:t,d:d}; }
 function bookProgress(book){
   var agg = countTasks(book.tasks);

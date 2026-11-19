@@ -25,7 +25,14 @@ else here.** New content belongs in Zach's saved data, which syncs to the privat
 
 ## What's in it
 - **Home** tabs (`S.homeTabOrder`, drag to reorder):
-  - **Production Board** (`overview`): `S.projects` → books → chapters → tasks, as a map or a list (`S.dtaskView`).
+  - **Production Board** (`overview`): `S.projects` → books → chapters → tasks, as a map, a list or a shelf (`S.dtaskView`
+    = `map` / `list` / `shelf`).
+    - **Shelf** (`renderShelf()`, Nov 19, 2026): each project is a shelf and each book a spine, in the Archive's lamplit
+      style (wood plank, brass bands, Cormorant Garamond).
+      - A spine's height fits its title; the fill rising from the bottom is % done; the badge counts open tasks (✓ when all
+        done); a red dot means an open task is overdue or `!high` (`shelfBookState()`).
+      - Tap a spine to open the book (`openShelfBook()`): its tasks, then each chapter, checkable, with an add box per section.
+      - Rename, reorder and delete stay in List view.
   - **Brain Dump** (`dump`): `S.dump` and the `S.feed` notes. AI sort calls the Anthropic API from the browser with the key
     stored in `subroutine_ai_key`. The model id is hard-coded in the `fetch` in that section.
   - **Monthly** (`S.calEvents`). Event names show without clock times (`calTitleNoTime()`); the saved title keeps them.
