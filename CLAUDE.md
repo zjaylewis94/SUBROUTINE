@@ -110,6 +110,16 @@ else here.** New content belongs in Zach's saved data, which syncs to the privat
   - Per device in localStorage: `sub_sky`, `sub_sky_loc`, `sub_sky_wx`. The location is never synced or committed.
     Without one, the city comes from the time zone (`TZ` map).
 
+## SUB FM (📻 in the top bar, Nov 24, 2026)
+- Zach's daily DJ broadcast: an original host, "DJ Overclock" on "SUB FM 94.1" (a hype radio DJ in the style of
+  extreme-sports games, not a copy of any game's DJ).
+- Episodes live in the **private** data repo: `radio/<YYYY-MM-DD>.json` (`date, title, host, script, playlist{name,url}`)
+  plus `radio/<YYYY-MM-DD>.mp3`. They're made by a scheduled Claude task with `radio/tools/make_episode.py` (a local
+  Kokoro voice, a synth jingle and a beat bed, 56 kbps mono). Never put an episode or its script in this repo.
+- `Radio` module (after `Sky`): it reads the Sync token from `subroutine_gh_cfg`, lists `radio/`, plays today's episode or
+  the latest one, and has a 14-day picker and a "Read along" script. The audio element moves to `#radio-hold` when
+  the panel closes, so playback continues; the chip reads "📻 ON AIR" while playing.
+
 ## Saved data and seeding
 - localStorage keys (shared origin with every book, ~5 MB total, so keep keys `sub_`-prefixed):
   - `sub_v5`: the state.
